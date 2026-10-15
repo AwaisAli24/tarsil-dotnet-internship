@@ -1,0 +1,15 @@
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/bin/Debug/net10.0/PersonalInfo
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/bin/Debug/net10.0/PersonalInfo.deps.json
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/bin/Debug/net10.0/PersonalInfo.runtimeconfig.json
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/bin/Debug/net10.0/PersonalInfo.dll
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/bin/Debug/net10.0/PersonalInfo.pdb
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.GeneratedMSBuildEditorConfig.editorconfig
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.AssemblyInfoInputs.cache
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.AssemblyInfo.cs
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.csproj.CoreCompileInputs.cache
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.sourcelink.json
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.dll
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/refint/PersonalInfo.dll
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.pdb
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/PersonalInfo.genruntimeconfig.cache
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/PersonalInfo/obj/Debug/net10.0/ref/PersonalInfo.dll
