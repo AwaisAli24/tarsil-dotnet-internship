@@ -1,0 +1,15 @@
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/bin/Debug/net10.0/GradeCalculator
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/bin/Debug/net10.0/GradeCalculator.deps.json
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/bin/Debug/net10.0/GradeCalculator.runtimeconfig.json
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/bin/Debug/net10.0/GradeCalculator.dll
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/bin/Debug/net10.0/GradeCalculator.pdb
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.GeneratedMSBuildEditorConfig.editorconfig
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.AssemblyInfoInputs.cache
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.AssemblyInfo.cs
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.csproj.CoreCompileInputs.cache
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.sourcelink.json
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.dll
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/refint/GradeCalculator.dll
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.pdb
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/GradeCalculator.genruntimeconfig.cache
+/Users/awaisali/Desktop/Internship/tarsil-dotnet-internship/Day1/GradeCalculator/obj/Debug/net10.0/ref/GradeCalculator.dll
