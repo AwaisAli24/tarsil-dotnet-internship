@@ -17,14 +17,15 @@
     if (!success)
     {
         Console.WriteLine("Your input number is not valid.");
-    }
-    if (num2 == 0)
-    {
-        Console.WriteLine("Cannot divide a number by zero.");
         continue;
     }
     Console.WriteLine("Choose an Operator: +,_,*,/,%");
     var operator_ = Console.ReadLine();
+    if (num2 == 0 && operator_ =="/")
+    {
+        Console.WriteLine("Cannot divide a number by zero.");
+        continue;
+    }
     double result = 0;
     switch (operator_)
     {
