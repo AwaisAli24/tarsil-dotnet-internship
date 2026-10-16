@@ -1,7 +1,7 @@
 ﻿List<Student> students = new List<Student>();
 while (true)
 {
-    Console.WriteLine("1.Add student\n2.View Students\n3.Search Student\n4.Update marks\n5.Delete Student");
+    Console.WriteLine("1.Add student\n2.View Students\n3.Search Student\n4.Update marks\n5.Delete Student\n6.Reports");
     var choice = Console.ReadLine();
     switch (choice)
     {
@@ -54,6 +54,36 @@ while (true)
             success = int.TryParse(Console.ReadLine(), out id);
             var studentToDelete = students.First(s => s.id == id);
             students.Remove(studentToDelete);
+            break;
+        case "6":
+            Console.WriteLine("Top 3 Students by marks.");
+            var top3StudentsByMarks = students.OrderBy(s => s.marks).Take(3);
+            foreach (var student in top3StudentsByMarks)
+            {
+                Console.WriteLine($"{student.name}\t{student.marks}");
+            }
+            Console.WriteLine($"Class Average {students.Average(s => s.marks)}");
+            Console.WriteLine($"Class Highest {students.Max(s => s.marks)}");
+            Console.WriteLine($"Class Lowest {students.Min(s => s.marks)}");
+            var studentsPassed = students.Select(s => s.marks >= 50).ToList();
+            Console.WriteLine("Students Passed:");
+            foreach(var (student,status) in students.Zip(studentsPassed))
+            {
+                Console.WriteLine($"{student.name}\t{status}");
+            }
+            var groups = students.GroupBy(s => s.city).ToList();
+            foreach (var g in groups)
+            {
+                Console.WriteLine($"{g.Key} {g.Count()}");
+            }
+            Console.WriteLine("Enter first letter to get names:");
+            var letter = Console.ReadLine();
+            var studentsByFirstLetter = students.Where(s => s.name.StartsWith(letter)).ToList();
+            Console.WriteLine($"Names starting with: {letter}");
+            foreach(var student in studentsByFirstLetter)
+            {
+                Console.WriteLine(student.name);
+            }
             break;
     }
 }
