@@ -1,8 +1,6 @@
 ﻿Console.WriteLine("Enter your Name:");
 var name = Console.ReadLine();
 Console.WriteLine("Enter your age:");
-// var input = Console.ReadLine();
-// int age = int.Parse(input);
 int age;
 do
 {
