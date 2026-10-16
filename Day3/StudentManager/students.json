@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "awais",
+    "city": "gujranwala",
+    "marks": 100
+  },
+  {
+    "id": 2,
+    "name": "Sher Ali",
+    "city": "Lahore",
+    "marks": 80
+  }
+]

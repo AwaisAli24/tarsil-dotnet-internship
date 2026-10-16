@@ -1,7 +1,22 @@
-﻿List<Student> students = new List<Student>();
-while (true)
+﻿using System.Text.Json;
+
+List<Student> students = new List<Student>();
+string file = "students1.json";
+
+try
 {
-    Console.WriteLine("1.Add student\n2.View Students\n3.Search Student\n4.Update marks\n5.Delete Student\n6.Reports");
+    string json = File.ReadAllText(file);
+    students = JsonSerializer.Deserialize<List<Student>>(json) ?? new List<Student>();
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.Message);
+}
+
+bool flag = true;
+while (flag)
+{
+    Console.WriteLine("1.Add student\n2.View Students\n3.Search Student\n4.Update marks\n5.Delete Student\n6.Reports\n7.Exit");
     var choice = Console.ReadLine();
     switch (choice)
     {
@@ -35,7 +50,7 @@ while (true)
             Console.WriteLine("Enter name to search:");
             var str = Console.ReadLine();
             var sstudent = students.Where(s => s.name.ToLower().Contains(str.ToLower())).ToList();
-            foreach(var student in sstudent)
+            foreach (var student in sstudent)
             {
                 Console.WriteLine($"{student.id} {student.name}");
             }
@@ -46,7 +61,7 @@ while (true)
             var studentToEdit = students.First(s => s.id == id);
             Console.WriteLine("Enter the new marks:");
             success = int.TryParse(Console.ReadLine(), out int newMarks);
-            studentToEdit.marks=newMarks;
+            studentToEdit.marks = newMarks;
             Console.WriteLine($"Your marks for {studentToEdit.name} has been updated.");
             break;
         case "5":
@@ -67,7 +82,7 @@ while (true)
             Console.WriteLine($"Class Lowest {students.Min(s => s.marks)}");
             var studentsPassed = students.Select(s => s.marks >= 50).ToList();
             Console.WriteLine("Students Passed:");
-            foreach(var (student,status) in students.Zip(studentsPassed))
+            foreach (var (student, status) in students.Zip(studentsPassed))
             {
                 Console.WriteLine($"{student.name}\t{status}");
             }
@@ -80,19 +95,24 @@ while (true)
             var letter = Console.ReadLine();
             var studentsByFirstLetter = students.Where(s => s.name.StartsWith(letter)).ToList();
             Console.WriteLine($"Names starting with: {letter}");
-            foreach(var student in studentsByFirstLetter)
+            foreach (var student in studentsByFirstLetter)
             {
                 Console.WriteLine(student.name);
             }
+            break;
+        case "7":
+            flag = false;
+            string json = JsonSerializer.Serialize(students, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(file, json);
             break;
     }
 }
 public class Student
 {
-    public int id;
-    public string name;
-    public string city;
-    public int marks;
+    public int id { get; set; }
+    public string name { get; set; }
+    public string city { get; set; }
+    public int marks { get; set; }
     public Student(int id, string name, string city, int marks)
     {
         this.id = id;
