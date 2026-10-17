@@ -72,7 +72,7 @@ while (flag)
             break;
         case "6":
             Console.WriteLine("Top 3 Students by marks.");
-            var top3StudentsByMarks = students.OrderBy(s => s.marks).Take(3);
+            var top3StudentsByMarks = students.OrderByDescending(s => s.marks).Take(3);
             foreach (var student in top3StudentsByMarks)
             {
                 Console.WriteLine($"{student.name}\t{student.marks}");
