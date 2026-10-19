@@ -8,55 +8,64 @@ while (true)
     {
         break;
     }
-    var number = int.Parse(value);
+    var success = int.TryParse(value, out int number);
+    if (!success)
+    {
+        Console.WriteLine("The number you entered is invalid.");
+        continue;
+    }
     numbers.Add(number);
 }
-int sum = 0;
-for (int i = 0; i < numbers.Count; i++)
+if (numbers.Count != 0)
 {
-    sum += numbers[i];
-}
-double average = sum / numbers.Count;
 
-int min = int.MaxValue;
-int max = int.MinValue;
-
-//Finding minimum value
-for (int i = 0; i < numbers.Count; i++)
-{
-    if (min > numbers[i])
+    int sum = 0;
+    for (int i = 0; i < numbers.Count; i++)
     {
-        min = numbers[i];
+        sum += numbers[i];
     }
-}
-//Finding maximum value
-for (int i = 0; i < numbers.Count; i++)
-{
-    if (max < numbers[i])
+    double average = (double)sum / numbers.Count;
+
+    int min = int.MaxValue;
+    int max = int.MinValue;
+
+    //Finding minimum value
+    for (int i = 0; i < numbers.Count; i++)
     {
-        max = numbers[i];
+        if (min > numbers[i])
+        {
+            min = numbers[i];
+        }
     }
-}
+    //Finding maximum value
+    for (int i = 0; i < numbers.Count; i++)
+    {
+        if (max < numbers[i])
+        {
+            max = numbers[i];
+        }
+    }
 
-Console.WriteLine($"Count:{numbers.Count}");
-Console.WriteLine($"Sum: {sum}");
-Console.WriteLine($"Average: {average}");
-Console.WriteLine($"Max Value: {max}");
-Console.WriteLine($"Min Value: {min}");
+    Console.WriteLine($"Count:{numbers.Count}");
+    Console.WriteLine($"Sum: {sum}");
+    Console.WriteLine($"Average: {average}");
+    Console.WriteLine($"Max Value: {max}");
+    Console.WriteLine($"Min Value: {min}");
 
-//Printing all even Numbers
-Console.WriteLine("Even Numbers");
-for (int i = 0; i < numbers.Count; i++)
-{
-    if (numbers[i] % 2 == 0)
+    //Printing all even Numbers
+    Console.WriteLine("Even Numbers");
+    for (int i = 0; i < numbers.Count; i++)
+    {
+        if (numbers[i] % 2 == 0)
+        {
+            Console.Write($"{numbers[i]} ");
+        }
+    }
+    //Sorted List
+    Console.WriteLine("\nSorted List");
+    numbers.Sort();
+    for (int i = 0; i < numbers.Count; i++)
     {
         Console.Write($"{numbers[i]} ");
     }
-}
-//Sorted List
-Console.WriteLine("\nSorted List");
-numbers.Sort();
-for(int i = 0; i < numbers.Count; i++)
-{
-    Console.Write($"{numbers[i]} ");
 }
