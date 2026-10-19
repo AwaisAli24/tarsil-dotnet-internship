@@ -7,7 +7,7 @@ list.Add(circ);
 list.Add(rect);
 list.Add(tri);
 
-foreach(Shape shape in list)
+foreach (Shape shape in list)
 {
     Console.WriteLine(shape.Describe());
     Console.WriteLine($"Area :{shape.CalculateArea()}");
@@ -16,14 +16,14 @@ foreach(Shape shape in list)
 
 
 
-public abstract class Shape: IDescribable
+public abstract class Shape : IDescribable
 {
     public abstract double CalculateArea();
     public abstract double CalculatePerimeter();
     public abstract string Describe();
 }
 
-public class Circle: Shape
+public class Circle : Shape
 {
     public double radius;
 
@@ -33,18 +33,18 @@ public class Circle: Shape
     }
     public override double CalculateArea()
     {
-        return 3.1412 * radius * radius;
+        return Math.PI * radius * radius;
     }
     public override double CalculatePerimeter()
     {
-        return 2 * 3.1412 * radius;
+        return 2 * Math.PI * radius;
     }
     public override string Describe()
     {
         return "This is a Circle";
     }
 }
-public class Rectangle: Shape
+public class Rectangle : Shape
 {
     public double length;
     public double width;
@@ -56,7 +56,7 @@ public class Rectangle: Shape
     }
     public override double CalculateArea()
     {
-        return length*width;
+        return length * width;
     }
     public override double CalculatePerimeter()
     {
@@ -81,8 +81,8 @@ public class Triangle : Shape
     }
     public override double CalculateArea()
     {
-        double s = CalculatePerimeter();
-        return Math.Sqrt(s / 2 * (s - this.a) * (s - this.b) * s - this.c);
+        double s = CalculatePerimeter() / 2;
+        return Math.Sqrt(s * (s - this.a) * (s - this.b) * (s - this.c));
     }
     public override double CalculatePerimeter()
     {
