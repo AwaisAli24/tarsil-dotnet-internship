@@ -1,36 +1,36 @@
-﻿// using System.Diagnostics;
-
-// async Task<string> SimulateDownloadAsync(string filename)
-// {
-//     Console.WriteLine("Downloading started....");
-//     await Task.Delay(2000);
-//     return $"{filename} Downloaded";
-// }
-
-// long startTime = Stopwatch.GetTimestamp();
-
-// Console.WriteLine(await SimulateDownloadAsync("file1.txt"));
-// Console.WriteLine(await SimulateDownloadAsync("file2.txt"));
-// Console.WriteLine(await SimulateDownloadAsync("file3.txt"));
-
-// TimeSpan timeTaken = Stopwatch.GetElapsedTime(startTime);
-// Console.WriteLine($"Time taken for sequential downloading: {timeTaken.Seconds}");
-
-
-// startTime = Stopwatch.GetTimestamp();
-
-// Task<string> task1 = SimulateDownloadAsync("file1.txt");
-// Task<string> task2 = SimulateDownloadAsync("file2.txt");
-// Task<string> task3 = SimulateDownloadAsync("file3.txt");
-
-// await Task.WhenAll(task1, task2, task3);
-// timeTaken = Stopwatch.GetElapsedTime(startTime);
-// Console.WriteLine(task1.Result);
-// Console.WriteLine(task2.Result);
-// Console.WriteLine(task3.Result);
-// Console.WriteLine($"Time taken for parallel downloading: {timeTaken.Seconds}");
-
+﻿using System.Diagnostics;
 using System.Net.Http.Json;
+
+async Task<string> SimulateDownloadAsync(string filename)
+{
+    Console.WriteLine("Downloading started....");
+    await Task.Delay(2000);
+    return $"{filename} Downloaded";
+}
+
+long startTime = Stopwatch.GetTimestamp();
+
+Console.WriteLine(await SimulateDownloadAsync("file1.txt"));
+Console.WriteLine(await SimulateDownloadAsync("file2.txt"));
+Console.WriteLine(await SimulateDownloadAsync("file3.txt"));
+
+TimeSpan timeTaken = Stopwatch.GetElapsedTime(startTime);
+Console.WriteLine($"Time taken for sequential downloading: {timeTaken.Seconds}");
+
+
+startTime = Stopwatch.GetTimestamp();
+
+Task<string> task1 = SimulateDownloadAsync("file1.txt");
+Task<string> task2 = SimulateDownloadAsync("file2.txt");
+Task<string> task3 = SimulateDownloadAsync("file3.txt");
+
+await Task.WhenAll(task1, task2, task3);
+timeTaken = Stopwatch.GetElapsedTime(startTime);
+Console.WriteLine(task1.Result);
+Console.WriteLine(task2.Result);
+Console.WriteLine(task3.Result);
+Console.WriteLine($"Time taken for parallel downloading: {timeTaken.Seconds}");
+
 
 HttpClient httpClient = new HttpClient();
 var posts = new List<Post>();
