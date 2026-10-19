@@ -15,10 +15,17 @@ while (flag)
         case "2":
             Console.WriteLine("Enter amount to withdraw:");
             success = decimal.TryParse(Console.ReadLine(), out amount);
-            obj.Withdraw(amount);
+            if (success)
+            {
+                obj.Withdraw(amount);
+            }
+            else
+            {
+                Console.WriteLine("Amount must be entered in numbers.");
+            }
             break;
         case "3":
-            Console.WriteLine($"Your balance is {obj.GetBalance()}");
+            Console.WriteLine($"Your balance is {obj.Balance}");
             break;
         case "4":
             obj.AddMonthlyInterest();
@@ -36,7 +43,13 @@ while (flag)
 
 public class BankAccount
 {
-    private decimal Balance { get; set; }
+    private decimal _balance;
+
+    public decimal Balance
+    {
+        get => _balance;
+        private set => _balance = value;
+    }
     public int AccountNumber;
     public String OwnerName;
 
@@ -54,27 +67,27 @@ public class BankAccount
             Console.WriteLine("The amount entered is invalid.");
             return;
         }
-        this.Balance += Amount;
+        this._balance += Amount;
         Console.WriteLine($"Rs.{Amount} has been successfully deposited.");
     }
     public void Withdraw(decimal Amount)
     {
-        if (Amount > this.Balance || Amount < 0)
+        if (Amount > this._balance || Amount <= 0)
         {
             Console.WriteLine("Error! Your amount is either invalid or greater than the balance.");
             return;
         }
-        this.Balance -= Amount;
+        this._balance -= Amount;
         Console.WriteLine($"Rs.{Amount} has been successfully withdrawn.");
     }
-    public void ModifyBalance(decimal Amount)
+    protected void ModifyBalance(decimal Amount)
     {
-        this.Balance += Amount;
+        this._balance += Amount;
     }
-    public decimal GetBalance()
-    {
-        return Balance;
-    }
+    // public decimal GetBalance()
+    // {
+    //     return Balance;
+    // }
 }
 public class SavingAccount : BankAccount
 {
@@ -85,8 +98,8 @@ public class SavingAccount : BankAccount
     }
     public void AddMonthlyInterest()
     {
-        decimal CurrentBalance = this.GetBalance();
-        decimal InterestAmount = CurrentBalance * (this.InterestRate/100);
+        decimal CurrentBalance = this.Balance;
+        decimal InterestAmount = CurrentBalance * (this.InterestRate / 100);
 
         ModifyBalance(InterestAmount);
     }
