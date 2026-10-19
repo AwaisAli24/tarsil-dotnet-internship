@@ -1,14 +1,62 @@
 [
   {
-    "id": 1,
-    "name": "awais",
-    "city": "gujranwala",
-    "marks": 100
+    "ID": 1,
+    "Name": "Ali Khan",
+    "City": "Lahore",
+    "Marks": 85
   },
   {
-    "id": 2,
-    "name": "Sher Ali",
-    "city": "Lahore",
-    "marks": 80
+    "ID": 2,
+    "Name": "Fatima Ahmed",
+    "City": "Karachi",
+    "Marks": 32
+  },
+  {
+    "ID": 3,
+    "Name": "Usman Tariq",
+    "City": "Islamabad",
+    "Marks": 78
+  },
+  {
+    "ID": 4,
+    "Name": "Ayesha Malik",
+    "City": "Lahore",
+    "Marks": 88
+  },
+  {
+    "ID": 5,
+    "Name": "Bilal Raza",
+    "City": "Faisalabad",
+    "Marks": 65
+  },
+  {
+    "ID": 6,
+    "Name": "Zainab Noor",
+    "City": "Rawalpindi",
+    "Marks": 95
+  },
+  {
+    "ID": 7,
+    "Name": "Hamza Farooq",
+    "City": "Multan",
+    "Marks": 72
+  },
+  {
+    "ID": 8,
+    "Name": "Sana Ejaz",
+    "City": "Karachi",
+    "Marks": 90
+  },
+  {
+    "ID": 9,
+    "Name": "Omer Sheikh",
+    "City": "Peshawar",
+    "Marks": 45
+  },
+  {
+    "ID": 10,
+    "Name": "Mahnoor Gilani",
+    "City": "Islamabad",
+    "Marks": 81
   }
 ]
