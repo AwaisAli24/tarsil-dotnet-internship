@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.Services;
 using TodoApi.Models;
+using System.Threading.Tasks;
 
 namespace TodoApi.Controllers;
 
@@ -17,14 +18,15 @@ public class TodoApiController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Todo>> Get()
+    public async Task<ActionResult<IEnumerable<Todo>>> Get()
     {
-        return Ok(_todoService.GetTodos());
+        var todos = await _todoService.GetTodos();
+        return Ok(todos);
     }
     [HttpGet("{id:int}")]
-    public ActionResult<Todo> GetByID(int id)
+    public async Task<ActionResult<Todo>> GetByID(int id)
     {
-        var todo = _todoService.DeleteTodoByID(id);
+        var todo = await _todoService.DeleteTodoByID(id);
         if (todo == null)
         {
             return NotFound();
@@ -32,13 +34,13 @@ public class TodoApiController : ControllerBase
         return todo;
     }
     [HttpPost]
-    public ActionResult<Todo> Post(Todo todo)
+    public async Task<ActionResult<Todo>> Post(Todo todo)
     {
         if (todo.Title == "")
         {
             return BadRequest();
         }
-        Todo createdTodo = _todoService.PostTodo(todo);
+        Todo createdTodo = await _todoService.PostTodo(todo);
         return CreatedAtAction(
             actionName: "GetById",
             routeValues: new { id = todo.Id },
@@ -46,9 +48,9 @@ public class TodoApiController : ControllerBase
         );
     }
     [HttpPut("{id:int}")]
-    public ActionResult<Todo> Put(int id, Todo todo)
+    public async Task<ActionResult<Todo>> Put(int id, Todo todo)
     {
-        Todo? toUpdate = _todoService.UpdateTodoByID(id, todo);
+        Todo? toUpdate = await _todoService.UpdateTodoByID(id, todo);
         if (toUpdate == null)
         {
             return NotFound();
@@ -56,9 +58,9 @@ public class TodoApiController : ControllerBase
         return NoContent();
     }
     [HttpDelete("{id:int}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        Todo? toDelete = _todoService.DeleteTodoByID(id);
+        Todo? toDelete = await _todoService.DeleteTodoByID(id);
         if (toDelete == null)
         {
             return NotFound();
@@ -66,9 +68,9 @@ public class TodoApiController : ControllerBase
         return NoContent();
     }
     [HttpPatch("{id:int}/complete")]
-    public ActionResult Patch(int id)
+    public async Task<ActionResult> Patch(int id)
     {
-        Todo? toComplete = _todoService.Complete(id);
+        Todo? toComplete = await _todoService.Complete(id);
         if (toComplete == null)
         {
             return NotFound();
@@ -76,9 +78,9 @@ public class TodoApiController : ControllerBase
         return Ok();
     }
     [HttpGet("completed")]
-    public ActionResult<List<Todo>> GetCompleted()
+    public async Task<ActionResult<List<Todo>>> GetCompleted()
     {
-        List<Todo> completed = _todoService.GetCompleted();
+        List<Todo> completed = await _todoService.GetCompleted();
         return Ok(completed);
     }
 }

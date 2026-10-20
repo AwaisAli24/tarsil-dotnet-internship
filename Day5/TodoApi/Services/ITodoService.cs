@@ -1,14 +1,15 @@
+using System.Threading.Tasks;
 using TodoApi.Models;
 
 namespace TodoApi.Services;
 
 public interface ITodoService
 {
-    public List<Todo> GetTodos();
-    public Todo? GetTodoByID(int id);
-    public Todo PostTodo(Todo todo);
-    public Todo? UpdateTodoByID(int id, Todo todo);
-    public Todo? DeleteTodoByID(int id);
-    public List<Todo>? GetCompleted();
-    public Todo? Complete(int id);
+    Task<List<Todo>> GetTodos();
+    Task<Todo?> GetTodoByID(int id);
+    Task<Todo> PostTodo(Todo todo);
+    Task<Todo?> UpdateTodoByID(int id, Todo todo);
+    Task<Todo?> DeleteTodoByID(int id);
+    Task<List<Todo>> GetCompleted();
+    Task<Todo?> Complete(int id);
 }
