@@ -43,7 +43,6 @@ public class TodoService : ITodoService
         }
         toUpdate.Title = todo.Title;
         toUpdate.Description = todo.Description;
-        toUpdate.IsCompleted = todo.IsCompleted;
         return toUpdate;
     }
     public Todo? DeleteTodoByID(int id)
