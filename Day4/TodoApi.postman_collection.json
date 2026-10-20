@@ -115,14 +115,14 @@
           "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API withing one week.\"\n}"
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/2",
+          "raw": "{{url}}/api/todoapi/4",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
             "todoapi",
-            "2"
+            "4"
           ]
         }
       },
@@ -173,6 +173,60 @@
             "api",
             "todoapi",
             "completed"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "404 Request Example",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/category",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            "category"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "400 Request Example",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            ""
           ]
         }
       },
