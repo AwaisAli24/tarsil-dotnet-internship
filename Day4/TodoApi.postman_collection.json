@@ -1,0 +1,212 @@
+{
+  "info": {
+    "_postman_id": "ebc0a76c-7282-431b-8a07-c28833fb64ec",
+    "name": "Tarsil Todo API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38239216"
+  },
+  "item": [
+    {
+      "name": "Get All Todo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/todoapi",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Todo",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Todo by ID",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/1",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update by ID",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"id\": 1,\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\",\n    \"isCompleted\": false,\n    \"createdAt\": \"2026-10-20T14:54:53.773011+05:00\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/1",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete By ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API withing one week.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/2",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Mark a Todo Completed",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/8/complete",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            "8",
+            "complete"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Completed Tasks",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todoapi/completed",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todoapi",
+            "completed"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "url",
+      "value": ""
+    }
+  ]
+}
