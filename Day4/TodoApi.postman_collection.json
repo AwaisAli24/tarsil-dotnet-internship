@@ -12,13 +12,13 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{url}}/api/todoapi",
+          "raw": "{{url}}/api/todos",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi"
+            "todos"
           ]
         }
       },
@@ -31,7 +31,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}",
+          "raw": "{\n    \"id\":15,\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -39,13 +39,13 @@
           }
         },
         "url": {
-          "raw": "{{url}}/api/todoapi",
+          "raw": "{{url}}/api/todos",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi"
+            "todos"
           ]
         }
       },
@@ -64,13 +64,13 @@
           "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/1",
+          "raw": "{{url}}/api/todos/1",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
+            "todos",
             "1"
           ]
         }
@@ -84,7 +84,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"id\": 1,\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\",\n    \"isCompleted\": false,\n    \"createdAt\": \"2026-10-20T14:54:53.773011+05:00\"\n}",
+          "raw": "{\n    \"title\": \" \",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -92,13 +92,13 @@
           }
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/1",
+          "raw": "{{url}}/api/todos/1",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
+            "todos",
             "1"
           ]
         }
@@ -115,14 +115,14 @@
           "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API withing one week.\"\n}"
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/4",
+          "raw": "{{url}}/api/todos/1",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
-            "4"
+            "todos",
+            "1"
           ]
         }
       },
@@ -138,14 +138,14 @@
           "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/8/complete",
+          "raw": "{{url}}/api/todos/2/complete",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
-            "8",
+            "todos",
+            "2",
             "complete"
           ]
         }
@@ -165,13 +165,13 @@
           "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/completed",
+          "raw": "{{url}}/api/todos/completed",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
+            "todos",
             "completed"
           ]
         }
@@ -191,14 +191,14 @@
           "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/category",
+          "raw": "{{url}}/api/todos/999",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
-            "category"
+            "todos",
+            "999"
           ]
         }
       },
@@ -219,13 +219,13 @@
           }
         },
         "url": {
-          "raw": "{{url}}/api/todoapi/",
+          "raw": "{{url}}/api/todos/",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
-            "todoapi",
+            "todos",
             ""
           ]
         }
