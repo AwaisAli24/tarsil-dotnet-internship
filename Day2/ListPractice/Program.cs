@@ -6,7 +6,7 @@ while (true)
     var value = Console.ReadLine();
     if (value == "done")
     {
-        if (numbers.Count != 0)
+        if (numbers.Count == 0)
         {
             Console.WriteLine("No numbers entered.");
         }

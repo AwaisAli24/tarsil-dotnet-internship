@@ -30,7 +30,7 @@ while (flag)
             }
             Console.WriteLine("Enter City:");
             var city = Console.ReadLine();
-            if (city == "" || city == null)
+            if (string.IsNullOrWhiteSpace(city))
             {
                 Console.WriteLine("City cannot be empty! Please try again.");
                 break;
@@ -112,7 +112,7 @@ while (flag)
             if (studentToDelete == null)
             {
                 Console.WriteLine("No matching id found");
-                return;
+                break;
             }
             students.Remove(studentToDelete);
             json = JsonSerializer.Serialize(students, new JsonSerializerOptions { WriteIndented = true });
@@ -156,7 +156,7 @@ while (flag)
             var letter = Console.ReadLine();
             if (!letter.IsWhiteSpace() && letter != null)
             {
-                var studentsByFirstLetter = students.Where(s => s.Name.ToLower().StartsWith(letter)).ToList();
+                var studentsByFirstLetter = students.Where(s => s.Name.ToLower().StartsWith(letter.ToLower())).ToList();
                 Console.WriteLine($"Names starting with: {letter}");
                 foreach (var student in studentsByFirstLetter)
                 {

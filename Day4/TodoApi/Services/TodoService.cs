@@ -20,14 +20,15 @@ public class TodoService : ITodoService
     }
     public Todo PostTodo(Todo todo)
     {
-        if (todos.Count == 0)
-        {
-            todo.Id = 1;
-        }
-        else
-        {
-            todo.Id = todos.Max(t => t.Id) + 1;
-        }
+        if (string.IsNullOrWhiteSpace(todo.Title))
+            if (todos.Count == 0)
+            {
+                todo.Id = 1;
+            }
+            else
+            {
+                todo.Id = todos.Max(t => t.Id) + 1;
+            }
         todo.IsCompleted = false;
         todo.CreatedAt = DateTime.Now;
         todos.Add(todo);

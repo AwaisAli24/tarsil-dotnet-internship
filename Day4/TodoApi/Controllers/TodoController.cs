@@ -34,7 +34,7 @@ public class TodoController : ControllerBase
     [HttpPost]
     public ActionResult<Todo> Post(Todo todo)
     {
-        if (todo.Title == "")
+        if (string.IsNullOrWhiteSpace(todo.Title))
         {
             return BadRequest();
         }
@@ -48,6 +48,10 @@ public class TodoController : ControllerBase
     [HttpPut("{id:int}")]
     public ActionResult<Todo> Put(int id, Todo todo)
     {
+        if (string.IsNullOrWhiteSpace(todo.Title))
+        {
+            return BadRequest();
+        }
         Todo? toUpdate = _todoService.UpdateTodoByID(id, todo);
         if (toUpdate == null)
         {
