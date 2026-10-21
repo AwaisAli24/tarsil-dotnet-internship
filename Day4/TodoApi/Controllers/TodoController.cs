@@ -8,10 +8,10 @@ namespace TodoApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TodoApiController : ControllerBase
+public class TodoController : ControllerBase
 {
     public ITodoService _todoService;
-    public TodoApiController(ITodoService todoService)
+    public TodoController(ITodoService todoService)
     {
         _todoService = todoService;
     }
@@ -24,7 +24,7 @@ public class TodoApiController : ControllerBase
     [HttpGet("{id:int}")]
     public ActionResult<Todo> GetByID(int id)
     {
-        var todo = _todoService.DeleteTodoByID(id);
+        var todo = _todoService.GetTodoByID(id);
         if (todo == null)
         {
             return NotFound();

@@ -4,7 +4,7 @@ namespace TodoApi.Services;
 
 public class TodoService : ITodoService
 {
-    public List<Todo> todos;
+    private List<Todo> todos;
 
     public TodoService()
     {
@@ -20,14 +20,13 @@ public class TodoService : ITodoService
     }
     public Todo PostTodo(Todo todo)
     {
-        try
+        if (todos.Count == 0)
+        {
+            todo.Id = 1;
+        }
+        else
         {
             todo.Id = todos.Max(t => t.Id) + 1;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            todo.Id = 1;
         }
         todo.IsCompleted = false;
         todo.CreatedAt = DateTime.Now;

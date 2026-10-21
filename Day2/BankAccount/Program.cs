@@ -91,10 +91,6 @@ public class BankAccount
     {
         this._balance += Amount;
     }
-    // public decimal GetBalance()
-    // {
-    //     return Balance;
-    // }
 }
 public class SavingAccount : BankAccount
 {

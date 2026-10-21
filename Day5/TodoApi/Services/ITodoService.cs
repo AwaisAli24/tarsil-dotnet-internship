@@ -5,11 +5,11 @@ namespace TodoApi.Services;
 
 public interface ITodoService
 {
-    Task<List<Todo>> GetTodos();
-    Task<Todo?> GetTodoByID(int id);
-    Task<Todo> PostTodo(Todo todo);
-    Task<Todo?> UpdateTodoByID(int id, Todo todo);
-    Task<Todo?> DeleteTodoByID(int id);
-    Task<List<Todo>> GetCompleted();
-    Task<Todo?> Complete(int id);
+    Task<List<Todo>> GetAsync();
+    Task<Todo?> GetByIDAsync(int id);
+    Task<Todo> AddAsync(Todo todo);
+    Task<Todo?> UpdateByIDAsync(int id, Todo todo);
+    Task<Todo?> DeleteByIDAsync(int id);
+    Task<List<Todo>> GetCompletedAsync();
+    Task<Todo?> CompleteAsync(int id);
 }
