@@ -3,13 +3,13 @@
     "ID": 1,
     "Name": "Ali Khan",
     "City": "Lahore",
-    "Marks": 85
+    "Marks": 95
   },
   {
     "ID": 2,
     "Name": "Fatima Ahmed",
     "City": "Karachi",
-    "Marks": 32
+    "Marks": 50
   },
   {
     "ID": 3,
@@ -58,5 +58,17 @@
     "Name": "Mahnoor Gilani",
     "City": "Islamabad",
     "Marks": 81
+  },
+  {
+    "ID": 11,
+    "Name": "demo",
+    "City": "demo",
+    "Marks": 90
+  },
+  {
+    "ID": 12,
+    "Name": "Awais Ali",
+    "City": "Gujranwala",
+    "Marks": 75
   }
 ]

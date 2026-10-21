@@ -8,7 +8,7 @@ try
     string json = File.ReadAllText(file);
     students = JsonSerializer.Deserialize<List<Student>>(json) ?? new List<Student>();
 }
-catch (Exception e)
+catch
 {
     Console.WriteLine("No file exist");
 }
@@ -23,7 +23,7 @@ while (flag)
         case "1":
             Console.WriteLine("Enter name:");
             var name = Console.ReadLine();
-            if (name == "" || name == null)
+            if (name == "" || name == null || name.IsWhiteSpace())
             {
                 Console.WriteLine("Name cannot be empty! Please try again.");
                 break;
@@ -47,7 +47,16 @@ while (flag)
                 Console.WriteLine("Marks Should be between 0 and 100");
                 break;
             }
-            students.Add(new Student(students[^1].ID, name, city, marks));
+            int studentID;
+            try
+            {
+                studentID = students[^1].ID + 1;
+            }
+            catch
+            {
+                studentID = 1;
+            }
+            students.Add(new Student(studentID, name, city, marks));
             string json = JsonSerializer.Serialize(students, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(file, json);
             break;
@@ -61,7 +70,7 @@ while (flag)
         case "3":
             Console.WriteLine("Enter name to search:");
             var str = Console.ReadLine();
-            if (!str.IsWhiteSpace() && str != null)
+            if (str != null && !str.IsWhiteSpace())
             {
                 var sstudent = students.Where(s => s.Name.ToLower().Contains(str.ToLower())).ToList();
                 foreach (var student in sstudent)
@@ -77,13 +86,14 @@ while (flag)
             if (studentToEdit == null)
             {
                 Console.WriteLine("No matching id found");
-                return;
+                break;
             }
             Console.WriteLine("Enter the new marks:");
             success = int.TryParse(Console.ReadLine(), out int newMarks);
             if (!success)
             {
                 Console.WriteLine("Invalid Marks");
+                break;
             }
             if (newMarks > 100 || newMarks < 0)
             {
@@ -124,7 +134,7 @@ while (flag)
             Console.WriteLine($"Class Highest {students.Max(s => s.Marks)}");
             Console.WriteLine($"Class Lowest {students.Min(s => s.Marks)}");
             var passedStudents = students.Where(s => s.Marks >= 50);
-            var failedStudents = students.Where(s => s.Marks <= 50);
+            var failedStudents = students.Where(s => s.Marks < 50);
 
             Console.WriteLine("Passed Students");
             foreach (var student in passedStudents)
@@ -146,7 +156,7 @@ while (flag)
             var letter = Console.ReadLine();
             if (!letter.IsWhiteSpace() && letter != null)
             {
-                var studentsByFirstLetter = students.Where(s => s.Name.StartsWith(letter)).ToList();
+                var studentsByFirstLetter = students.Where(s => s.Name.ToLower().StartsWith(letter)).ToList();
                 Console.WriteLine($"Names starting with: {letter}");
                 foreach (var student in studentsByFirstLetter)
                 {

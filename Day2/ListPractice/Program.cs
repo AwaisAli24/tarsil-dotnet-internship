@@ -6,6 +6,10 @@ while (true)
     var value = Console.ReadLine();
     if (value == "done")
     {
+        if (numbers.Count != 0)
+        {
+            Console.WriteLine("No numbers entered.");
+        }
         break;
     }
     var success = int.TryParse(value, out int number);

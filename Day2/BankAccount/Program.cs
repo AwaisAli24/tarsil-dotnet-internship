@@ -10,7 +10,14 @@ while (flag)
         case "1":
             Console.WriteLine("Enter amount to deposit.");
             bool success = decimal.TryParse(Console.ReadLine(), out decimal amount);
-            obj.Deposit(amount);
+            if (success)
+            {
+                obj.Deposit(amount);
+            }
+            else
+            {
+                Console.WriteLine("Amount must be entered in numbers.");
+            }
             break;
         case "2":
             Console.WriteLine("Enter amount to withdraw:");

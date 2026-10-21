@@ -17,6 +17,11 @@
 
 long Factorial(int n)
 {
+    if (n < 0)
+    {
+        Console.Write("Factorial of negative numbers is not possible");
+        return -1;
+    }
     if (n == 1 || n == 0)
     {
         return 1;
