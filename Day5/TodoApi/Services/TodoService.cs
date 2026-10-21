@@ -14,14 +14,36 @@ public class TodoService : ITodoService
     {
         _context = context;
     }
-    public async Task<List<Todo>> GetAsync()
+    public async Task<List<TodoResponseDto>> GetAsync()
     {
         var todos = await _context.Todos.ToListAsync();
-        return todos;
+        var result = todos.Select(todo => new TodoResponseDto
+        {
+            Id = todo.Id,
+            Title = todo.Title,
+            Description = todo.Description,
+            IsCompleted = todo.IsCompleted,
+            CreatedAt = todo.CreatedAt
+        }).ToList();
+        return result;
     }
-    public async Task<Todo?> GetByIDAsync(int id)
+    public async Task<TodoResponseDto?> GetByIDAsync(int id)
     {
-        return await _context.Todos.FindAsync(id);
+        var todo = await _context.Todos.FindAsync(id);
+        if (todo == null)
+        {
+            return null;
+        }
+        TodoResponseDto result = new TodoResponseDto
+        {
+            Id = todo.Id,
+            Title = todo.Title,
+            Description = todo.Description,
+            IsCompleted = todo.IsCompleted,
+            CreatedAt = todo.CreatedAt
+        };
+        Console.WriteLine(result.Title);
+        return result;
     }
     public async Task<Todo> AddAsync(CreateTodoDto dto)
     {

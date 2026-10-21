@@ -6,8 +6,8 @@ namespace TodoApi.Services;
 
 public interface ITodoService
 {
-    Task<List<Todo>> GetAsync();
-    Task<Todo?> GetByIDAsync(int id);
+    Task<List<TodoResponseDto>> GetAsync();
+    Task<TodoResponseDto?> GetByIDAsync(int id);
     Task<Todo> AddAsync(CreateTodoDto dto);
     Task<Todo?> UpdateByIDAsync(int id, UpdateTodoDto dto);
     Task<Todo?> DeleteByIDAsync(int id);

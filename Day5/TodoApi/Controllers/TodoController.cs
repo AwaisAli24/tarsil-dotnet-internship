@@ -19,20 +19,21 @@ public class TodosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Todo>>> Get()
+    public async Task<ActionResult<IEnumerable<TodoResponseDto>>> Get()
     {
         var todos = await _todoService.GetAsync();
         return Ok(todos);
     }
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Todo>> GetByID(int id)
+    public async Task<ActionResult<TodoResponseDto>> GetByID(int id)
     {
         var todo = await _todoService.GetByIDAsync(id);
         if (todo == null)
         {
             return NotFound();
         }
-        return todo;
+        Console.WriteLine($"{todo.Title} From Controller");
+        return Ok(todo);
     }
     [HttpPost]
     public async Task<ActionResult<Todo>> Post(CreateTodoDto dto)
