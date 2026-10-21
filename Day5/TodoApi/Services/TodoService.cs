@@ -2,6 +2,7 @@ using TodoApi.Models;
 using TodoApi.Data;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TodoApi.Dto;
 
 namespace TodoApi.Services;
 
@@ -22,33 +23,28 @@ public class TodoService : ITodoService
     {
         return await _context.Todos.FindAsync(id);
     }
-    public async Task<Todo> AddAsync(Todo todo)
+    public async Task<Todo> AddAsync(CreateTodoDto dto)
     {
-        try
+        Todo todo = new Todo
         {
-            todo.Id = _context.Todos.Max(t => t.Id) + 1;
-        }
-        catch
-        {
-            todo.Id = 1;
-        }
-        Console.WriteLine(todo.Id);
-        todo.IsCompleted = false;
-        todo.CreatedAt = DateTime.Now;
+            Title = dto.Title,
+            Description = dto.Description,
+            IsCompleted = false,
+            CreatedAt = DateTime.Now
+        };
         await _context.AddAsync(todo);
         await _context.SaveChangesAsync();
         return todo;
     }
-    public async Task<Todo?> UpdateByIDAsync(int id, Todo todo)
+    public async Task<Todo?> UpdateByIDAsync(int id, UpdateTodoDto dto)
     {
         Todo? toUpdate = await _context.Todos.FindAsync(id);
         if (toUpdate == null)
         {
             return null;
         }
-        toUpdate.Title = todo.Title;
-        toUpdate.Description = todo.Description;
-        toUpdate.IsCompleted = todo.IsCompleted;
+        toUpdate.Title = dto.Title;
+        toUpdate.Description = dto.Description;
 
         await _context.SaveChangesAsync();
 

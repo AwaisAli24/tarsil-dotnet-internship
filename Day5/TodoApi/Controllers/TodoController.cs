@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoApi.Services;
 using TodoApi.Models;
 using System.Threading.Tasks;
+using TodoApi.Dto;
 
 namespace TodoApi.Controllers;
 
@@ -9,10 +10,10 @@ namespace TodoApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TodoController : ControllerBase
+public class TodosController : ControllerBase
 {
     private readonly ITodoService _todoService;
-    public TodoController(ITodoService todoService)
+    public TodosController(ITodoService todoService)
     {
         _todoService = todoService;
     }
@@ -34,27 +35,27 @@ public class TodoController : ControllerBase
         return todo;
     }
     [HttpPost]
-    public async Task<ActionResult<Todo>> Post(Todo todo)
+    public async Task<ActionResult<Todo>> Post(CreateTodoDto dto)
     {
-        if (string.IsNullOrWhiteSpace(todo.Title))
+        if (string.IsNullOrWhiteSpace(dto.Title))
         {
             return BadRequest();
         }
-        Todo createdTodo = await _todoService.AddAsync(todo);
+        Todo createdTodo = await _todoService.AddAsync(dto);
         return CreatedAtAction(
             actionName: nameof(GetByID),
-            routeValues: new { id = todo.Id },
+            routeValues: new { id = createdTodo.Id },
             value: createdTodo
         );
     }
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Todo>> Put(int id, Todo todo)
+    public async Task<ActionResult<Todo>> Put(int id, UpdateTodoDto dto)
     {
-        if (string.IsNullOrWhiteSpace(todo.Title))
+        if (string.IsNullOrWhiteSpace(dto.Title))
         {
             return BadRequest();
         }
-        Todo? toUpdate = await _todoService.UpdateByIDAsync(id, todo);
+        Todo? toUpdate = await _todoService.UpdateByIDAsync(id, dto);
         if (toUpdate == null)
         {
             return NotFound();
