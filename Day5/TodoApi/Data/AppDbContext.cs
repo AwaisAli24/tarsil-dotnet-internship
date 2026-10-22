@@ -11,4 +11,5 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Todo> Todos { get; set; }
+    public DbSet<Category> Categories { get; set; }
 }

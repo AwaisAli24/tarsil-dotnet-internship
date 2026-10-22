@@ -19,9 +19,13 @@ public class TodosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoResponseDto>>> Get()
+    public async Task<ActionResult<IEnumerable<TodoResponseDto>>> Get(
+[FromQuery] bool? isCompleted,
+        [FromQuery] string? search
+    )
     {
-        var todos = await _todoService.GetAsync();
+        Console.WriteLine(isCompleted);
+        var todos = await _todoService.GetAsync(isCompleted, search);
         return Ok(todos);
     }
     [HttpGet("{id:int}")]
@@ -36,13 +40,13 @@ public class TodosController : ControllerBase
         return Ok(todo);
     }
     [HttpPost]
-    public async Task<ActionResult<Todo>> Post(CreateTodoDto dto)
+    public async Task<ActionResult<TodoResponseDto>> Post(CreateTodoDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Title))
         {
             return BadRequest();
         }
-        Todo createdTodo = await _todoService.AddAsync(dto);
+        var createdTodo = await _todoService.AddAsync(dto);
         return CreatedAtAction(
             actionName: nameof(GetByID),
             routeValues: new { id = createdTodo.Id },
@@ -50,13 +54,13 @@ public class TodosController : ControllerBase
         );
     }
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Todo>> Put(int id, UpdateTodoDto dto)
+    public async Task<ActionResult<TodoResponseDto>> Put(int id, UpdateTodoDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Title))
         {
             return BadRequest();
         }
-        Todo? toUpdate = await _todoService.UpdateByIDAsync(id, dto);
+        var toUpdate = await _todoService.UpdateByIDAsync(id, dto);
         if (toUpdate == null)
         {
             return NotFound();
@@ -66,7 +70,7 @@ public class TodosController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        Todo? toDelete = await _todoService.DeleteByIDAsync(id);
+        var toDelete = await _todoService.DeleteByIDAsync(id);
         if (toDelete == null)
         {
             return NotFound();
@@ -76,7 +80,7 @@ public class TodosController : ControllerBase
     [HttpPatch("{id:int}/complete")]
     public async Task<ActionResult> Patch(int id)
     {
-        Todo? toComplete = await _todoService.CompleteAsync(id);
+        var toComplete = await _todoService.CompleteAsync(id);
         if (toComplete == null)
         {
             return NotFound();
@@ -86,7 +90,7 @@ public class TodosController : ControllerBase
     [HttpGet("completed")]
     public async Task<ActionResult<List<Todo>>> GetCompleted()
     {
-        List<Todo> completed = await _todoService.GetCompletedAsync();
+        List<TodoResponseDto> completed = await _todoService.GetCompletedAsync();
         return Ok(completed);
     }
 }

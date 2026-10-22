@@ -6,11 +6,11 @@ namespace TodoApi.Services;
 
 public interface ITodoService
 {
-    Task<List<TodoResponseDto>> GetAsync();
+    Task<List<TodoResponseDto>> GetAsync(bool? isCompleted, string? search);
     Task<TodoResponseDto?> GetByIDAsync(int id);
-    Task<Todo> AddAsync(CreateTodoDto dto);
-    Task<Todo?> UpdateByIDAsync(int id, UpdateTodoDto dto);
-    Task<Todo?> DeleteByIDAsync(int id);
-    Task<List<Todo>> GetCompletedAsync();
-    Task<Todo?> CompleteAsync(int id);
+    Task<TodoResponseDto> AddAsync(CreateTodoDto dto);
+    Task<TodoResponseDto?> UpdateByIDAsync(int id, UpdateTodoDto dto);
+    Task<TodoResponseDto?> DeleteByIDAsync(int id);
+    Task<List<TodoResponseDto>> GetCompletedAsync();
+    Task<TodoResponseDto?> CompleteAsync(int id);
 }

@@ -14,17 +14,19 @@ public class TodoService : ITodoService
     {
         _context = context;
     }
-    public async Task<List<TodoResponseDto>> GetAsync()
+    public async Task<List<TodoResponseDto>> GetAsync(bool? isCompleted, string? search)
     {
-        var todos = await _context.Todos.ToListAsync();
-        var result = todos.Select(todo => new TodoResponseDto
+        var query = _context.Todos.AsQueryable();
+        if (isCompleted.HasValue)
         {
-            Id = todo.Id,
-            Title = todo.Title,
-            Description = todo.Description,
-            IsCompleted = todo.IsCompleted,
-            CreatedAt = todo.CreatedAt
-        }).ToList();
+            query = query.Where(t => t.IsCompleted == isCompleted.Value);
+        }
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(t => t.Title.Contains(search));
+        }
+        var todos = await query.ToListAsync();
+        var result = todos.Select(MapToDTO).ToList();
         return result;
     }
     public async Task<TodoResponseDto?> GetByIDAsync(int id)
@@ -34,31 +36,25 @@ public class TodoService : ITodoService
         {
             return null;
         }
-        TodoResponseDto result = new TodoResponseDto
-        {
-            Id = todo.Id,
-            Title = todo.Title,
-            Description = todo.Description,
-            IsCompleted = todo.IsCompleted,
-            CreatedAt = todo.CreatedAt
-        };
+        TodoResponseDto result = MapToDTO(todo);
         Console.WriteLine(result.Title);
         return result;
     }
-    public async Task<Todo> AddAsync(CreateTodoDto dto)
+    public async Task<TodoResponseDto> AddAsync(CreateTodoDto dto)
     {
         Todo todo = new Todo
         {
             Title = dto.Title,
             Description = dto.Description,
             IsCompleted = false,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.Now,
+            CategoryId = dto.CategoryId
         };
         await _context.AddAsync(todo);
         await _context.SaveChangesAsync();
-        return todo;
+        return MapToDTO(todo);
     }
-    public async Task<Todo?> UpdateByIDAsync(int id, UpdateTodoDto dto)
+    public async Task<TodoResponseDto?> UpdateByIDAsync(int id, UpdateTodoDto dto)
     {
         Todo? toUpdate = await _context.Todos.FindAsync(id);
         if (toUpdate == null)
@@ -67,13 +63,14 @@ public class TodoService : ITodoService
         }
         toUpdate.Title = dto.Title;
         toUpdate.Description = dto.Description;
+        toUpdate.CategoryId = dto.CategoryId;
 
         await _context.SaveChangesAsync();
 
-        return toUpdate;
+        return MapToDTO(toUpdate);
 
     }
-    public async Task<Todo?> DeleteByIDAsync(int id)
+    public async Task<TodoResponseDto?> DeleteByIDAsync(int id)
     {
         Todo? toDelete = await _context.Todos.FindAsync(id);
         if (toDelete is null)
@@ -82,9 +79,9 @@ public class TodoService : ITodoService
         }
         _context.Todos.Remove(toDelete);
         await _context.SaveChangesAsync();
-        return toDelete;
+        return MapToDTO(toDelete);
     }
-    public async Task<Todo?> CompleteAsync(int id)
+    public async Task<TodoResponseDto?> CompleteAsync(int id)
     {
         Todo? toComplete = await _context.Todos.FindAsync(id);
         if (toComplete is null)
@@ -93,12 +90,24 @@ public class TodoService : ITodoService
         }
         toComplete.IsCompleted = true;
         await _context.SaveChangesAsync();
-        return toComplete;
+        return MapToDTO(toComplete);
     }
-    public async Task<List<Todo>> GetCompletedAsync()
+    public async Task<List<TodoResponseDto>> GetCompletedAsync()
     {
-        return await _context.Todos
-            .Where(t => t.IsCompleted)
-            .ToListAsync();
+        var completedTasks = await _context.Todos.Where(t => t.IsCompleted).ToListAsync();
+        var completedTasksDTO = completedTasks.Select(MapToDTO).ToList();
+        return completedTasksDTO;
+    }
+    public TodoResponseDto MapToDTO(Todo todo)
+    {
+        return new TodoResponseDto
+        {
+            Id = todo.Id,
+            Title = todo.Title,
+            Description = todo.Description,
+            IsCompleted = todo.IsCompleted,
+            CreatedAt = todo.CreatedAt,
+            CategoryId = todo.CategoryId
+        };
     }
 }
