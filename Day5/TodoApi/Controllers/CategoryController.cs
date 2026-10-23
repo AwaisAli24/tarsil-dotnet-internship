@@ -7,10 +7,10 @@ namespace TodoApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController : ControllerBase
+public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
-    public CategoryController(ICategoryService categoryService)
+    public CategoriesController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
     }
@@ -65,7 +65,7 @@ public class CategoryController : ControllerBase
         return NoContent();
     }
     [HttpGet("{id:int}/todos")]
-    public async Task<ActionResult<List<TodosByCategoryDto?>>> GetTodosByCategory(int id)
+    public async Task<ActionResult<List<TodoResponseDto?>>> GetTodosByCategory(int id)
     {
         var todos = await _categoryService.GetTodosAsync(id);
         if (todos == null)

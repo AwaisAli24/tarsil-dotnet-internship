@@ -67,7 +67,7 @@ class CategoryService : ICategoryService
         }
         return new CategoryResponseDto { Name = toDelete.Name };
     }
-    public async Task<TodosByCategoryDto?> GetTodosAsync(int id)
+    public async Task<List<TodoResponseDto>?> GetTodosAsync(int id)
     {
         var category = await _context.Categories.FindAsync(id);
         if (category == null)
@@ -77,12 +77,7 @@ class CategoryService : ICategoryService
         var todos = await _context.Todos.Where(t => t.CategoryId == id).ToListAsync();
         // category.Todos = category.Todos.Select(TodoService.MapToDTO).ToList();
         // return category;
-        TodosByCategoryDto Todos = new TodosByCategoryDto
-        {
-            CategoryId = category.Id,
-            CategoryName = category.Name,
-            Todos = todos.Select(TodoService.MapToDTO).ToList()
-        };
+        List<TodoResponseDto> Todos = todos.Select(TodoService.MapToDTO).ToList();
         return Todos;
 
     }

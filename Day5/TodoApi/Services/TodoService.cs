@@ -24,7 +24,7 @@ public class TodoService : ITodoService
         }
         if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(t => t.Title.Contains(search));
+            query = query.Where(t => t.Title.ToLower().Contains(search.ToLower()));
         }
         var todos = await query.ToListAsync();
         var result = todos.Select(MapToDTO).ToList();
