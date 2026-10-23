@@ -64,11 +64,13 @@ namespace TodoApi.Migrations
 
             modelBuilder.Entity("TodoApi.Models.Todo", b =>
                 {
-                    b.HasOne("TodoApi.Models.Category", null)
+                    b.HasOne("TodoApi.Models.Category", "Category")
                         .WithMany("Todos")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("TodoApi.Models.Category", b =>

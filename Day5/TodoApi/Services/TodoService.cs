@@ -3,6 +3,7 @@ using TodoApi.Data;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Dto;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TodoApi.Services;
 
@@ -42,6 +43,11 @@ public class TodoService : ITodoService
     }
     public async Task<TodoResponseDto> AddAsync(CreateTodoDto dto)
     {
+        bool exists = await IsCategoryExists(dto.CategoryId);
+        if (!exists)
+        {
+            throw new BadHttpRequestException("Category not found", StatusCodes.Status400BadRequest);
+        }
         Todo todo = new Todo
         {
             Title = dto.Title,
@@ -56,6 +62,11 @@ public class TodoService : ITodoService
     }
     public async Task<TodoResponseDto?> UpdateByIDAsync(int id, UpdateTodoDto dto)
     {
+        bool exists = await IsCategoryExists(dto.CategoryId);
+        if (!exists)
+        {
+            throw new BadHttpRequestException("Category not found", StatusCodes.Status400BadRequest);
+        }
         Todo? toUpdate = await _context.Todos.FindAsync(id);
         if (toUpdate == null)
         {
@@ -109,5 +120,10 @@ public class TodoService : ITodoService
             CreatedAt = todo.CreatedAt,
             CategoryId = todo.CategoryId
         };
+    }
+    public async Task<bool> IsCategoryExists(int id)
+    {
+        bool exists = await _context.Categories.AnyAsync(t => t.Id == id);
+        return exists;
     }
 }

@@ -19,12 +19,8 @@ public class TodosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoResponseDto>>> Get(
-[FromQuery] bool? isCompleted,
-        [FromQuery] string? search
-    )
+    public async Task<ActionResult<IEnumerable<TodoResponseDto>>> Get([FromQuery] bool? isCompleted, [FromQuery] string? search)
     {
-        Console.WriteLine(isCompleted);
         var todos = await _todoService.GetAsync(isCompleted, search);
         return Ok(todos);
     }
@@ -42,11 +38,23 @@ public class TodosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TodoResponseDto>> Post(CreateTodoDto dto)
     {
+        if (dto.CategoryId == 0)
+        {
+            return BadRequest("Category Id cannot be Empty.");
+        }
         if (string.IsNullOrWhiteSpace(dto.Title))
         {
-            return BadRequest();
+            return BadRequest("Category cannot be empty");
         }
-        var createdTodo = await _todoService.AddAsync(dto);
+        TodoResponseDto createdTodo;
+        try
+        {
+            createdTodo = await _todoService.AddAsync(dto);
+        }
+        catch (BadHttpRequestException ex)
+        {
+            return BadRequest(ex.Message);
+        }
         return CreatedAtAction(
             actionName: nameof(GetByID),
             routeValues: new { id = createdTodo.Id },
@@ -56,11 +64,24 @@ public class TodosController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<TodoResponseDto>> Put(int id, UpdateTodoDto dto)
     {
+        if (dto.CategoryId == 0)
+        {
+            return BadRequest("Category Id cannot be Empty.");
+        }
         if (string.IsNullOrWhiteSpace(dto.Title))
         {
             return BadRequest();
         }
-        var toUpdate = await _todoService.UpdateByIDAsync(id, dto);
+        TodoResponseDto? toUpdate;
+        try
+        {
+
+            toUpdate = await _todoService.UpdateByIDAsync(id, dto);
+        }
+        catch (BadHttpRequestException ex)
+        {
+            return BadRequest(ex.Message);
+        }
         if (toUpdate == null)
         {
             return NotFound();

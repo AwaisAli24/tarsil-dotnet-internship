@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
 namespace TodoApi.Models;
 
 public class Todo
@@ -8,4 +11,5 @@ public class Todo
     public bool IsCompleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public int CategoryId { get; set; }
+    public Category Category { get; set; } = null!;
 }

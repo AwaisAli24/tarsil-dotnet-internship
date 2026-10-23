@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using TodoApi.Data;
 using TodoApi.Models;
 using TodoApi.Services;
@@ -39,6 +40,7 @@ class CategoryService : ICategoryService
         }
         toUpdate.Name = category.Name;
         toUpdate.Todos = category.Todos;
+        await _context.SaveChangesAsync();
         return toUpdate;
     }
     public async Task<Category?> DeleteAsync(int id)
@@ -48,13 +50,24 @@ class CategoryService : ICategoryService
         {
             return toDelete;
         }
-        _context.Remove(toDelete);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Remove(toDelete);
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            throw new Exception("Cannot delete category because it has associated todos.");
+        }
         return toDelete;
     }
     public async Task<Category?> GetTodosAsync(int id)
     {
         var category = await _context.Categories.FindAsync(id);
+        if (category == null)
+        {
+            return category;
+        }
         category.Todos = await _context.Todos.Where(t => t.CategoryId == id).ToListAsync();
         return category;
     }
