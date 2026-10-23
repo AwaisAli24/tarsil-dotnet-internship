@@ -64,7 +64,7 @@ public class CategoriesController : ControllerBase
         }
         if (toDelete == null)
         {
-            return NotFound();
+            return NotFound("Category not found.");
         }
         return NoContent();
     }

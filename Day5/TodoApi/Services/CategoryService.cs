@@ -56,8 +56,8 @@ class CategoryService : ICategoryService
         {
             return null;
         }
-        bool hasTodo = await _context.Todos.AnyAsync(t => t.Id == id);
-        if (!hasTodo)
+        bool hasTodo = await _context.Todos.AnyAsync(t => t.CategoryId == id);
+        if (hasTodo)
         {
             throw new Exception("Cannot delete category because it has associated todos.");
         }
