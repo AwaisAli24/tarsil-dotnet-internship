@@ -20,8 +20,14 @@
         },
         "url": {
           "raw": "{{url}}/api/Categories/",
-          "host": ["{{url}}"],
-          "path": ["api", "Categories", ""]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            ""
+          ]
         }
       },
       "response": []
@@ -54,8 +60,14 @@
         },
         "url": {
           "raw": "{{url}}/api/Categories/",
-          "host": ["{{url}}"],
-          "path": ["api", "Categories", ""]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            ""
+          ]
         }
       },
       "response": []
@@ -67,8 +79,14 @@
         "header": [],
         "url": {
           "raw": "{{url}}/api/Categories/{{categoryId}}",
-          "host": ["{{url}}"],
-          "path": ["api", "Categories", "{{categoryId}}"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}"
+          ]
         }
       },
       "response": []
@@ -89,8 +107,14 @@
         },
         "url": {
           "raw": "{{url}}/api/Categories/{{categoryId}}",
-          "host": ["{{url}}"],
-          "path": ["api", "Categories", "{{categoryId}}"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}"
+          ]
         }
       },
       "response": []
@@ -102,8 +126,15 @@
         "header": [],
         "url": {
           "raw": "{{url}}/api/Categories/{{categoryId}}/todos",
-          "host": ["{{url}}"],
-          "path": ["api", "Categories", "{{categoryId}}", "todos"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}",
+            "todos"
+          ]
         }
       },
       "response": []
@@ -115,8 +146,13 @@
         "header": [],
         "url": {
           "raw": "{{url}}/api/todos",
-          "host": ["{{url}}"],
-          "path": ["api", "todos"],
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos"
+          ],
           "query": [
             {
               "key": "isCompleted",
@@ -139,11 +175,13 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "var jsonData = pm.response.json();",
               "pm.collectionVariables.set(\"id\", jsonData.id);"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -152,7 +190,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"title\": \"Learn .NET3\",\n    \"description\": \"Learn ASP.NET and make a simple API.\",\n    \"categoryId\": 2\n}",
+          "raw": "{\n    \"title\": \"Learn .NET3\",\n    \"description\": \"Learn ASP.NET and make a simple API.\",\n    \"categoryId\": {{categoryId}}\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -161,8 +199,13 @@
         },
         "url": {
           "raw": "{{url}}/api/todos",
-          "host": ["{{url}}"],
-          "path": ["api", "todos"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos"
+          ]
         }
       },
       "response": []
@@ -181,8 +224,14 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/{{id}}",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", "{{id}}"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}"
+          ]
         }
       },
       "response": []
@@ -203,8 +252,14 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/{{id}}",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", "{{id}}"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}"
+          ]
         }
       },
       "response": []
@@ -220,8 +275,15 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/{{id}}/complete",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", "{{id}}", "complete"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}",
+            "complete"
+          ]
         }
       },
       "response": []
@@ -240,8 +302,14 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/completed",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", "completed"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "completed"
+          ]
         }
       },
       "response": []
@@ -257,8 +325,14 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/{{id}}",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", "{{id}}"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}"
+          ]
         }
       },
       "response": []
@@ -274,8 +348,14 @@
         },
         "url": {
           "raw": "{{url}}/api/Categories/{{categoryId}}",
-          "host": ["{{url}}"],
-          "path": ["api", "Categories", "{{categoryId}}"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}"
+          ]
         }
       },
       "response": []
@@ -294,8 +374,14 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/999",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", "999"]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "999"
+          ]
         }
       },
       "response": []
@@ -316,8 +402,14 @@
         },
         "url": {
           "raw": "{{url}}/api/todos/",
-          "host": ["{{url}}"],
-          "path": ["api", "todos", ""]
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            ""
+          ]
         }
       },
       "response": []
@@ -337,14 +429,16 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     }
   ],
   "variable": [
     {
       "key": "url",
-      "value": "http://localhost:5254"
+      "value": ""
     },
     {
       "key": "id",
