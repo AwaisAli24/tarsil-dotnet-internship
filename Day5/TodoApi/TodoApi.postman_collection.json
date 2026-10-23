@@ -16,22 +16,12 @@
             "header": [],
             "url": {
               "raw": "{{url}}/api/todos",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos"
-              ],
+              "host": ["{{url}}"],
+              "path": ["api", "todos"],
               "query": [
                 {
                   "key": "isCompleted",
                   "value": "false",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "report",
                   "disabled": true
                 },
                 {
@@ -51,7 +41,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET3\",\n    \"description\": \"Learn ASP.NET and make a simple API.\",\n    \"categoryId\" : \"2\"\n}",
+              "raw": "{\n    \"title\": \"Learn .NET3\",\n    \"description\": \"Learn ASP.NET and make a simple API.\",\n    \"categoryId\": 2\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -60,13 +50,8 @@
             },
             "url": {
               "raw": "{{url}}/api/todos",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos"
-              ]
+              "host": ["{{url}}"],
+              "path": ["api", "todos"]
             }
           },
           "response": []
@@ -84,15 +69,9 @@
               "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
             },
             "url": {
-              "raw": "{{url}}/api/todos/3",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                "3"
-              ]
+              "raw": "{{url}}/api/todos/4",
+              "host": ["{{url}}"],
+              "path": ["api", "todos", "4"]
             }
           },
           "response": []
@@ -104,7 +83,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .Net Core\",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\",\n    \"categoryId\":1\n}",
+              "raw": "{\n    \"title\": \"Learn .Net Core\",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\",\n    \"categoryId\":2\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -112,15 +91,9 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/todos/3",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                "3"
-              ]
+              "raw": "{{url}}/api/todos/5",
+              "host": ["{{url}}"],
+              "path": ["api", "todos", "5"]
             }
           },
           "response": []
@@ -135,16 +108,9 @@
               "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
             },
             "url": {
-              "raw": "{{url}}/api/todos/3/complete",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                "3",
-                "complete"
-              ]
+              "raw": "{{url}}/api/todos/5/complete",
+              "host": ["{{url}}"],
+              "path": ["api", "todos", "5", "complete"]
             }
           },
           "response": []
@@ -163,14 +129,8 @@
             },
             "url": {
               "raw": "{{url}}/api/todos/completed",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                "completed"
-              ]
+              "host": ["{{url}}"],
+              "path": ["api", "todos", "completed"]
             }
           },
           "response": []
@@ -185,15 +145,9 @@
               "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API withing one week.\"\n}"
             },
             "url": {
-              "raw": "{{url}}/api/todos/3",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                "3"
-              ]
+              "raw": "{{url}}/api/todos/4",
+              "host": ["{{url}}"],
+              "path": ["api", "todos", "4"]
             }
           },
           "response": []
@@ -212,14 +166,8 @@
             },
             "url": {
               "raw": "{{url}}/api/todos/999",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                "999"
-              ]
+              "host": ["{{url}}"],
+              "path": ["api", "todos", "999"]
             }
           },
           "response": []
@@ -240,14 +188,8 @@
             },
             "url": {
               "raw": "{{url}}/api/todos/",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "todos",
-                ""
-              ]
+              "host": ["{{url}}"],
+              "path": ["api", "todos", ""]
             }
           },
           "response": []
@@ -270,15 +212,9 @@
               "raw": "{\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
             },
             "url": {
-              "raw": "{{url}}/api/category/",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "category",
-                ""
-              ]
+              "raw": "{{url}}/api/Categories/",
+              "host": ["{{url}}"],
+              "path": ["api", "Categories", ""]
             }
           },
           "response": []
@@ -290,7 +226,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\" : \"Very urgent\"\n}",
+              "raw": "{\n    \"name\" : \"General\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -298,15 +234,9 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/category/",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "category",
-                ""
-              ]
+              "raw": "{{url}}/api/Categories/",
+              "host": ["{{url}}"],
+              "path": ["api", "Categories", ""]
             }
           },
           "response": []
@@ -321,15 +251,9 @@
               "raw": "{\n    \"name\" : \"General\"\n}"
             },
             "url": {
-              "raw": "{{url}}/api/category/3",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "category",
-                "3"
-              ]
+              "raw": "{{url}}/api/Categories/3",
+              "host": ["{{url}}"],
+              "path": ["api", "Categories", "3"]
             }
           },
           "response": []
@@ -340,16 +264,31 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{url}}/api/category/2/todos",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "category",
-                "2",
-                "todos"
-              ]
+              "raw": "{{url}}/api/Categories/1/todos",
+              "host": ["{{url}}"],
+              "path": ["api", "Categories", "1", "todos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update by ID",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\" : \"not that urgent\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/Categories/2",
+              "host": ["{{url}}"],
+              "path": ["api", "Categories", "2"]
             }
           },
           "response": []
@@ -364,9 +303,7 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     },
     {
@@ -375,16 +312,14 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     }
   ],
   "variable": [
     {
       "key": "url",
-      "value": ""
+      "value": "http://localhost:5254"
     }
   ]
 }
