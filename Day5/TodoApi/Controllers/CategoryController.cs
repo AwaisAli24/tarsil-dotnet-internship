@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.Models;
 using TodoApi.Services;
+using TodoApi.Dto;
 
 namespace TodoApi.Controllers;
 
@@ -30,13 +31,13 @@ public class CategoryController : ControllerBase
         return Ok(category);
     }
     [HttpPost]
-    public async Task<ActionResult<Category>> Post(Category category)
+    public async Task<ActionResult<Category>> Post(CreateCategoryDto category)
     {
         var toPost = await _categoryService.AddAsync(category);
         return CreatedAtAction(actionName: nameof(GetById), routeValues: new { id = toPost.Id }, value: toPost);
     }
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Category>> Put(int id, Category category)
+    public async Task<ActionResult<Category>> Put(int id, UpdateCategoryDto category)
     {
         var toUpdate = _categoryService.UpdateAsync(id, category);
         if (toUpdate == null)
@@ -46,9 +47,9 @@ public class CategoryController : ControllerBase
         return NoContent();
     }
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<Category>> Delete(int id)
+    public async Task<ActionResult<CategoryResponseDto>> Delete(int id)
     {
-        Category? toDelete;
+        CategoryResponseDto? toDelete;
         try
         {
             toDelete = await _categoryService.DeleteAsync(id);
@@ -64,7 +65,7 @@ public class CategoryController : ControllerBase
         return NoContent();
     }
     [HttpGet("{id:int}/todos")]
-    public async Task<ActionResult<List<Category>>> GetTodosByCategory(int id)
+    public async Task<ActionResult<List<TodosByCategoryDto?>>> GetTodosByCategory(int id)
     {
         var todos = await _categoryService.GetTodosAsync(id);
         if (todos == null)

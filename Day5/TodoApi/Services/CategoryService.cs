@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using TodoApi.Data;
 using TodoApi.Models;
 using TodoApi.Services;
+using TodoApi.Dto;
 
 class CategoryService : ICategoryService
 {
@@ -11,44 +12,49 @@ class CategoryService : ICategoryService
     {
         _context = context;
     }
-    public async Task<List<Category>> GetAsync()
+    public async Task<List<CategoryResponseDto>> GetAsync()
     {
         var category = await _context.Categories.ToListAsync();
-        return category;
+        List<CategoryResponseDto> response = category.Select(c => new CategoryResponseDto { Name = c.Name, Id = c.Id }).ToList();
+        return response;
     }
-    public async Task<Category?> GetByIdAsync(int id)
+    public async Task<CategoryResponseDto?> GetByIdAsync(int id)
     {
         var category = await _context.Categories.FindAsync(id);
+
         if (category == null)
         {
-            return category;
+            return null;
         }
-        return category;
+        return new CategoryResponseDto { Name = category.Name, Id = category.Id };
     }
-    public async Task<Category> AddAsync(Category category)
+    public async Task<CategoryResponseDto> AddAsync(CreateCategoryDto categoryDto)
     {
+        Category category = new Category
+        {
+            Name = categoryDto.Name
+        };
         await _context.AddAsync(category);
         await _context.SaveChangesAsync();
-        return category;
+        return new CategoryResponseDto { Name = categoryDto.Name };
     }
-    public async Task<Category?> UpdateAsync(int id, Category category)
+    public async Task<CategoryResponseDto?> UpdateAsync(int id, UpdateCategoryDto categoryDto)
     {
         var toUpdate = await _context.Categories.FindAsync(id);
         if (toUpdate == null)
         {
-            return toUpdate;
+            return null;
         }
-        toUpdate.Name = category.Name;
-        toUpdate.Todos = category.Todos;
+        toUpdate.Name = categoryDto.Name;
         await _context.SaveChangesAsync();
-        return toUpdate;
+        return new CategoryResponseDto { Name = categoryDto.Name };
     }
-    public async Task<Category?> DeleteAsync(int id)
+    public async Task<CategoryResponseDto?> DeleteAsync(int id)
     {
         var toDelete = await _context.Categories.FindAsync(id);
         if (toDelete == null)
         {
-            return toDelete;
+            return null;
         }
         try
         {
@@ -59,16 +65,25 @@ class CategoryService : ICategoryService
         {
             throw new Exception("Cannot delete category because it has associated todos.");
         }
-        return toDelete;
+        return new CategoryResponseDto { Name = toDelete.Name };
     }
-    public async Task<Category?> GetTodosAsync(int id)
+    public async Task<TodosByCategoryDto?> GetTodosAsync(int id)
     {
         var category = await _context.Categories.FindAsync(id);
         if (category == null)
         {
-            return category;
+            return null;
         }
-        category.Todos = await _context.Todos.Where(t => t.CategoryId == id).ToListAsync();
-        return category;
+        var todos = await _context.Todos.Where(t => t.CategoryId == id).ToListAsync();
+        // category.Todos = category.Todos.Select(TodoService.MapToDTO).ToList();
+        // return category;
+        TodosByCategoryDto Todos = new TodosByCategoryDto
+        {
+            CategoryId = category.Id,
+            CategoryName = category.Name,
+            Todos = todos.Select(TodoService.MapToDTO).ToList()
+        };
+        return Todos;
+
     }
 }

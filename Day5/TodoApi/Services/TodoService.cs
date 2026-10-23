@@ -109,7 +109,7 @@ public class TodoService : ITodoService
         var completedTasksDTO = completedTasks.Select(MapToDTO).ToList();
         return completedTasksDTO;
     }
-    public TodoResponseDto MapToDTO(Todo todo)
+    public static TodoResponseDto MapToDTO(Todo todo)
     {
         return new TodoResponseDto
         {
