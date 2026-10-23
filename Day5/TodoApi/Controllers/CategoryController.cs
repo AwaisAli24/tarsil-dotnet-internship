@@ -39,10 +39,14 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Category>> Put(int id, UpdateCategoryDto category)
     {
-        var toUpdate = _categoryService.UpdateAsync(id, category);
+        var toUpdate = await _categoryService.UpdateAsync(id, category);
         if (toUpdate == null)
         {
             return NotFound();
+        }
+        if (string.IsNullOrWhiteSpace(category.Name))
+        {
+            return BadRequest();
         }
         return NoContent();
     }

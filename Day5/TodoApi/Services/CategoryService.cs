@@ -36,7 +36,7 @@ class CategoryService : ICategoryService
         };
         await _context.AddAsync(category);
         await _context.SaveChangesAsync();
-        return new CategoryResponseDto { Name = categoryDto.Name };
+        return new CategoryResponseDto { Id = category.Id, Name = categoryDto.Name };
     }
     public async Task<CategoryResponseDto?> UpdateAsync(int id, UpdateCategoryDto categoryDto)
     {
@@ -47,7 +47,7 @@ class CategoryService : ICategoryService
         }
         toUpdate.Name = categoryDto.Name;
         await _context.SaveChangesAsync();
-        return new CategoryResponseDto { Name = categoryDto.Name };
+        return new CategoryResponseDto { Id = toUpdate.Id, Name = toUpdate.Name };
     }
     public async Task<CategoryResponseDto?> DeleteAsync(int id)
     {
@@ -56,16 +56,15 @@ class CategoryService : ICategoryService
         {
             return null;
         }
-        try
-        {
-            _context.Remove(toDelete);
-            await _context.SaveChangesAsync();
-        }
-        catch
+        bool hasTodo = await _context.Todos.AnyAsync(t => t.Id == id);
+        if (!hasTodo)
         {
             throw new Exception("Cannot delete category because it has associated todos.");
         }
-        return new CategoryResponseDto { Name = toDelete.Name };
+        _context.Remove(toDelete);
+        await _context.SaveChangesAsync();
+
+        return new CategoryResponseDto { Name = toDelete.Name, Id = toDelete.Id };
     }
     public async Task<List<TodoResponseDto>?> GetTodosAsync(int id)
     {

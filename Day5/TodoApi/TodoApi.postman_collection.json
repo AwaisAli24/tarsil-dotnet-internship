@@ -7,293 +7,410 @@
   },
   "item": [
     {
-      "name": "Todo",
-      "item": [
-        {
-          "name": "Get All Todo",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/api/todos",
-              "host": ["{{url}}"],
-              "path": ["api", "todos"],
-              "query": [
-                {
-                  "key": "isCompleted",
-                  "value": "false",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "3",
-                  "disabled": true
-                }
-              ]
-            }
-          },
-          "response": []
+      "name": "Get All Category",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
         },
-        {
-          "name": "Add Todo",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET3\",\n    \"description\": \"Learn ASP.NET and make a simple API.\",\n    \"categoryId\": 2\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/api/todos",
-              "host": ["{{url}}"],
-              "path": ["api", "todos"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Todo by ID",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/4",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", "4"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update by ID",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .Net Core\",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\",\n    \"categoryId\":2\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/5",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", "5"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Mark a Todo Completed",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/5/complete",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", "5", "complete"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Completed Tasks",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/completed",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", "completed"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete By ID",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API withing one week.\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/4",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", "4"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "404 Request Example",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/999",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", "999"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "400 Request Example",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/api/todos/",
-              "host": ["{{url}}"],
-              "path": ["api", "todos", ""]
-            }
-          },
-          "response": []
+        "url": {
+          "raw": "{{url}}/api/Categories/",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            ""
+          ]
         }
-      ]
+      },
+      "response": []
     },
     {
-      "name": "Category",
-      "item": [
+      "name": "Post Category",
+      "event": [
         {
-          "name": "Get All Category",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/Categories/",
-              "host": ["{{url}}"],
-              "path": ["api", "Categories", ""]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Post Category",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\" : \"General\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/api/Categories/",
-              "host": ["{{url}}"],
-              "path": ["api", "Categories", ""]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Category",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\" : \"General\"\n}"
-            },
-            "url": {
-              "raw": "{{url}}/api/Categories/3",
-              "host": ["{{url}}"],
-              "path": ["api", "Categories", "3"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Todos by Category Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/api/Categories/1/todos",
-              "host": ["{{url}}"],
-              "path": ["api", "Categories", "1", "todos"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update by ID",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\" : \"not that urgent\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/api/Categories/2",
-              "host": ["{{url}}"],
-              "path": ["api", "Categories", "2"]
-            }
-          },
-          "response": []
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set(\"categoryId\", jsonData.id);"
+            ]
+          }
         }
-      ]
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\" : \"Work1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/Categories/",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Category by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/Categories/{{categoryId}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Category by ID",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\" : \"hello\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/Categories/{{categoryId}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Todos by Category Id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/Categories/{{categoryId}}/todos",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}",
+            "todos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Todo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/todos",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos"
+          ],
+          "query": [
+            {
+              "key": "isCompleted",
+              "value": "false",
+              "disabled": true
+            },
+            {
+              "key": "search",
+              "value": "3",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Todo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set(\"id\", jsonData.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET3\",\n    \"description\": \"Learn ASP.NET and make a simple API.\",\n    \"categoryId\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/todos",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Todo by ID",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/{{id}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Todo by ID",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .Net Core\",\n    \"description\": \"Learn ASP.NET and make a simple API within a week.\",\n    \"categoryId\":2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/{{id}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Mark a Todo Completed",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/{{id}}/complete",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}",
+            "complete"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Completed Tasks",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/completed",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "completed"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete By ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API withing one week.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/{{id}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Category",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\" : \"General\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/Categories/{{categoryId}}",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "Categories",
+            "{{categoryId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "404 Request Example",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Learn .NET\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/999",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "400 Request Example",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"\",\n    \"description\": \"Learn ASP.NET and make a simple API.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/todos/",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "todos",
+            ""
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
@@ -301,9 +418,7 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [""]
+        "exec": []
       }
     },
     {
@@ -312,14 +427,24 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     }
   ],
   "variable": [
     {
       "key": "url",
-      "value": "http://localhost:5254"
+      "value": ""
+    },
+    {
+      "key": "id",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": ""
     }
   ]
 }
