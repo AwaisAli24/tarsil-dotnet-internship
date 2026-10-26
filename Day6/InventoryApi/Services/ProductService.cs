@@ -61,6 +61,11 @@ class ProductService : IProductService
         {
             throw new InvalidOperationException("A product with this Sku already exists");
         }
+        bool isCategoryExist = await _context.Products.AnyAsync(p => p.CategoryId == product.CategoryId);
+        if (isCategoryExist)
+        {
+            throw new InvalidOperationException("The given Category Does Not exist");
+        }
         Product toAdd = new Product
         {
             Name = product.Name,
@@ -80,6 +85,11 @@ class ProductService : IProductService
         if (isDuplicate)
         {
             throw new InvalidOperationException("A product with this Sku already exists");
+        }
+        bool isCategoryExist = await _context.Products.AnyAsync(p => p.CategoryId == product.CategoryId);
+        if (isCategoryExist)
+        {
+            throw new InvalidOperationException("The given Category Does Not exist");
         }
         var toUpdate = await _context.Products.FindAsync(id);
         if (toUpdate == null)
