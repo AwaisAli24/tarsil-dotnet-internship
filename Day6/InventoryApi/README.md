@@ -5,6 +5,28 @@ An ASP.NET Core Web API for managing inventory products and categories. It uses 
 ## Requirements
 
 - .NET 10 SDK
+- Entity Framework Core CLI (`dotnet-ef`) to create or apply migrations
+
+## Database migrations
+
+Install the EF Core CLI tool if it is not already installed:
+
+```bash
+dotnet tool install --global dotnet-ef --version 10.0.13
+```
+
+The project includes migrations in `Migrations/`. Apply them to create or update the SQLite database:
+
+```bash
+dotnet ef database update --project Day6/InventoryApi
+```
+
+When the data model changes, create a migration from the repository root, then apply it:
+
+```bash
+dotnet ef migrations add MigrationName --project Day6/InventoryApi
+dotnet ef database update --project Day6/InventoryApi
+```
 
 ## Run
 
