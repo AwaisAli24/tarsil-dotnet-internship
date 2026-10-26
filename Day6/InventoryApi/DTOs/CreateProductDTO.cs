@@ -6,6 +6,7 @@ public class CreateProductDTO
 {
     [Required]
     public string Name { get; set; } = string.Empty;
+    [Required]
     public string Sku { get; set; } = string.Empty;
     [Range(0.01, double.MaxValue)]
     public double Price { get; set; }
