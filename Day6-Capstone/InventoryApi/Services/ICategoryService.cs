@@ -1,4 +1,6 @@
 using InventoryApi.DTOs;
+namespace InventoryApi.Services;
+
 public interface ICategoryService
 {
     Task<List<ResponseCategoryDTO>> GetCategoriesAsync();

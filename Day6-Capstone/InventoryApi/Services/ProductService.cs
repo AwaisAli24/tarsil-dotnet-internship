@@ -1,7 +1,6 @@
 using InventoryApi.Data;
 using InventoryApi.DTOs;
 using InventoryApi.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryApi.Services;
@@ -19,29 +18,25 @@ class ProductService : IProductService
         if (categoryId != null)
         {
             query = query.Where(p => p.CategoryId == categoryId);
-            Console.WriteLine("Here 1");
         }
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(p => p.Name.ToLower().Contains(search.ToLower()));
-            Console.WriteLine("Here 2");
         }
         if (minPrice != null)
         {
-            query = query.Where(p => p.Price > minPrice);
-            Console.WriteLine("Here 3");
+            query = query.Where(p => p.Price >= minPrice);
         }
         if (maxPrice != null)
         {
             query = query.Where(p => p.Price <= maxPrice);
-            Console.WriteLine("Here 4");
         }
-        var products = await query.ToListAsync();
         if (pageSize != null && page != null)
         {
             int skip = (int)((page - 1) * pageSize);
-            products = products.Skip(skip).Take((int)pageSize).ToList();
+            query = query.Skip(skip).Take((int)pageSize);
         }
+        var products = await query.ToListAsync();
         var productsDtoList = products.Select(MapToDto).ToList();
         return productsDtoList;
     }

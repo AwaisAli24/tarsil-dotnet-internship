@@ -1,6 +1,5 @@
 using InventoryApi.DTOs;
 using InventoryApi.Services;
-using InventoryApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryApi.Controllers;

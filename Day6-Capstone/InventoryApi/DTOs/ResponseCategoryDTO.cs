@@ -1,3 +1,5 @@
+namespace InventoryApi.DTOs;
+
 public class ResponseCategoryDTO
 {
     public int Id { get; set; }
