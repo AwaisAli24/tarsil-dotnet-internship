@@ -16,6 +16,7 @@ A collection of C# practice projects built during a .NET internship. The project
 | 3 | `AsyncDemo`, `StudentManager` | Async/await, HTTP requests, and a JSON-backed student management console app |
 | 4 | `TodoApi` | ASP.NET Core CRUD API using in-memory data |
 | 5 | `TodoApi` | Async ASP.NET Core CRUD API using Entity Framework Core and SQLite |
+| 6 | `InventoryApi` | ASP.NET Core inventory API for products and categories using Entity Framework Core and SQLite |
 
 Each project is independent; there is no solution file at the repository root.
 
@@ -66,3 +67,30 @@ dotnet ef database update --project Day5/TodoApi
 ```
 
 The connection string is in `Day5/TodoApi/appsettings.json`. In Development, both APIs expose an OpenAPI document at `/openapi/v1.json`.
+
+## Day 6: Inventory API
+
+Run the API from the repository root:
+
+```bash
+dotnet run --project Day6/InventoryApi
+```
+
+The HTTP launch profile uses `http://localhost:5137`; the HTTPS profile uses `https://localhost:7199` and also listens on HTTP port `5137`. In Development, the OpenAPI document is available at `/openapi/v1.json`. The API uses SQLite, with its connection string in `Day6/InventoryApi/appsettings.json`.
+
+### Endpoints
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/products` | List products; optionally filter by `categoryId`, `search`, `minPrice`, and/or `maxPrice` query parameters |
+| `GET` | `/api/products/{id}` | Get a product by ID |
+| `POST` | `/api/products` | Create a product |
+| `PUT` | `/api/products/{id}` | Update a product |
+| `DELETE` | `/api/products/{id}` | Delete a product |
+| `GET` | `/api/products/low-stock?threshold={threshold}` | List products at or below the stock threshold |
+| `POST` | `/api/products/{id}/stock` | Increase a product's stock |
+| `GET` | `/api/categories` | List categories |
+| `GET` | `/api/categories/{id}` | Get a category by ID |
+| `POST` | `/api/categories` | Create a category |
+| `PUT` | `/api/categories/{id}` | Update a category |
+| `DELETE` | `/api/categories/{id}` | Delete a category |

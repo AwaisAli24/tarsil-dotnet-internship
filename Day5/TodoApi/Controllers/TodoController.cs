@@ -32,7 +32,6 @@ public class TodosController : ControllerBase
         {
             return NotFound();
         }
-        Console.WriteLine($"{todo.Title} From Controller");
         return Ok(todo);
     }
     [HttpPost]

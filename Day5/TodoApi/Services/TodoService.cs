@@ -38,7 +38,6 @@ public class TodoService : ITodoService
             return null;
         }
         TodoResponseDto result = MapToDTO(todo);
-        Console.WriteLine(result.Title);
         return result;
     }
     public async Task<TodoResponseDto> AddAsync(CreateTodoDto dto)

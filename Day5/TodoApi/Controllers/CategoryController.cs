@@ -60,7 +60,7 @@ public class CategoriesController : ControllerBase
         }
         catch
         {
-            return Conflict();
+            return Conflict("Cannot be deleted! Category associated with a task");
         }
         if (toDelete == null)
         {

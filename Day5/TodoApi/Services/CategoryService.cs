@@ -74,8 +74,6 @@ class CategoryService : ICategoryService
             return null;
         }
         var todos = await _context.Todos.Where(t => t.CategoryId == id).ToListAsync();
-        // category.Todos = category.Todos.Select(TodoService.MapToDTO).ToList();
-        // return category;
         List<TodoResponseDto> Todos = todos.Select(TodoService.MapToDTO).ToList();
         return Todos;
 
