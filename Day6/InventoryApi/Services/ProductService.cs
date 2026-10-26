@@ -127,6 +127,10 @@ class ProductService : IProductService
         {
             return null;
         }
+        if (product.StockQuantity + change < 0)
+        {
+            throw new InvalidOperationException("The stock level cannot be negative.");
+        }
         product.StockQuantity += change;
         await _context.SaveChangesAsync();
         return MapToDto(product);

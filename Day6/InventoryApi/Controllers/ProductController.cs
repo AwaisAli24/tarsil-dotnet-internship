@@ -86,12 +86,15 @@ public class ProductsController : ControllerBase
     [HttpPost("{id:int}/stock")]
     public async Task<ActionResult<ResponseProductDTO?>> UpdateStock(int id, UpdateStockDTO stock)
     {
-        Console.WriteLine(stock.change);
-        if (stock.change <= 0)
+        ResponseProductDTO? product;
+        try
         {
-            return BadRequest("The change must be positive");
+            product = await _productService.UpdateStock(id, stock.change);
         }
-        var product = await _productService.UpdateStock(id, stock.change);
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(e.Message);
+        }
         if (product == null)
         {
             return NotFound();
