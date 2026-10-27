@@ -56,7 +56,7 @@ class ProductService : IProductService
         {
             throw new InvalidOperationException("A product with this Sku already exists");
         }
-        bool isCategoryExist = await _context.Products.AnyAsync(p => p.CategoryId == product.CategoryId);
+        bool isCategoryExist = await _context.Categories.AnyAsync(p => p.Id == product.CategoryId);
         if (!isCategoryExist)
         {
             throw new InvalidOperationException("The given Category Does Not exist");
@@ -81,8 +81,8 @@ class ProductService : IProductService
         {
             throw new InvalidOperationException("A product with this Sku already exists");
         }
-        bool isCategoryExist = await _context.Products.AnyAsync(p => p.CategoryId == product.CategoryId);
-        if (isCategoryExist)
+        bool isCategoryExist = await _context.Categories.AnyAsync(p => p.Id == product.CategoryId);
+        if (!isCategoryExist)
         {
             throw new InvalidOperationException("The given Category Does Not exist");
         }

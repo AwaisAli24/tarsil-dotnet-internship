@@ -18,14 +18,14 @@ dotnet tool install --global dotnet-ef --version 10.0.13
 The project includes migrations in `Migrations/`. Apply them to create or update the SQLite database:
 
 ```bash
-dotnet ef database update --project Day6/InventoryApi
+dotnet ef database update --project Day6-Capstone/InventoryApi
 ```
 
 When the data model changes, create a migration from the repository root, then apply it:
 
 ```bash
-dotnet ef migrations add MigrationName --project Day6/InventoryApi
-dotnet ef database update --project Day6/InventoryApi
+dotnet ef migrations add MigrationName --project Day6-Capstone/InventoryApi
+dotnet ef database update --project Day6-Capstone/InventoryApi
 ```
 
 ## Run
@@ -33,7 +33,7 @@ dotnet ef database update --project Day6/InventoryApi
 From the repository root:
 
 ```bash
-dotnet run --project Day6/InventoryApi
+dotnet run --project Day6-Capstone/InventoryApi
 ```
 
 The HTTP launch profile listens at `http://localhost:5137`. The HTTPS profile listens at `https://localhost:7199` and `http://localhost:5137`.

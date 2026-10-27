@@ -1,4 +1,4 @@
-
+using InventoryApi.Services;
 using InventoryApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
