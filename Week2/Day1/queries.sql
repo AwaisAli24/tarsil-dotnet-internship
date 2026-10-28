@@ -32,12 +32,13 @@ SELECT title FROM books
 WHERE id IN (SELECT book_id FROM loans GROUP BY book_id ORDER BY count(book_id))
 LIMIT 3
 --9.
-SELECT title FROM books
-WHERE id IN (SELECT book_id FROM loans GROUP BY book_id ORDER BY count(book_id) desc)
-LIMIT 3
--- 10.
 SELECT name FROM authors
 Where id in (SELECT author_id from books GROUP BY author_id having avg(price)>1000)
+-- 10.
+SELECT EXISTS(
+	SELECT * FROM loans
+	WHERE id=2 and returned_at IS null
+)
 -- 11.
 INSERT INTO books (title,isbn,price,total_copies,available_copies,published_year,author_id)
 VALUES
