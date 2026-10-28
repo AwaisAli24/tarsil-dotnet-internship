@@ -40,7 +40,7 @@ while (running)
                 JOIN authors a ON author_id=a.id;
             """;
 
-                var reader = await command.ExecuteReaderAsync();
+                using var reader = await command.ExecuteReaderAsync();
                 Console.WriteLine("Id\tTitle\t\t\t\t\tPrice\t\tAuthor");
                 while (await reader.ReadAsync())
                 {
@@ -63,32 +63,36 @@ while (running)
                 WHERE title ILIKE @search;
             """;
                 command.Parameters.AddWithValue("@search", "%" + search + "%");
-                NpgsqlDataReader reader;
+                // NpgsqlDataReader reader;
                 try
                 {
-
-                    reader = await command.ExecuteReaderAsync();
+                    using var reader = await command.ExecuteReaderAsync();
+                    Console.WriteLine($"Following books contain \"{search}\" in their title:");
+                    while (await reader.ReadAsync())
+                    {
+                        string title = reader.GetString(0);
+                        Console.WriteLine(title);
+                    }
                 }
                 catch (NpgsqlException e)
                 {
                     Console.WriteLine(e.Message);
                     continue;
                 }
-                Console.WriteLine($"Following books contain \"{search}\" in their title:");
-                while (await reader.ReadAsync())
-                {
-                    string title = reader.GetString(0);
-                    Console.WriteLine(title);
-                }
             }
             break;
         case 3:
             {
                 Console.WriteLine("Enter book title:");
-                string title = Console.ReadLine();
+                string? title = Console.ReadLine();
                 Console.WriteLine("Enter book isbn:");
-                string isbn = Console.ReadLine();
+                string? isbn = Console.ReadLine();
                 Console.WriteLine("Enter book price:");
+                if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(isbn))
+                {
+                    Console.WriteLine("Fields Are required.");
+                    continue;
+                }
                 success = decimal.TryParse(Console.ReadLine(), out decimal price);
                 if (!success)
                 {
@@ -110,34 +114,29 @@ while (running)
                     continue;
                 }
                 Console.WriteLine("Enter published year:");
-                if (DateTime.TryParseExact(Console.ReadLine(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime publishedDate))
-                {
-                    Console.WriteLine($"Success! Parsed Date: {publishedDate}");
-                }
-                else
+                if (!DateTime.TryParseExact(Console.ReadLine(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime publishedDate))
                 {
                     Console.WriteLine("Invalid date format.");
                     continue;
                 }
                 Console.WriteLine("Enter author's name:");
-                string authorName = Console.ReadLine();
+                string? authorName = Console.ReadLine();
                 command.CommandText = """
                     SELECT id FROM authors
                     WHERE name ILIKE @author_name;    
                 """;
                 command.Parameters.AddWithValue("@author_name", "%" + authorName + "%");
-                object? result = null;
+                int authorId;
                 try
                 {
-                    result = await command.ExecuteScalarAsync();
+                    var result = await command.ExecuteScalarAsync();
+                    authorId = Convert.ToInt32(result);
                 }
                 catch (NpgsqlException e)
                 {
                     Console.WriteLine(e.Message);
                     continue;
                 }
-                int authorId = Convert.ToInt32(result);
-                Console.WriteLine($"author id:{authorId}");
 
                 command.CommandText = """
                     INSERT INTO books(title,isbn,price,total_copies,available_copies,published_year,author_id)
@@ -154,15 +153,15 @@ while (running)
                 try
                 {
 
-                    result = await command.ExecuteScalarAsync();
+                    var result = await command.ExecuteScalarAsync();
+                    Console.WriteLine($"Book inserted with id ${Convert.ToInt32(result)}");
+                    break;
                 }
                 catch (NpgsqlException e)
                 {
                     Console.WriteLine(e.Message);
                     continue;
                 }
-                Console.WriteLine($"Book inserted with id ${Convert.ToInt32(result)}");
-                break;
             }
         case 4:
             {
@@ -178,11 +177,12 @@ while (running)
                     WHERE id=@id
                 """;
                 command.Parameters.AddWithValue("@id", id);
-                object? result = null;
+                decimal price;
                 try
                 {
 
-                    result = await command.ExecuteScalarAsync();
+                    var result = await command.ExecuteScalarAsync();
+                    price = Convert.ToDecimal(result);
 
                 }
                 catch (NpgsqlException e)
@@ -190,7 +190,6 @@ while (running)
                     Console.WriteLine(e.Message);
                     continue;
                 }
-                decimal price = Convert.ToDecimal(result);
 
                 Console.WriteLine($"The current price is: {price}");
 
@@ -212,13 +211,13 @@ while (running)
                 try
                 {
                     affectedRows = await command.ExecuteNonQueryAsync();
+                    Console.WriteLine("Price Updated.");
                 }
                 catch (NpgsqlException e)
                 {
                     Console.WriteLine(e.Message);
                     continue;
                 }
-                Console.WriteLine($"Price Updated {affectedRows}");
             }
             break;
         case 5:
@@ -237,7 +236,6 @@ while (running)
                 int result = 0;
                 try
                 {
-
                     result = await command.ExecuteNonQueryAsync();
                 }
                 catch (NpgsqlException e)
