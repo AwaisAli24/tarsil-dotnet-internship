@@ -11,34 +11,32 @@ SELECT * FROM books
 where title ILIKE '%the%';
 --4.
 SELECT * FROM books
-OFFSET 3 LIMIT 3
+ORDER BY id ASC
+OFFSET 3 LIMIT 3;
 --5.
 SELECT a.id,a.name,count(b.id) FROM authors a
 LEFT JOIN books b
 ON a.id= b.author_id
-GROUP BY a.id
+GROUP BY a.id;
 --6.
-SELECT * FROM members
-WHERE id IN (
-	SELECT member_id FROM loans WHERE returned_at IS NULL
-)
+SELECT m.full_name FROM members m
+JOIN loans l
+ON l.member_id=m.id and l.returned_at IS NULL;
 --7.
-SELECT b.title,m.full_name FROM loans l
-LEFT JOIN books b ON l.book_id = b.id
-LEFT JOIN members m ON l.member_id = m.id
-WHERE returned_at is NULL or due_date < returned_at
+SELECT * FROM loans
+WHERE NOW()>due_date AND returned_at IS NULL;
 --8.
 SELECT title FROM books
-WHERE id IN (SELECT book_id FROM loans GROUP BY book_id ORDER BY count(book_id))
-LIMIT 3
+WHERE id IN (SELECT book_id FROM loans GROUP BY book_id ORDER BY count(book_id) DESC)
+LIMIT 3;
 --9.
 SELECT name FROM authors
-Where id in (SELECT author_id from books GROUP BY author_id having avg(price)>1000)
+Where id in (SELECT author_id from books GROUP BY author_id having avg(price)>1000);
 -- 10.
 SELECT EXISTS(
 	SELECT * FROM loans
-	WHERE id=2 and returned_at IS null
-)
+	WHERE member_id=2 and returned_at IS null
+);
 -- 11.
 INSERT INTO books (title,isbn,price,total_copies,available_copies,published_year,author_id)
 VALUES
@@ -48,7 +46,7 @@ VALUES
         800.00,
         5,
         3,
-        '1866-01-01',
+        1866,
         1
     )
 	returning id;

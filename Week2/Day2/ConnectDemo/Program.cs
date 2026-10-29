@@ -6,7 +6,6 @@ var builder = new ConfigurationBuilder()
     .Build();
 
 string? connectionString = builder.GetConnectionString("DefaultConnection");
-Console.WriteLine(connectionString);
 
 using var connection = new NpgsqlConnection(connectionString);
 
