@@ -7,13 +7,19 @@ var builder = new ConfigurationBuilder()
 
 string? connectionString = builder.GetConnectionString("DefaultConnection");
 
+if (connectionString == null)
+{
+    Console.WriteLine("Connection string is not configured.");
+    return;
+}
+
 using var connection = new NpgsqlConnection(connectionString);
 
 try
 {
     await connection.OpenAsync();
 }
-catch (PostgresException ex)
+catch (NpgsqlException ex)
 {
     Console.WriteLine($"Error connecting to the database: {ex.Message}");
     return;

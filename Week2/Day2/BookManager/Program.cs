@@ -63,7 +63,6 @@ while (running)
                 WHERE title ILIKE @search;
             """;
                 command.Parameters.AddWithValue("@search", "%" + search + "%");
-                // NpgsqlDataReader reader;
                 try
                 {
                     using var reader = await command.ExecuteReaderAsync();
@@ -99,11 +98,21 @@ while (running)
                     Console.WriteLine("Invalid Input! Please Try again");
                     continue;
                 }
+                if (price < 0)
+                {
+                    Console.WriteLine("Price cannot be negative.");
+                    continue;
+                }
                 Console.WriteLine("Enter total copies:");
                 success = int.TryParse(Console.ReadLine(), out int totalCopies);
                 if (!success)
                 {
                     Console.WriteLine("Invalid Input! Please Try again");
+                    continue;
+                }
+                if (totalCopies < 0)
+                {
+                    Console.WriteLine("Total copies cannot be negative.");
                     continue;
                 }
                 Console.WriteLine("Enter available copies:");
@@ -113,23 +122,51 @@ while (running)
                     Console.WriteLine("Invalid Input! Please Try again");
                     continue;
                 }
+                if (availableCopies < 0)
+                {
+                    Console.WriteLine("Available copies cannot be negative.");
+                    continue;
+                }
+                if (availableCopies > totalCopies)
+                {
+                    Console.WriteLine("Available copies cannot be greater than total copies.");
+                    continue;
+                }
                 Console.WriteLine("Enter published year:");
-                if (!DateTime.TryParseExact(Console.ReadLine(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime publishedDate))
+                if (int.TryParse(Console.ReadLine(), out int publishedYear))
+                {
+                    if (publishedYear < 0 || publishedYear > DateTime.Now.Year)
+                    {
+                        Console.WriteLine("Published year must be a valid year.");
+                        continue;
+                    }
+                }
+                else
                 {
                     Console.WriteLine("Invalid date format.");
                     continue;
                 }
                 Console.WriteLine("Enter author's name:");
                 string? authorName = Console.ReadLine();
+                if (authorName == null)
+                {
+                    Console.WriteLine("Author name is required.");
+                    continue;
+                }
                 command.CommandText = """
                     SELECT id FROM authors
                     WHERE name ILIKE @author_name;    
                 """;
-                command.Parameters.AddWithValue("@author_name", "%" + authorName + "%");
+                command.Parameters.AddWithValue("@author_name", authorName);
                 int authorId;
                 try
                 {
                     var result = await command.ExecuteScalarAsync();
+                    if (result is null or DBNull)
+                    {
+                        Console.WriteLine("Author not found.");
+                        continue;
+                    }
                     authorId = Convert.ToInt32(result);
                 }
                 catch (NpgsqlException e)
@@ -148,16 +185,36 @@ while (running)
                 command.Parameters.AddWithValue("@price", price);
                 command.Parameters.AddWithValue("@totalCopies", totalCopies);
                 command.Parameters.AddWithValue("@availableCopies", availableCopies);
-                command.Parameters.AddWithValue("@publishedDate", publishedDate);
+                command.Parameters.AddWithValue("@publishedDate", publishedYear);
                 command.Parameters.AddWithValue("@author_id", authorId);
                 try
                 {
 
                     var result = await command.ExecuteScalarAsync();
-                    Console.WriteLine($"Book inserted with id ${Convert.ToInt32(result)}");
+                    Console.WriteLine($"Book inserted with id {Convert.ToInt32(result)}");
                     break;
                 }
                 catch (NpgsqlException e)
+                {
+                    if (e.SqlState == "23505")
+                    {
+                        Console.WriteLine("A book with this ISBN already exists.");
+                    }
+                    else if (e.SqlState == "23503")
+                    {
+                        Console.WriteLine("The specified author does not exist.");
+                    }
+                    else if (e.SqlState == "22001")
+                    {
+                        Console.WriteLine("One of the input values is too long for the database column.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error inserting book: {e.Message}");
+                    }
+                    continue;
+                }
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     continue;
@@ -182,6 +239,11 @@ while (running)
                 {
 
                     var result = await command.ExecuteScalarAsync();
+                    if (result == null || result is DBNull)
+                    {
+                        Console.WriteLine("No book found with the given id.");
+                        continue;
+                    }
                     price = Convert.ToDecimal(result);
 
                 }
@@ -211,6 +273,13 @@ while (running)
                 try
                 {
                     affectedRows = await command.ExecuteNonQueryAsync();
+                    if (affectedRows == 0)
+                    {
+                        Console.WriteLine("No book found with the given id.");
+                        continue;
+                    }
+                    Console.WriteLine($"Price updated to {newPrice} for book with id {id}.");
+                    Console.WriteLine($"Affected rows: {affectedRows}");
                     Console.WriteLine("Price Updated.");
                 }
                 catch (NpgsqlException e)
@@ -227,6 +296,7 @@ while (running)
                 if (!success)
                 {
                     Console.WriteLine("Invalid choice! Please try again");
+                    continue;
                 }
                 command.CommandText = """
                     DELETE FROM books
@@ -247,12 +317,18 @@ while (running)
                 {
                     Console.WriteLine("Deleted Successfully");
                 }
+                else
+                {
+                    Console.WriteLine("No book found with the given id.");
+                }
             }
             break;
         case 6:
             running = false;
             break;
-
+        default:
+            Console.WriteLine("Invalid choice! Please try again.");
+            continue;
     }
 }
 
