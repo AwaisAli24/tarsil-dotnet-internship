@@ -14,7 +14,7 @@ public class AuthorRepository : IAuthorRepository
     {
         List<Author> authors = new List<Author>();
         using var command = _dataSource.CreateCommand("""
-            SELECT * FROM author;
+            SELECT * FROM authors;
         """);
         using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -27,7 +27,7 @@ public class AuthorRepository : IAuthorRepository
     public async Task<Author?> GetByIdAsync(int id)
     {
         using var command = _dataSource.CreateCommand("""
-            SELECT * FROM author
+            SELECT * FROM authors
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
@@ -37,22 +37,23 @@ public class AuthorRepository : IAuthorRepository
     public async Task<int> CreateAsync(Author author)
     {
         using var command = _dataSource.CreateCommand("""
-            INSERT INTO author(name,country)
+            INSERT INTO authors(name,country)
             VALUES(@name,@country)
             RETURNING id;
         """);
-        command.Parameters.AddWithValue("@title", author.Name);
-        command.Parameters.AddWithValue("@isbn", author.Country);
+        command.Parameters.AddWithValue("@name", author.Name);
+        command.Parameters.AddWithValue("@country", author.Country);
         int id = Convert.ToInt32(await command.ExecuteScalarAsync());
         return id;
     }
     public async Task<bool> UpdateAsync(int id, Author author)
     {
         using var command = _dataSource.CreateCommand("""
-            UPDATE TABLE author
+            UPDATE authors
             SET
             name = @name,
-            country = @country,
+            country = @country
+            WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@name", author.Name);
         command.Parameters.AddWithValue("@country", author.Country);
@@ -64,7 +65,7 @@ public class AuthorRepository : IAuthorRepository
     public async Task<bool> DeleteAsync(int id)
     {
         using var command = _dataSource.CreateCommand("""
-            DELETE FROM author
+            DELETE FROM authors
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);

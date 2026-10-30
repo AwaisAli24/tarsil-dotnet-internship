@@ -50,16 +50,16 @@ public class MemberRepository : IMemberRepository
     public async Task<bool> UpdateAsync(int id, Member member)
     {
         using var command = _dataSource.CreateCommand("""
-            UPDATE TABLE members
+            UPDATE members
             SET
             full_name = @full_name,
             email = @email,
-            joined_on = @joined_on,
+            joined_on = @joined_on
             WHERE id = @id;
         """);
-        command.Parameters.AddWithValue("@title", member.FullName);
-        command.Parameters.AddWithValue("@isbn", member.Email);
-        command.Parameters.AddWithValue("@price", member.JoinedOn ?? DateOnly.FromDateTime(DateTime.Now));
+        command.Parameters.AddWithValue("@full_name", member.FullName);
+        command.Parameters.AddWithValue("@email", member.Email);
+        command.Parameters.AddWithValue("@joined_on", member.JoinedOn ?? DateOnly.FromDateTime(DateTime.Now));
         command.Parameters.AddWithValue("@id", id);
 
         var affectedRows = await command.ExecuteNonQueryAsync();

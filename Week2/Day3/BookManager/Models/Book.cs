@@ -9,4 +9,5 @@ public class Book
     public int TotalCopies { get; set; }
     public int AvailableCopies { get; set; }
     public int PublishedYear { get; set; }
+    public int AuthorId { get; set; }
 }
