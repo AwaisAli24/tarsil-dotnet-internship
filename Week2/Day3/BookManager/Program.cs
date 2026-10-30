@@ -19,6 +19,7 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
 
 using var host = builder.Build();
@@ -27,8 +28,7 @@ await host.StartAsync();
 
 using (var scope = host.Services.CreateScope())
 {
-    // var Repository = scope.ServiceProvider
-    //     .GetRequiredService<IBookRepository>();
+    var repository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
 
     // var books = await repository.GetAllAsync();
 
@@ -44,7 +44,7 @@ using (var scope = host.Services.CreateScope())
     //     PublishedYear = 1925,
     //     TotalCopies = 100,
     //     AvailableCopies = 100,
-    //     Isbn = "978-0743273565"
+    //     Isbn = "9780679720218"
     // };
     // var id = await repository.CreateAsync(book);
     // Console.WriteLine($"Book generated with the Id of {id}");
@@ -61,6 +61,18 @@ using (var scope = host.Services.CreateScope())
     // Console.WriteLine(isUpdated ? "The book has been updated." : "Some error occured");
     // bool isDeleted = await repository.DeleteAsync(12);
     // Console.WriteLine(isDeleted ? "The book has been Deleted." : "Some error occured");
+    // var books = await repository.SearchAsync( 1, 2,title:"the");
+    // Explicitly naming the required parameters
+    var books = await repository.SearchAsync(2, 2, title: "the");
+
+    foreach (var book in books)
+    {
+        Console.WriteLine(book.Title);
+    }
+
+
+
+
     // var repository = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
     // var authors = await repository.GetAllAsync();
     // foreach (var author in authors)
@@ -85,7 +97,7 @@ using (var scope = host.Services.CreateScope())
     // bool isDeleted = await repository.DeleteAsync(4);
     // Console.WriteLine(isDeleted ? "The author has been Deleted." : "Some error occured");
 
-    var repository = scope.ServiceProvider.GetRequiredService<IMemberRepository>();
+    // var repository = scope.ServiceProvider.GetRequiredService<IMemberRepository>();
     // var members = await repository.GetAllAsync();
     // foreach (var member in members)
     // {
@@ -107,9 +119,22 @@ using (var scope = host.Services.CreateScope())
     // };
     // bool isUpdated = await repository.UpdateAsync(6, member);
     // Console.WriteLine(isUpdated ? "The member has been updated." : "Some error occured");
-    bool isDeleted = await repository.DeleteAsync(6);
-    Console.WriteLine(isDeleted ? "The member has been Deleted." : "Some error occured");
+    // bool isDeleted = await repository.DeleteAsync(6);
+    // Console.WriteLine(isDeleted ? "The member has been Deleted." : "Some error occured");
+    // var repository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
 
+    // await repository.BorrowAsync(1, 1, 2);
+    // await repository.BorrowAsync(2, 2, 2);
+    // await repository.BorrowAsync(3, 3, 2);
+    // await repository.BorrowAsync(4, 4, 2);
+    // await repository.BorrowAsync(5, 5, 2);
+
+
+    // await repository.ReturnLoan(22);
+    // await repository.ReturnLoan(23);
+    // await repository.ReturnLoan(24);
+    // await repository.ReturnLoan(25);
+    // await repository.ReturnLoan(17);
 }
 
 await host.StopAsync();

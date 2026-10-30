@@ -8,4 +8,5 @@ public interface IBookRepository
     Task<int> CreateAsync(Book book);
     Task<bool> UpdateAsync(int id, Book book);
     Task<bool> DeleteAsync(int id);
+    Task<List<Book>> SearchAsync(int page, int pageSize, string? title = null, int? authorId = null, decimal? minPrice = null, decimal? maxPrice = null);
 }

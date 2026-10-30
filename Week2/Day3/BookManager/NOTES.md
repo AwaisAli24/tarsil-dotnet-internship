@@ -1,0 +1,1 @@
+I used a throw statement in the transaction between two queries, and the first query was not saved because the transaction failed before it could be committed. The throw caused the whole process to stop, so the database rolled back, and nothing from that transaction was permanently saved.

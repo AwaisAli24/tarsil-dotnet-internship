@@ -1,5 +1,6 @@
 using BookManager.Models;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace BookManager.Data;
 
@@ -48,7 +49,21 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("@available_copies", book.AvailableCopies);
         command.Parameters.AddWithValue("@published_year", book.PublishedYear);
         command.Parameters.AddWithValue("@author_id", book.AuthorId);
-        int id = Convert.ToInt32(await command.ExecuteScalarAsync());
+        int id = -1;
+        try
+        {
+            id = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+        }
+        catch (PostgresException e) when (e.SqlState == "23505")
+        {
+            Console.WriteLine("ISBN already exists.");
+
+        }
+        catch (PostgresException e) when (e.SqlState == "23503")
+        {
+            Console.WriteLine("Author not Found");
+        }
         return id;
     }
     public async Task<bool> UpdateAsync(int id, Book book)
@@ -86,6 +101,53 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("@id", id);
         var affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
+    }
+    public async Task<List<Book>> SearchAsync(int page, int pageSize, string? title = null, int? authorId = null, decimal? minPrice = null, decimal? maxPrice = null)
+    {
+        if (page <= 0)
+        {
+            throw new ArgumentOutOfRangeException("Page number should be 1 or greater");
+        }
+        if (pageSize > 50 || pageSize < 1)
+        {
+            throw new ArgumentOutOfRangeException("Pagesize should be between 1 and 50");
+        }
+        var command = _dataSource.CreateCommand("""
+            SELECT *
+            FROM books
+            WHERE (@title IS NULL OR title ILIKE '%' || @title || '%')
+              AND (@authorId IS NULL OR author_id = @authorId)
+              AND (@minPrice IS NULL OR price >= @minPrice)
+              AND (@maxPrice IS NULL OR price <= @maxPrice)
+            ORDER BY id ASC
+            LIMIT @pageSize OFFSET @offset;
+        """);
+
+        command.Parameters.Add("@title", NpgsqlDbType.Text).Value =
+    (object?)title ?? DBNull.Value;
+
+        command.Parameters.Add("@authorId", NpgsqlDbType.Integer).Value =
+            (object?)authorId ?? DBNull.Value;
+
+        command.Parameters.Add("@minPrice", NpgsqlDbType.Numeric).Value =
+            (object?)minPrice ?? DBNull.Value;
+
+        command.Parameters.Add("@maxPrice", NpgsqlDbType.Numeric).Value =
+            (object?)maxPrice ?? DBNull.Value;
+
+        int offset = (page - 1) * pageSize;
+
+        command.Parameters.Add("@pageSize", NpgsqlDbType.Integer).Value = pageSize;
+        command.Parameters.Add("@offset", NpgsqlDbType.Integer).Value = offset;
+
+        using var reader = await command.ExecuteReaderAsync();
+        var books = new List<Book>();
+        while (await reader.ReadAsync())
+        {
+            books.Add(MapToObj(reader));
+        }
+
+        return books;
     }
     Book MapToObj(NpgsqlDataReader reader)
     {
