@@ -6,9 +6,11 @@ namespace LibraryApi.Services;
 public class AuthorService : IAuthorService
 {
     private readonly IAuthorRepository _repository;
-    public AuthorService(IAuthorRepository repository)
+    private readonly ILogger<AuthorService> _logger;
+    public AuthorService(IAuthorRepository repository, ILogger<AuthorService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
     public async Task<List<ResponseAuthorDTO>> GetAllAsync()
     {
@@ -34,6 +36,7 @@ public class AuthorService : IAuthorService
         {
             throw new ArgumentException("Author already Exist");
         }
+        _logger.LogInformation($"Author with id {toAdd.Id} created successfully.");
         return toAdd;
     }
     public async Task<ResponseAuthorDTO?> UpdateAsync(int id, UpdateAuthorDTO author)
@@ -47,6 +50,7 @@ public class AuthorService : IAuthorService
         {
             throw new ArgumentException("Author already Exist");
         }
+        _logger.LogInformation($"Author with id {toUpdate?.Id} updated successfully.");
         return toUpdate;
     }
     public async Task<bool> DeleteAsync(int id)
@@ -59,6 +63,10 @@ public class AuthorService : IAuthorService
         catch (PostgresException e) when (e.SqlState == "23503")
         {
             throw new ArgumentException("Author is associated with a book and cannot be deleted.");
+        }
+        if (toDelete)
+        {
+            _logger.LogInformation($"Author with id {id} deleted successfully.");
         }
         return toDelete;
     }

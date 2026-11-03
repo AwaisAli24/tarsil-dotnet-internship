@@ -52,7 +52,7 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("@id", id);
 
         var reader = await command.ExecuteReaderAsync();
-        if (reader == null)
+        if (reader.HasRows == false)
         {
             return null;
         }
@@ -96,7 +96,7 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("isbn", book.Isbn);
         command.Parameters.AddWithValue("price", book.Price);
         command.Parameters.AddWithValue("total_copies", book.TotalCopies);
-        command.Parameters.AddWithValue("available_copiestle", book.AvailableCopies);
+        command.Parameters.AddWithValue("available_copies", book.AvailableCopies);
         command.Parameters.AddWithValue("published_year", book.PublishedYear);
         command.Parameters.AddWithValue("author_id", book.AuthorId);
         command.Parameters.AddWithValue("id", id);

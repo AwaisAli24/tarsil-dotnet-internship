@@ -1,0 +1,1466 @@
+{
+  "info": {
+    "_postman_id": "604d4984-66f8-4b77-b840-dcd95021fa9b",
+    "name": "LibraryApi",
+    "description": "LibraryApi Postman Collection \u2014 Run Order Guide\n==============================================\n\nIMPORTANT: Run the folders IN ORDER for chained variables to work:\n\n  1. Authors        \u2192 POST \"Create Author\" captures {{authorId}}\n  2. Books          \u2192 POST \"Create Book\" uses {{authorId}}, captures {{bookId}}\n  3. Error Scenarios \u2192 Validation/error edge-cases (safe to run standalone)\n  4. Cleanup        \u2192 DELETE Book first, then DELETE Author (FK order matters)\n\nCollection Variables set automatically:\n  {{baseUrl}}          \u2192 http://localhost:5194 (edit to match your environment)\n  {{authorId}}         \u2192 set by \"Create Author\" POST response\n  {{bookId}}           \u2192 set by \"Create Book\" POST response\n  {{conflictAuthorId}} \u2192 hardcoded to 1 (seeded author Dostoevsky who has books)\n  {{nonExistentId}}    \u2192 999999 (used for 404 tests)\n  {{invalidId}}        \u2192 0     (used for 400 tests)\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5194",
+      "type": "string",
+      "description": "Base URL of the running LibraryApi service"
+    },
+    {
+      "key": "authorId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Author\" test script. Run that request first before calling any request that uses {{authorId}}."
+    },
+    {
+      "key": "bookId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Book\" test script. Run that request first before calling any request that uses {{bookId}}."
+    },
+    {
+      "key": "nonExistentId",
+      "value": "999999",
+      "type": "string",
+      "description": "Non-existent ID used for testing 404 Not Found scenarios"
+    },
+    {
+      "key": "invalidId",
+      "value": "0",
+      "type": "string",
+      "description": "Invalid ID (<= 0) used for testing 400 Bad Request scenarios"
+    },
+    {
+      "key": "conflictAuthorId",
+      "value": "1",
+      "type": "string",
+      "description": "Author ID 1 (Fyodor Dostoevsky, seeded) who has existing books \u2014 triggers 409 Conflict on DELETE. Never updated dynamically."
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authors",
+      "description": "CRUD operations for Authors. Creates an author and persists {{authorId}} for downstream book creation.",
+      "item": [
+        {
+          "name": "Get All Authors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array of authors\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Authors have valid schema (id, name, country)\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    if (responseData.length > 0) {",
+                  "        const author = responseData[0];",
+                  "        pm.expect(author).to.have.property(\"id\");",
+                  "        pm.expect(author).to.have.property(\"name\");",
+                  "        pm.expect(author).to.have.property(\"country\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Get All Authors",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Fyodor Dostoevsky\",\n    \"country\": \"Russia\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Franz Kafka\",\n    \"country\": \"Austria-Hungary\"\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Albert Camus\",\n    \"country\": \"France\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create Author (Chains authorId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains created author details\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData).to.have.property(\"id\");",
+                  "    pm.expect(responseData.name).to.eql(\"George Orwell\");",
+                  "    pm.expect(responseData.country).to.eql(\"United Kingdom\");",
+                  "});",
+                  "",
+                  "pm.test(\"Chain Author ID to collection and environment variables\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"authorId\", responseData.id.toString());",
+                  "    pm.environment.set(\"authorId\", responseData.id.toString());",
+                  "    console.log(\"Saved authorId: \" + responseData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created - Author Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Location",
+                  "value": "http://localhost:5194/api/authors/4"
+                }
+              ],
+              "body": "{\n  \"id\": 4,\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Author by ID (Uses {{authorId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Guard: authorId must be set by running \"Create Author\" first",
+                  "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
+                  "if (!authorId) {",
+                  "    throw new Error(\"{{authorId}} is empty! Run the \"Create Author\" request first.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returned author matches requested authorId\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    const currentAuthorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
+                  "    if (currentAuthorId) {",
+                  "        pm.expect(responseData.id).to.eql(parseInt(currentAuthorId));",
+                  "    }",
+                  "    pm.expect(responseData).to.have.property(\"name\");",
+                  "    pm.expect(responseData).to.have.property(\"country\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Get Author by ID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors",
+                    "{{authorId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"id\": 4,\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Author by ID (Uses {{authorId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Guard: authorId must be set by running \"Create Author\" first",
+                  "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
+                  "if (!authorId) {",
+                  "    throw new Error(\"{{authorId}} is empty! Run the \"Create Author\" request first.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Author name was updated successfully\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData.name).to.eql(\"Eric Arthur Blair (George Orwell)\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Eric Arthur Blair (George Orwell)\",\n  \"country\": \"United Kingdom\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Update Author",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Eric Arthur Blair (George Orwell)\",\n  \"country\": \"United Kingdom\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors",
+                    "{{authorId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"id\": 4,\n  \"name\": \"Eric Arthur Blair (George Orwell)\",\n  \"country\": \"United Kingdom\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Books",
+      "description": "CRUD operations for Books. Consumes {{authorId}} to create a book and persists {{bookId}}.",
+      "item": [
+        {
+          "name": "Create Book (Uses {{authorId}}, Chains bookId)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate unique ISBN to avoid any duplicate constraint collisions",
+                  "const randomDigits = Math.floor(1000000000 + Math.random() * 9000000000);",
+                  "pm.variables.set(\"uniqueIsbn\", \"978\" + randomDigits);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains created book details\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData).to.have.property(\"id\");",
+                  "    pm.expect(responseData.title).to.eql(\"1984\");",
+                  "    const currentAuthorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
+                  "    if (currentAuthorId) {",
+                  "        pm.expect(responseData.authorId).to.eql(parseInt(currentAuthorId));",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test(\"Chain Book ID to collection and environment variables\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"bookId\", responseData.id.toString());",
+                  "    pm.environment.set(\"bookId\", responseData.id.toString());",
+                  "    console.log(\"Saved bookId: \" + responseData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created - Book Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/books",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Location",
+                  "value": "http://localhost:5194/api/books/9"
+                }
+              ],
+              "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Books (Filtered and Paginated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array of books\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Books have required fields\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    if (responseData.length > 0) {",
+                  "        const book = responseData[0];",
+                  "        pm.expect(book).to.have.property(\"id\");",
+                  "        pm.expect(book).to.have.property(\"title\");",
+                  "        pm.expect(book).to.have.property(\"isbn\");",
+                  "        pm.expect(book).to.have.property(\"price\");",
+                  "        pm.expect(book).to.have.property(\"authorId\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Get All Books",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/books?page=1&pageSize=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Crime and Punishment\",\n    \"isbn\": \"9780140449136\",\n    \"price\": 1200.0,\n    \"totalCopies\": 5,\n    \"availableCopies\": 3,\n    \"publishedYear\": 1866,\n    \"authorId\": 1\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Book by ID (Uses {{bookId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Guard: bookId must be set by running \"Create Book\" first",
+                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
+                  "if (!bookId) {",
+                  "    throw new Error(\"{{bookId}} is empty! Run the \"Create Book\" request first.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returned book matches requested bookId\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    const currentBookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
+                  "    if (currentBookId) {",
+                  "        pm.expect(responseData.id).to.eql(parseInt(currentBookId));",
+                  "    }",
+                  "    pm.expect(responseData).to.have.property(\"title\");",
+                  "    pm.expect(responseData).to.have.property(\"isbn\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Get Book by ID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/books/{{bookId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books",
+                    "{{bookId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Book by ID (Uses {{bookId}} and {{authorId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Guard: bookId must be set by running \"Create Book\" first",
+                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
+                  "if (!bookId) {",
+                  "    throw new Error(\"{{bookId}} is empty! Run the \"Create Book\" request first.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 19.99,\n  \"totalCopies\": 15,\n  \"availableCopies\": 15,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content - Update Book",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 19.99,\n  \"totalCopies\": 15,\n  \"availableCopies\": 15,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/books/{{bookId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books",
+                    "{{bookId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Error Scenarios (400, 404, 409)",
+      "description": "Explicit test cases validating 400 Bad Request, 404 Not Found, and 409 Conflict status codes and messages.",
+      "item": [
+        {
+          "name": "400 Bad Request - Invalid Author ID (<= 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates Id must be greater than 0\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Id must be greater than 0\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{invalidId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{invalidId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Invalid Author ID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors/0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors",
+                    "0"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "body": "Id must be greater than 0"
+            }
+          ]
+        },
+        {
+          "name": "400 Bad Request - Book Available Copies Exceed Total Copies",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000000000 + Math.random() * 9000000000);",
+                  "pm.variables.set(\"badCopiesIsbn\", \"978\" + rand);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Validation error specifies copies constraint\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Available copies should be less or equal than the total copies\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Overallocated Book\",\n  \"isbn\": \"{{badCopiesIsbn}}\",\n  \"price\": 10.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 10,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Available Copies > Total Copies",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Overallocated Book\",\n  \"isbn\": \"9789999999991\",\n  \"price\": 10.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 10,\n  \"publishedYear\": 2024,\n  \"authorId\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/books",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "body": "Available copies should be less or equal than the total copies."
+            }
+          ]
+        },
+        {
+          "name": "400 Bad Request - Book Price Zero or Negative",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000000000 + Math.random() * 9000000000);",
+                  "pm.variables.set(\"badPriceIsbn\", \"978\" + rand);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Validation error specifies price constraint\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.satisfy(function(val) {",
+                  "        return val.includes(\"Price should be greater than 0\") || val.includes(\"Price\");",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Zero Cost Book\",\n  \"isbn\": \"{{badPriceIsbn}}\",\n  \"price\": 0.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 5,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Price <= 0",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Zero Cost Book\",\n  \"isbn\": \"9789999999992\",\n  \"price\": 0.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 5,\n  \"publishedYear\": 2024,\n  \"authorId\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/books",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "body": "Price should be greater than 0."
+            }
+          ]
+        },
+        {
+          "name": "404 Not Found - Author by Non-Existent ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{nonExistentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{nonExistentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Author ID Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors/999999",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors",
+                    "999999"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "404 Not Found - Book by Non-Existent ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{nonExistentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{nonExistentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Book ID Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/books/999999",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books",
+                    "999999"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "404 Not Found - Delete Non-Existent Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{nonExistentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{nonExistentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Delete Non-Existent Book",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/books/999999",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books",
+                    "999999"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "409 Conflict - Delete Author With Associated Books",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "",
+                  "pm.test(\"Conflict error message explains foreign key restriction\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"cannot be deleted\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{conflictAuthorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{conflictAuthorId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Foreign Key Delete Author",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "body": "Author is associated with a book and cannot be deleted."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Cleanup",
+      "description": "Tears down test resources in proper foreign-key order: first deletes the book ({{bookId}}), then deletes the author ({{authorId}}).",
+      "item": [
+        {
+          "name": "Delete Book by ID (Uses {{bookId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Guard: bookId must be set by running \"Create Book\" first",
+                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
+                  "if (!bookId) {",
+                  "    throw new Error(\"{{bookId}} is empty! Run the \"Create Book\" request first.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "{{bookId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content - Delete Book",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/books/{{bookId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "books",
+                    "{{bookId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Delete Author by ID (Uses {{authorId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Guard: authorId must be set by running \"Create Author\" first",
+                  "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
+                  "if (!authorId) {",
+                  "    throw new Error(\"{{authorId}} is empty! Run the \"Create Author\" request first.\");",
+                  "}",
+                  "",
+                  "// Ensure the book is deleted first (FK constraint)",
+                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
+                  "if (bookId) {",
+                  "    console.warn(\"Warning: bookId is still set. Delete the book before deleting the author to avoid 409 Conflict.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors",
+                "{{authorId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content - Author Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "authors",
+                    "{{authorId}}"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

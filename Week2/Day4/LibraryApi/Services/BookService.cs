@@ -8,9 +8,11 @@ namespace LibraryApi.Services;
 public class BookService : IBookService
 {
     private readonly IBookRepository _repository;
-    public BookService(IBookRepository repository)
+    private readonly ILogger<BookService> _logger;
+    public BookService(IBookRepository repository, ILogger<BookService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
     public async Task<List<ResponseBookDTO>> GetAllAsync(int page, int pageSize, string? title = null, int? authorId = null, decimal? minPrice = null, decimal? maxPrice = null)
     {
@@ -48,6 +50,7 @@ public class BookService : IBookService
         {
             throw new ArgumentException("Author Id does not exist");
         }
+        _logger.LogInformation($"Book with id {toAdd.Id} created successfully.");
         return toAdd;
     }
     public async Task<ResponseBookDTO?> UpdateAsync(int id, UpdateBookDTO book)
@@ -73,12 +76,17 @@ public class BookService : IBookService
         {
             throw new ArgumentException("Author Id does not exist");
         }
+        _logger.LogInformation($"Book with id {toUpdate?.Id} updated successfully.");
         return toUpdate;
     }
     public async Task<bool> DeleteAsync(int id)
     {
 
         var toDelete = await _repository.DeleteAsync(id);
+        if (toDelete)
+        {
+            _logger.LogInformation($"Book with id {id} deleted successfully.");
+        }
         return toDelete;
     }
 }

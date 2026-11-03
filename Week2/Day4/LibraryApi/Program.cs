@@ -3,6 +3,8 @@ using LibraryApi.Repositories;
 using LibraryApi.Repositories.Interfaces;
 using LibraryApi.Services;
 using LibraryApi.Services.Interfaces;
+using LibraryApi.Exceptions;
+using Scalar.AspNetCore;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Configuration.AddUserSecrets<Program>();
 
@@ -37,12 +42,15 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 
 var migrator = app.Services.GetRequiredService<DatabaseMigrator>();
 await migrator.RunAsync();
 
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

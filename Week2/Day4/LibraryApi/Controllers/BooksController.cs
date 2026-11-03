@@ -45,6 +45,10 @@ public class BooksController : ControllerBase
         {
             return BadRequest(e.Message);
         }
+        catch (BadHttpRequestException e)
+        {
+            return BadRequest(e.Message);
+        }
         return CreatedAtAction(
             actionName: "GetById",
             routeValues: new { id = newBook.Id },
@@ -54,7 +58,7 @@ public class BooksController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateAsync(int id, UpdateBookDTO book)
     {
-        if (id > 0)
+        if (id <= 0)
         {
             return BadRequest("Id must be greater than 0");
         }

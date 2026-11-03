@@ -32,6 +32,10 @@ class AuthorRepository : IAuthorRepository
         """);
         command.Parameters.AddWithValue("@id", id);
         var reader = await command.ExecuteReaderAsync();
+        if (reader.HasRows == false)
+        {
+            return null;
+        }
         await reader.ReadAsync();
         return MaptoDTO(reader);
     }
@@ -73,7 +77,6 @@ class AuthorRepository : IAuthorRepository
         """);
         command.Parameters.AddWithValue("@id", id);
         var affectedRows = await command.ExecuteNonQueryAsync();
-        Console.WriteLine(affectedRows);
         return affectedRows > 0;
     }
     private ResponseAuthorDTO MaptoDTO(NpgsqlDataReader reader)
