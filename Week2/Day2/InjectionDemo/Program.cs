@@ -1,4 +1,4 @@
-﻿using Npgsql;
+using Npgsql;
 using Microsoft.Extensions.Configuration;
 
 var builder = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
@@ -21,7 +21,7 @@ var command = connection.CreateCommand();
 async Task FindMemberUnsafe(string email)
 {
     command.CommandText = $"""
-        SELECT * FROM emails
+        SELECT * FROM members
         WHERE email = '{email}';
     """;
     using var reader = await command.ExecuteReaderAsync();
@@ -35,8 +35,8 @@ async Task FindMemberUnsafe(string email)
 async Task FindMemberSafe(string email)
 {
     command.CommandText = """
-        SELECT * FROM emails
-        Where email = @email;
+        SELECT * FROM members
+        WHERE email = @email;
     """;
     command.Parameters.AddWithValue("@email", email);
     using var reader = await command.ExecuteReaderAsync();
@@ -49,4 +49,4 @@ async Task FindMemberSafe(string email)
 }
 
 await FindMemberUnsafe("' OR '1'='1");
-await FindMemberSafe("awais@mail.com");
+await FindMemberSafe("' OR '1'='1");

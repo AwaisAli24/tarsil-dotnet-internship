@@ -1,7 +1,16 @@
-# EF Core Migrations vs Manual Migration
+# Database Runner Notes
 
-I think of EF Core migrations as the smart and organized way. I update my model, run `Add-Migration`, and then `Update-Database`, and EF creates the database changes for me. It keeps a history of changes and makes it easier to move the project forward without losing track of what changed.
+This project does not rely on `dotnet ef` commands like `Add-Migration` or `Update-Database`. Instead, it uses a custom database runner that applies migration files directly from the app's `db/Migrations` folder.
 
-Manual migration, like I did in this project, is more hands-on. I had to create or update the database schema myself, usually with SQL or direct changes, and there was no automatic tracking from EF. That gives more control, but it is easier to forget a change or mismatch the database with the code.
+The runner does this in order:
 
-So basically: EF Core migrations are automated and versioned, while manual migration is more manual and depends on me being careful every step of the way.
+- checks whether the `schema_migrations` table exists
+- scans `db/Migrations/*.sql` files in sorted order
+- skips any migration whose filename is already recorded in `schema_migrations`
+- executes each unapplied SQL file inside a transaction
+- records the migration file name in `schema_migrations` after it succeeds
+- runs the seed script afterward to populate initial data
+
+That means the tracking is not "automatic EF tracking" in the usual sense, but it is still automatic tracking from the runner itself. The app records what has already been applied, so reruns do not re-run the same migration.
+
+So the pattern here is: SQL-first migrations, runner-managed execution, and explicit version tracking via `schema_migrations` rather than EF Core migration history.

@@ -34,14 +34,14 @@ public class DatabaseMigrator
             }
             await ApplyMigrationAsync(migrationPath);
         }
-
+        await SeedDatabaseAsync();
     }
     private string[] GetMigrationFilesAsync()
     {
         string migrationDirectory = Path.Combine(
             AppContext.BaseDirectory,
             "db",
-            "migrations"
+            "Migrations"
         );
 
         if (!Directory.Exists(migrationDirectory))
@@ -108,5 +108,25 @@ public class DatabaseMigrator
             throw;
         }
 
+    }
+    private async Task SeedDatabaseAsync()
+    {
+        string seedPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "db",
+            "seed.sql"
+        );
+
+        if (!File.Exists(seedPath))
+        {
+            throw new FileNotFoundException(
+                $"Seed file not found: {seedPath}"
+            );
+        }
+
+        string sql = await File.ReadAllTextAsync(seedPath);
+
+        await using var command = _datasource.CreateCommand(sql);
+        await command.ExecuteNonQueryAsync();
     }
 }

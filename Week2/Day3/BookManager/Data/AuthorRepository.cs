@@ -31,8 +31,9 @@ public class AuthorRepository : IAuthorRepository
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
-        using var reader = command.ExecuteReaderAsync();
-        return MapToObj(await reader);
+        var reader = await command.ExecuteReaderAsync();
+        await reader.ReadAsync();
+        return MapToObj(reader);
     }
     public async Task<int> CreateAsync(Author author)
     {
@@ -72,7 +73,7 @@ public class AuthorRepository : IAuthorRepository
         var affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
     }
-    Author MapToObj(NpgsqlDataReader reader)
+    private Author MapToObj(NpgsqlDataReader reader)
     {
         return new Author
         {

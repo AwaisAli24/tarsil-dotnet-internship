@@ -26,8 +26,14 @@ ON l.member_id=m.id and l.returned_at IS NULL;
 SELECT * FROM loans
 WHERE NOW()>due_date AND returned_at IS NULL;
 --8.
-SELECT title FROM books
-WHERE id IN (SELECT book_id FROM loans GROUP BY book_id ORDER BY count(book_id) DESC)
+SELECT title
+FROM books
+WHERE id IN (
+    SELECT book_id
+    FROM loans
+    GROUP BY book_id
+    ORDER BY count(book_id) DESC
+)
 LIMIT 3;
 --9.
 SELECT name FROM authors

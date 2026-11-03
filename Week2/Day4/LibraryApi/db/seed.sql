@@ -2,7 +2,8 @@ INSERT INTO authors (name, country)
 VALUES
     ('Fyodor Dostoevsky', 'Russia'),
     ('Franz Kafka', 'Austria-Hungary'),
-    ('Albert Camus', 'France');
+    ('Albert Camus', 'France')
+    ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO books (
     title,
@@ -21,7 +22,8 @@ VALUES
     ('The Trial', '9780805209990', 950.00, 4, 3, 1925, 2),
     ('The Stranger', '9780679720201', 900.00, 5, 4, 1942, 3),
     ('The Plague', '9780679720218', 1300.00, 4, 4, 1947, 3),
-    ('The Fall', '9780679720225', 850.00, 3, 3, 1956, 3);
+    ('The Fall', '9780679720225', 850.00, 3, 3, 1956, 3)
+    ON CONFLICT (isbn) DO NOTHING;
 
 INSERT INTO members (full_name, email, joined_on)
 VALUES
@@ -29,7 +31,8 @@ VALUES
     ('Sara Khan', 'sara@example.com', '2025-02-15'),
     ('Usman Malik', 'usman@example.com', '2025-03-20'),
     ('Ayesha Noor', 'ayesha@example.com', '2025-04-05'),
-    ('Hamza Tariq', 'hamza@example.com', '2025-05-12');
+    ('Hamza Tariq', 'hamza@example.com', '2025-05-12')
+    ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO loans (
     book_id,
@@ -80,4 +83,5 @@ VALUES
         NOW() - INTERVAL '2 days',
         NOW() + INTERVAL '12 days',
         NULL
-    );
+    )
+    ON CONFLICT (book_id, member_id, borrowed_at) DO NOTHING;

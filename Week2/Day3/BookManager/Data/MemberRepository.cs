@@ -31,8 +31,9 @@ public class MemberRepository : IMemberRepository
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
-        using var reader = command.ExecuteReaderAsync();
-        return MapToObj(await reader);
+        var reader = await command.ExecuteReaderAsync();
+        await reader.ReadAsync();
+        return MapToObj(reader);
     }
     public async Task<int> CreateAsync(Member member)
     {
@@ -75,7 +76,7 @@ public class MemberRepository : IMemberRepository
         var affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
     }
-    Member MapToObj(NpgsqlDataReader reader)
+    private Member MapToObj(NpgsqlDataReader reader)
     {
         return new Member
         {

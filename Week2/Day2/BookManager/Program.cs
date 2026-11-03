@@ -98,9 +98,9 @@ while (running)
                     Console.WriteLine("Invalid Input! Please Try again");
                     continue;
                 }
-                if (price < 0)
+                if (price <= 0)
                 {
-                    Console.WriteLine("Price cannot be negative.");
+                    Console.WriteLine("Price cannot be zero or negative.");
                     continue;
                 }
                 Console.WriteLine("Enter total copies:");

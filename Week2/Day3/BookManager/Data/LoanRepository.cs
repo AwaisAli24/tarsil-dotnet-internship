@@ -38,7 +38,7 @@ public class LoanRepository : ILoanRepository
             command.CommandText = """
             UPDATE books
             SET available_copies = available_copies - 1
-            WHERE id = @id;
+            WHERE id = @id AND available_copies > 0;
         """;
             command.Parameters.AddWithValue("@id", bookId);
 
@@ -56,6 +56,18 @@ public class LoanRepository : ILoanRepository
     }
     public async Task ReturnLoan(int loanId)
     {
+        using var isLoanExistsCommand = _dataSource.CreateCommand("""
+            SELECT EXISTS(
+                SELECT * FROM loans
+                WHERE id = @loanId
+            );
+        """);
+        isLoanExistsCommand.Parameters.AddWithValue("@loanId", loanId);
+        bool isLoanExists = Convert.ToBoolean(await isLoanExistsCommand.ExecuteScalarAsync());
+        if (!isLoanExists)
+        {
+            throw new Exception("This loan does not exist");
+        }
         using var isAlreadyReturendCommand = _dataSource.CreateCommand("""
             SELECT EXISTS(
                 SELECT * FROM loans
@@ -66,8 +78,7 @@ public class LoanRepository : ILoanRepository
         bool isAlreadyReturend = Convert.ToBoolean(await isAlreadyReturendCommand.ExecuteScalarAsync());
         if (isAlreadyReturend)
         {
-            Console.WriteLine("This loan is already returned");
-            return;
+            throw new Exception("This loan is already returned");
         }
 
         using var connection = await _dataSource.OpenConnectionAsync();

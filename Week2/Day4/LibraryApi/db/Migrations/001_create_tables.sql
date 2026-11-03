@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS loans, books, members, authors;
-
 CREATE TABLE authors (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(50) NOT NULL,

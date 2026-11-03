@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Configuration.AddUserSecrets<Program>();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -28,7 +29,7 @@ await host.StartAsync();
 
 using (var scope = host.Services.CreateScope())
 {
-    var repository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
+    // var repository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
 
     // var books = await repository.GetAllAsync();
 
@@ -63,12 +64,12 @@ using (var scope = host.Services.CreateScope())
     // Console.WriteLine(isDeleted ? "The book has been Deleted." : "Some error occured");
     // var books = await repository.SearchAsync( 1, 2,title:"the");
     // Explicitly naming the required parameters
-    var books = await repository.SearchAsync(2, 2, title: "the");
+    // var books = await repository.SearchAsync(2, 2, title: "the");
 
-    foreach (var book in books)
-    {
-        Console.WriteLine(book.Title);
-    }
+    // foreach (var book in books)
+    // {
+    //     Console.WriteLine(book.Title);
+    // }
 
 
 
@@ -121,7 +122,7 @@ using (var scope = host.Services.CreateScope())
     // Console.WriteLine(isUpdated ? "The member has been updated." : "Some error occured");
     // bool isDeleted = await repository.DeleteAsync(6);
     // Console.WriteLine(isDeleted ? "The member has been Deleted." : "Some error occured");
-    // var repository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
+    var repository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
 
     // await repository.BorrowAsync(1, 1, 2);
     // await repository.BorrowAsync(2, 2, 2);
@@ -134,7 +135,7 @@ using (var scope = host.Services.CreateScope())
     // await repository.ReturnLoan(23);
     // await repository.ReturnLoan(24);
     // await repository.ReturnLoan(25);
-    // await repository.ReturnLoan(17);
+    await repository.ReturnLoan(999);
 }
 
 await host.StopAsync();

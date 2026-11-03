@@ -32,8 +32,9 @@ public class BookRepository : IBookRepository
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
-        using var reader = command.ExecuteReaderAsync();
-        return MapToObj(await reader);
+        var reader = await command.ExecuteReaderAsync();
+        await reader.ReadAsync();
+        return MapToObj(reader);
     }
     public async Task<int> CreateAsync(Book book)
     {
@@ -57,12 +58,12 @@ public class BookRepository : IBookRepository
         }
         catch (PostgresException e) when (e.SqlState == "23505")
         {
-            Console.WriteLine("ISBN already exists.");
+            throw new Exception("ISBN already exists.");
 
         }
-        catch (PostgresException e) when (e.SqlState == "23503")
+        catch (PostgresException e) when (e.SqlState == "23001")
         {
-            Console.WriteLine("Author not Found");
+            throw new Exception("Author not Found");
         }
         return id;
     }
@@ -89,7 +90,19 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("@author_id", book.AuthorId);
         command.Parameters.AddWithValue("@id", id);
 
-        var affectedRows = await command.ExecuteNonQueryAsync();
+        int affectedRows;
+        try
+        {
+            affectedRows = await command.ExecuteNonQueryAsync();
+        }
+        catch (PostgresException e) when (e.SqlState == "23505")
+        {
+            throw new Exception("ISBN already exists.");
+        }
+        catch (PostgresException e) when (e.SqlState == "23001")
+        {
+            throw new Exception("Author not Found");
+        }
         return affectedRows == 1;
     }
     public async Task<bool> DeleteAsync(int id)
@@ -149,7 +162,7 @@ public class BookRepository : IBookRepository
 
         return books;
     }
-    Book MapToObj(NpgsqlDataReader reader)
+    private Book MapToObj(NpgsqlDataReader reader)
     {
         return new Book
         {
