@@ -42,7 +42,12 @@ public class LoanRepository : ILoanRepository
         """;
             command.Parameters.AddWithValue("@id", bookId);
 
-            await command.ExecuteNonQueryAsync();
+            var affectedRows = await command.ExecuteNonQueryAsync();
+
+            if (Convert.ToInt32(affectedRows) == 0)
+            {
+                throw new Exception("No available copies for this book.");
+            }
 
             await transaction.CommitAsync();
             Console.WriteLine($"Loan added with the id of ${loanId}");

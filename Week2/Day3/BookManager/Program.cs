@@ -128,14 +128,18 @@ using (var scope = host.Services.CreateScope())
     // await repository.BorrowAsync(2, 2, 2);
     // await repository.BorrowAsync(3, 3, 2);
     // await repository.BorrowAsync(4, 4, 2);
-    // await repository.BorrowAsync(5, 5, 2);
+    await repository.BorrowAsync(1, 5, 2);
+    // await repository.BorrowAsync(1, 5, 2);
+    // await repository.BorrowAsync(1, 5, 2);
+    // await repository.BorrowAsync(1, 5, 2);
+    // await repository.BorrowAsync(1, 5, 2);
 
 
     // await repository.ReturnLoan(22);
     // await repository.ReturnLoan(23);
     // await repository.ReturnLoan(24);
     // await repository.ReturnLoan(25);
-    await repository.ReturnLoan(999);
+    // await repository.ReturnLoan(999);
 }
 
 await host.StopAsync();
