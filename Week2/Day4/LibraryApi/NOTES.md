@@ -14,3 +14,5 @@ The runner does this in order:
 That means the tracking is not "automatic EF tracking" in the usual sense, but it is still automatic tracking from the runner itself. The app records what has already been applied, so reruns do not re-run the same migration.
 
 So the pattern here is: SQL-first migrations, runner-managed execution, and explicit version tracking via `schema_migrations` rather than EF Core migration history.
+
+In day4 deleting author already associated with the book raises sqlstat 23503(confirmed through debugging) but you said it raises 23001 i tried changing it to 23001 but then it throws a 500 error help me with this please.
