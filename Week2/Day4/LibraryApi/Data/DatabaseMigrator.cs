@@ -34,7 +34,7 @@ public class DatabaseMigrator
             }
             await ApplyMigrationAsync(migrationPath);
         }
-        await SeedDatabaseAsync();
+        // await SeedDatabaseAsync();
     }
     private string[] GetMigrationFilesAsync()
     {

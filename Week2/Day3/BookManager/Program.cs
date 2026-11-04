@@ -29,7 +29,7 @@ await host.StartAsync();
 
 using (var scope = host.Services.CreateScope())
 {
-    // var repository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
+    var repository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
 
     // var books = await repository.GetAllAsync();
 
@@ -37,18 +37,18 @@ using (var scope = host.Services.CreateScope())
     // {
     //     Console.WriteLine(book.Title);
     // }
-    // Book book = new Book
-    // {
-    //     Title = "The Great Gatsby",
-    //     Price = 1000,
-    //     AuthorId = 1,
-    //     PublishedYear = 1925,
-    //     TotalCopies = 100,
-    //     AvailableCopies = 100,
-    //     Isbn = "9780679720218"
-    // };
-    // var id = await repository.CreateAsync(book);
-    // Console.WriteLine($"Book generated with the Id of {id}");
+    Book book = new Book
+    {
+        Title = "The Great Gatsby",
+        Price = 1000,
+        AuthorId = 100,
+        PublishedYear = 1925,
+        TotalCopies = 100,
+        AvailableCopies = 100,
+        Isbn = "978067977620218"
+    };
+    var id = await repository.CreateAsync(book);
+    Console.WriteLine($"Book generated with the Id of {id}");
     // bool isUpdated = await repository.UpdateAsync(12, new Book
     // {
     //     Title = "The Great",
@@ -122,13 +122,13 @@ using (var scope = host.Services.CreateScope())
     // Console.WriteLine(isUpdated ? "The member has been updated." : "Some error occured");
     // bool isDeleted = await repository.DeleteAsync(6);
     // Console.WriteLine(isDeleted ? "The member has been Deleted." : "Some error occured");
-    var repository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
+    // var repository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
 
     // await repository.BorrowAsync(1, 1, 2);
     // await repository.BorrowAsync(2, 2, 2);
     // await repository.BorrowAsync(3, 3, 2);
     // await repository.BorrowAsync(4, 4, 2);
-    await repository.BorrowAsync(1, 5, 2);
+    // await repository.BorrowAsync(1, 5, 2);
     // await repository.BorrowAsync(1, 5, 2);
     // await repository.BorrowAsync(1, 5, 2);
     // await repository.BorrowAsync(1, 5, 2);
