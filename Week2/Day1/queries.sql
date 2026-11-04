@@ -32,7 +32,7 @@ SELECT b.title FROM books b
 JOIN loans l ON b.id=l.book_id
 GROUP BY b.title
 ORDER BY COUNT(book_id) DESC
-LIMIT 3
+LIMIT 3;
 --9. Authors whose average book price is above 1000
 SELECT name FROM authors
 Where id in (SELECT author_id from books GROUP BY author_id having avg(price)>1000);

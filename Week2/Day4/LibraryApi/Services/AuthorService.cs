@@ -60,7 +60,7 @@ public class AuthorService : IAuthorService
         {
             toDelete = await _repository.DeleteAsync(id);
         }
-        catch (PostgresException e) when (e.SqlState == "23503")
+        catch (PostgresException e) when (e.SqlState == "23503" || e.SqlState == "23001")
         {
             throw new ArgumentException("Author is associated with a book and cannot be deleted.");
         }
