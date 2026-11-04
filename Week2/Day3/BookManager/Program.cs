@@ -29,15 +29,19 @@ await host.StartAsync();
 
 using (var scope = host.Services.CreateScope())
 {
-    var repository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
+    // ── Book Repository ──────────────────────────────────────────────────
+    var bookRepository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
 
-    // var books = await repository.GetAllAsync();
+    var allBooks = await bookRepository.GetAllAsync();
+    foreach (var b in allBooks)
+    {
+        Console.WriteLine(b.Title);
+    }
 
-    // foreach (var book in books)
-    // {
-    //     Console.WriteLine(book.Title);
-    // }
-    Book book = new Book
+    var foundBook = await bookRepository.GetByIdAsync(999);
+    Console.WriteLine(foundBook?.Title ?? "Book not found");
+
+    var newBook = new Book
     {
         Title = "The Great Gatsby",
         Price = 1000,
@@ -47,99 +51,107 @@ using (var scope = host.Services.CreateScope())
         AvailableCopies = 100,
         Isbn = "978067977620218"
     };
-    var id = await repository.CreateAsync(book);
-    Console.WriteLine($"Book generated with the Id of {id}");
-    // bool isUpdated = await repository.UpdateAsync(12, new Book
-    // {
-    //     Title = "The Great",
-    //     Price = 1000,
-    //     AuthorId = 1,
-    //     PublishedYear = 1925,
-    //     TotalCopies = 100,
-    //     AvailableCopies = 100,
-    //     Isbn = "978-0743273565"
-    // });
-    // Console.WriteLine(isUpdated ? "The book has been updated." : "Some error occured");
-    // bool isDeleted = await repository.DeleteAsync(12);
-    // Console.WriteLine(isDeleted ? "The book has been Deleted." : "Some error occured");
-    // var books = await repository.SearchAsync( 1, 2,title:"the");
+    var newBookId = await bookRepository.CreateAsync(newBook);
+    Console.WriteLine($"Book generated with the Id of {newBookId}");
+
+    bool isBookUpdated = await bookRepository.UpdateAsync(12, new Book
+    {
+        Title = "The Great",
+        Price = 1000,
+        AuthorId = 1,
+        PublishedYear = 1925,
+        TotalCopies = 100,
+        AvailableCopies = 100,
+        Isbn = "978-0743273565"
+    });
+    Console.WriteLine(isBookUpdated ? "The book has been updated." : "Some error occured");
+
+    bool isBookDeleted = await bookRepository.DeleteAsync(12);
+    Console.WriteLine(isBookDeleted ? "The book has been Deleted." : "Some error occured");
+
+    var booksPage1 = await bookRepository.SearchAsync(1, 2, title: "the");
     // Explicitly naming the required parameters
-    // var books = await repository.SearchAsync(2, 2, title: "the");
+    var booksPage2 = await bookRepository.SearchAsync(2, 2, title: "the");
 
-    // foreach (var book in books)
-    // {
-    //     Console.WriteLine(book.Title);
-    // }
+    foreach (var b in booksPage2)
+    {
+        Console.WriteLine(b.Title);
+    }
 
+    // ── Author Repository ────────────────────────────────────────────────
+    var authorRepository = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
+    var authors = await authorRepository.GetAllAsync();
+    foreach (var a in authors)
+    {
+        Console.WriteLine(a.Name);
+    }
 
+    var newAuthor = new Author
+    {
+        Name = "George Orwell",
+        Country = "England"
+    };
+    int newAuthorId = await authorRepository.CreateAsync(newAuthor);
+    Console.WriteLine($"Author added with the id {newAuthorId}");
 
+    var updatedAuthor = new Author
+    {
+        Name = "George",
+        Country = "England"
+    };
+    bool isAuthorUpdated = await authorRepository.UpdateAsync(4, updatedAuthor);
+    Console.WriteLine(isAuthorUpdated ? "The author has been updated." : "Some error occured");
 
-    // var repository = scope.ServiceProvider.GetRequiredService<IAuthorRepository>();
-    // var authors = await repository.GetAllAsync();
-    // foreach (var author in authors)
-    // {
-    //     Console.WriteLine(author.Name);
-    // }
-    // Author author = new Author
-    // {
-    //     Name = "George Orwell",
-    //     Country = "England"
-    // };
-    // int id = await repository.CreateAsync(author);
-    // Console.WriteLine($"Author added with the id {id}");
-    // Author author = new Author
-    // {
-    //     Name = "George",
-    //     Country = "England"
-    // };
-    // bool isUpdated = await repository.UpdateAsync(4, author);
-    // Console.WriteLine(isUpdated ? "The author has been updated." : "Some error occured");
+    bool isAuthorDeleted = await authorRepository.DeleteAsync(4);
+    Console.WriteLine(isAuthorDeleted ? "The author has been Deleted." : "Some error occured");
 
-    // bool isDeleted = await repository.DeleteAsync(4);
-    // Console.WriteLine(isDeleted ? "The author has been Deleted." : "Some error occured");
+    // ── Member Repository ────────────────────────────────────────────────
+    var memberRepository = scope.ServiceProvider.GetRequiredService<IMemberRepository>();
+    var members = await memberRepository.GetAllAsync();
+    foreach (var m in members)
+    {
+        Console.WriteLine(m.FullName);
+    }
 
-    // var repository = scope.ServiceProvider.GetRequiredService<IMemberRepository>();
-    // var members = await repository.GetAllAsync();
-    // foreach (var member in members)
-    // {
-    //     Console.WriteLine(member.FullName);
-    // }
-    // Member member = new Member
-    // {
-    //     FullName = "Awais Ali",
-    //     Email = "awais@mail.com",
-    //     JoinedOn = DateOnly.FromDateTime(DateTime.Now)
-    // };
-    // int id = await repository.CreateAsync(member);
-    // Console.WriteLine($"Member Inserted with Id {id}");
-    // Member member = new Member
-    // {
-    //     FullName = "Awais Ali",
-    //     Email = "awaisali@mail.com",
-    //     JoinedOn = DateOnly.FromDateTime(DateTime.Now)
-    // };
-    // bool isUpdated = await repository.UpdateAsync(6, member);
-    // Console.WriteLine(isUpdated ? "The member has been updated." : "Some error occured");
-    // bool isDeleted = await repository.DeleteAsync(6);
-    // Console.WriteLine(isDeleted ? "The member has been Deleted." : "Some error occured");
-    // var repository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
+    var newMember = new Member
+    {
+        FullName = "Awais Ali",
+        Email = "awais@mail.com",
+        JoinedOn = DateOnly.FromDateTime(DateTime.Now)
+    };
+    int newMemberId = await memberRepository.CreateAsync(newMember);
+    Console.WriteLine($"Member Inserted with Id {newMemberId}");
 
-    // await repository.BorrowAsync(1, 1, 2);
-    // await repository.BorrowAsync(2, 2, 2);
-    // await repository.BorrowAsync(3, 3, 2);
-    // await repository.BorrowAsync(4, 4, 2);
-    // await repository.BorrowAsync(1, 5, 2);
-    // await repository.BorrowAsync(1, 5, 2);
-    // await repository.BorrowAsync(1, 5, 2);
-    // await repository.BorrowAsync(1, 5, 2);
-    // await repository.BorrowAsync(1, 5, 2);
+    var updatedMember = new Member
+    {
+        FullName = "Awais Ali",
+        Email = "awaisali@mail.com",
+        JoinedOn = DateOnly.FromDateTime(DateTime.Now)
+    };
+    bool isMemberUpdated = await memberRepository.UpdateAsync(6, updatedMember);
+    Console.WriteLine(isMemberUpdated ? "The member has been updated." : "Some error occured");
 
+    bool isMemberDeleted = await memberRepository.DeleteAsync(6);
+    Console.WriteLine(isMemberDeleted ? "The member has been Deleted." : "Some error occured");
 
-    // await repository.ReturnLoan(22);
-    // await repository.ReturnLoan(23);
-    // await repository.ReturnLoan(24);
-    // await repository.ReturnLoan(25);
-    // await repository.ReturnLoan(999);
+    // ── Loan Repository ──────────────────────────────────────────────────
+    var loanRepository = scope.ServiceProvider.GetRequiredService<ILoanRepository>();
+
+    await loanRepository.BorrowAsync(1, 1, 2);
+    await loanRepository.BorrowAsync(2, 2, 2);
+    await loanRepository.BorrowAsync(3, 3, 2);
+    await loanRepository.BorrowAsync(4, 4, 2);
+    await loanRepository.BorrowAsync(1, 5, 2);
+    await loanRepository.BorrowAsync(1, 5, 2);
+    await loanRepository.BorrowAsync(1, 5, 2);
+    await loanRepository.BorrowAsync(1, 5, 2);
+    await loanRepository.BorrowAsync(1, 5, 2);
+
+    await loanRepository.ReturnLoan(22);
+    await loanRepository.ReturnLoan(23);
+    await loanRepository.ReturnLoan(24);
+    await loanRepository.ReturnLoan(25);
+    await loanRepository.ReturnLoan(999);
 }
 
 await host.StopAsync();

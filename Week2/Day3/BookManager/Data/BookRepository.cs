@@ -32,7 +32,11 @@ public class BookRepository : IBookRepository
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
+        if (reader.HasRows == false)
+        {
+            return null;
+        }
         await reader.ReadAsync();
         return MapToObj(reader);
     }

@@ -1,49 +1,47 @@
--- 1.
+-- 1. All books with their author's name
 SELECT b.*, a.name
 FROM books b
 JOIN authors a ON b.author_id = a.id;
--- 2.
+-- 2. Books priced between 500 and 1500, cheapest first
 SELECT * FROM books
 WHERE price >= 500 and price <= 1500
 ORDER BY price asc;
---3.
+--3. Search books by title, case-insensitive
 SELECT * FROM books
 where title ILIKE '%the%';
---4.
+--4. Page 2 of books, 3 per page
 SELECT * FROM books
 ORDER BY id ASC
 OFFSET 3 LIMIT 3;
---5.
+--5. Number of books per author, including authors with 0 books
 SELECT a.id,a.name,count(b.id) FROM authors a
 LEFT JOIN books b
 ON a.id= b.author_id
 GROUP BY a.id;
---6.
+--6. Members who currently have a book
 SELECT m.full_name FROM members m
 JOIN loans l
 ON l.member_id=m.id and l.returned_at IS NULL;
---7.
-SELECT * FROM loans
+--7. Overdue loans: not returned and past due date, with member and book names
+SELECT l.*,m.full_name AS member_name,b.title as book_name FROM loans l
+JOIN members m ON l.member_id = m.id
+JOIN books b ON l.book_id = b.id
 WHERE NOW()>due_date AND returned_at IS NULL;
---8.
-SELECT title
-FROM books
-WHERE id IN (
-    SELECT book_id
-    FROM loans
-    GROUP BY book_id
-    ORDER BY count(book_id) DESC
-)
-LIMIT 3;
---9.
+--8. The 3 most borrowed books
+SELECT b.title FROM books b
+JOIN loans l ON b.id=l.book_id
+GROUP BY b.title
+ORDER BY COUNT(book_id) DESC
+LIMIT 3
+--9. Authors whose average book price is above 1000
 SELECT name FROM authors
 Where id in (SELECT author_id from books GROUP BY author_id having avg(price)>1000);
--- 10.
+-- 10. Does member 2 have any active loan? 
 SELECT EXISTS(
 	SELECT * FROM loans
 	WHERE member_id=2 and returned_at IS null
 );
--- 11.
+-- 11. Insert a book and get its new id back
 INSERT INTO books (title,isbn,price,total_copies,available_copies,published_year,author_id)
 VALUES
     (

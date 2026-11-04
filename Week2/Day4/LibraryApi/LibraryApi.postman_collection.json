@@ -1,52 +1,14 @@
 {
   "info": {
-    "_postman_id": "604d4984-66f8-4b77-b840-dcd95021fa9b",
+    "_postman_id": "01cdb4e6-f898-4bdc-9daa-01131aec8746",
     "name": "LibraryApi",
-    "description": "LibraryApi Postman Collection \u2014 Run Order Guide\n==============================================\n\nIMPORTANT: Run the folders IN ORDER for chained variables to work:\n\n  1. Authors        \u2192 POST \"Create Author\" captures {{authorId}}\n  2. Books          \u2192 POST \"Create Book\" uses {{authorId}}, captures {{bookId}}\n  3. Error Scenarios \u2192 Validation/error edge-cases (safe to run standalone)\n  4. Cleanup        \u2192 DELETE Book first, then DELETE Author (FK order matters)\n\nCollection Variables set automatically:\n  {{baseUrl}}          \u2192 http://localhost:5194 (edit to match your environment)\n  {{authorId}}         \u2192 set by \"Create Author\" POST response\n  {{bookId}}           \u2192 set by \"Create Book\" POST response\n  {{conflictAuthorId}} \u2192 hardcoded to 1 (seeded author Dostoevsky who has books)\n  {{nonExistentId}}    \u2192 999999 (used for 404 tests)\n  {{invalidId}}        \u2192 0     (used for 400 tests)\n",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "description": "LibraryApi Postman Collection — Run Order Guide\n==============================================\n\nIMPORTANT: Run the folders IN ORDER for chained variables to work:\n\n  1. Authors        → POST \"Create Author\" captures {{authorId}}\n  2. Books          → POST \"Create Book\" uses {{authorId}}, captures {{bookId}}\n  3. Error Scenarios → Validation/error edge-cases (safe to run standalone)\n  4. Cleanup        → DELETE Book first, then DELETE Author (FK order matters)\n\nCollection Variables set automatically:\n  {{baseUrl}}          → http://localhost:5194 (edit to match your environment)\n  {{authorId}}         → set by \"Create Author\" POST response\n  {{bookId}}           → set by \"Create Book\" POST response\n  {{conflictAuthorId}} → hardcoded to 1 (seeded author Dostoevsky who has books)\n  {{nonExistentId}}    → 999999 (used for 404 tests)\n  {{invalidId}}        → 0     (used for 400 tests)\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38239216"
   },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:5194",
-      "type": "string",
-      "description": "Base URL of the running LibraryApi service"
-    },
-    {
-      "key": "authorId",
-      "value": "",
-      "type": "string",
-      "description": "Dynamically set by \"Create Author\" test script. Run that request first before calling any request that uses {{authorId}}."
-    },
-    {
-      "key": "bookId",
-      "value": "",
-      "type": "string",
-      "description": "Dynamically set by \"Create Book\" test script. Run that request first before calling any request that uses {{bookId}}."
-    },
-    {
-      "key": "nonExistentId",
-      "value": "999999",
-      "type": "string",
-      "description": "Non-existent ID used for testing 404 Not Found scenarios"
-    },
-    {
-      "key": "invalidId",
-      "value": "0",
-      "type": "string",
-      "description": "Invalid ID (<= 0) used for testing 400 Bad Request scenarios"
-    },
-    {
-      "key": "conflictAuthorId",
-      "value": "1",
-      "type": "string",
-      "description": "Author ID 1 (Fyodor Dostoevsky, seeded) who has existing books \u2014 triggers 409 Conflict on DELETE. Never updated dynamically."
-    }
-  ],
   "item": [
     {
       "name": "1. Authors",
-      "description": "CRUD operations for Authors. Creates an author and persists {{authorId}} for downstream book creation.",
       "item": [
         {
           "name": "Get All Authors",
@@ -118,6 +80,7 @@
                   "value": "application/json; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Fyodor Dostoevsky\",\n    \"country\": \"Russia\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Franz Kafka\",\n    \"country\": \"Austria-Hungary\"\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Albert Camus\",\n    \"country\": \"France\"\n  }\n]"
             }
           ]
@@ -161,6 +124,15 @@
                 "type": "text"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/authors",
               "host": [
@@ -170,15 +142,6 @@
                 "api",
                 "authors"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": [
@@ -220,6 +183,7 @@
                   "value": "http://localhost:5194/api/authors/4"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"id\": 4,\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}"
             }
           ]
@@ -230,20 +194,21 @@
             {
               "listen": "prerequest",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "// Guard: authorId must be set by running \"Create Author\" first",
                   "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
                   "if (!authorId) {",
-                  "    throw new Error(\"{{authorId}} is empty! Run the \"Create Author\" request first.\");",
+                  "    throw new Error(\"{{authorId}} is empty! Run the 'Create Author' request first.\");",
                   "}"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status code is 200 OK\", function () {",
                   "    pm.response.to.have.status(200);",
@@ -258,7 +223,10 @@
                   "    pm.expect(responseData).to.have.property(\"name\");",
                   "    pm.expect(responseData).to.have.property(\"country\");",
                   "});"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -304,6 +272,7 @@
                   "value": "application/json; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"id\": 4,\n  \"name\": \"George Orwell\",\n  \"country\": \"United Kingdom\"\n}"
             }
           ]
@@ -314,20 +283,21 @@
             {
               "listen": "prerequest",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "// Guard: authorId must be set by running \"Create Author\" first",
                   "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
                   "if (!authorId) {",
-                  "    throw new Error(\"{{authorId}} is empty! Run the \"Create Author\" request first.\");",
+                  "    throw new Error(\"{{authorId}} is empty! Run the 'Create Author' request first.\");",
                   "}"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status code is 200 OK\", function () {",
                   "    pm.response.to.have.status(200);",
@@ -337,7 +307,10 @@
                   "    const responseData = pm.response.json();",
                   "    pm.expect(responseData.name).to.eql(\"Eric Arthur Blair (George Orwell)\");",
                   "});"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -350,6 +323,15 @@
                 "type": "text"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Eric Arthur Blair (George Orwell)\",\n  \"country\": \"United Kingdom\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/authors/{{authorId}}",
               "host": [
@@ -360,15 +342,6 @@
                 "authors",
                 "{{authorId}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Eric Arthur Blair (George Orwell)\",\n  \"country\": \"United Kingdom\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": [
@@ -407,15 +380,16 @@
                   "value": "application/json; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"id\": 4,\n  \"name\": \"Eric Arthur Blair (George Orwell)\",\n  \"country\": \"United Kingdom\"\n}"
             }
           ]
         }
-      ]
+      ],
+      "description": "CRUD operations for Authors. Creates an author and persists {{authorId}} for downstream book creation."
     },
     {
       "name": "2. Books",
-      "description": "CRUD operations for Books. Consumes {{authorId}} to create a book and persists {{bookId}}.",
       "item": [
         {
           "name": "Create Book (Uses {{authorId}}, Chains bookId)",
@@ -470,6 +444,15 @@
                 "type": "text"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/books",
               "host": [
@@ -479,15 +462,6 @@
                 "api",
                 "books"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": [
@@ -529,6 +503,7 @@
                   "value": "http://localhost:5194/api/books/9"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
             }
           ]
@@ -625,6 +600,7 @@
                   "value": "application/json; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "[\n  {\n    \"id\": 1,\n    \"title\": \"Crime and Punishment\",\n    \"isbn\": \"9780140449136\",\n    \"price\": 1200.0,\n    \"totalCopies\": 5,\n    \"availableCopies\": 3,\n    \"publishedYear\": 1866,\n    \"authorId\": 1\n  }\n]"
             }
           ]
@@ -635,20 +611,21 @@
             {
               "listen": "prerequest",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "// Guard: bookId must be set by running \"Create Book\" first",
                   "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
                   "if (!bookId) {",
-                  "    throw new Error(\"{{bookId}} is empty! Run the \"Create Book\" request first.\");",
+                  "    throw new Error(\"{{bookId}} is empty! Run the 'Create Book' request first.\");",
                   "}"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status code is 200 OK\", function () {",
                   "    pm.response.to.have.status(200);",
@@ -663,7 +640,10 @@
                   "    pm.expect(responseData).to.have.property(\"title\");",
                   "    pm.expect(responseData).to.have.property(\"isbn\");",
                   "});"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -709,6 +689,7 @@
                   "value": "application/json; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
             }
           ]
@@ -719,25 +700,29 @@
             {
               "listen": "prerequest",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "// Guard: bookId must be set by running \"Create Book\" first",
                   "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
                   "if (!bookId) {",
-                  "    throw new Error(\"{{bookId}} is empty! Run the \"Create Book\" request first.\");",
+                  "    throw new Error(\"{{bookId}} is empty! Run the 'Create Book' request first.\");",
                   "}"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status code is 204 No Content\", function () {",
                   "    pm.response.to.have.status(204);",
                   "});"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -750,6 +735,15 @@
                 "type": "text"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 19.99,\n  \"totalCopies\": 15,\n  \"availableCopies\": 15,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/books/{{bookId}}",
               "host": [
@@ -760,15 +754,6 @@
                 "books",
                 "{{bookId}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 19.99,\n  \"totalCopies\": 15,\n  \"availableCopies\": 15,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": [
@@ -802,15 +787,16 @@
               "code": 204,
               "_postman_previewlanguage": "text",
               "header": [],
+              "cookie": [],
               "body": ""
             }
           ]
         }
-      ]
+      ],
+      "description": "CRUD operations for Books. Consumes {{authorId}} to create a book and persists {{bookId}}."
     },
     {
       "name": "3. Error Scenarios (400, 404, 409)",
-      "description": "Explicit test cases validating 400 Bad Request, 404 Not Found, and 409 Conflict status codes and messages.",
       "item": [
         {
           "name": "400 Bad Request - Invalid Author ID (<= 0)",
@@ -874,6 +860,7 @@
                   "value": "text/plain; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "Id must be greater than 0"
             }
           ]
@@ -917,6 +904,15 @@
                 "type": "text"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Overallocated Book\",\n  \"isbn\": \"{{badCopiesIsbn}}\",\n  \"price\": 10.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 10,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/books",
               "host": [
@@ -926,15 +922,6 @@
                 "api",
                 "books"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Overallocated Book\",\n  \"isbn\": \"{{badCopiesIsbn}}\",\n  \"price\": 10.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 10,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{authorId}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": [
@@ -972,6 +959,7 @@
                   "value": "text/plain; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "Available copies should be less or equal than the total copies."
             }
           ]
@@ -1017,6 +1005,15 @@
                 "type": "text"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Zero Cost Book\",\n  \"isbn\": \"{{badPriceIsbn}}\",\n  \"price\": 0.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 5,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/books",
               "host": [
@@ -1026,15 +1023,6 @@
                 "api",
                 "books"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Zero Cost Book\",\n  \"isbn\": \"{{badPriceIsbn}}\",\n  \"price\": 0.0,\n  \"totalCopies\": 5,\n  \"availableCopies\": 5,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{authorId}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": [
@@ -1072,6 +1060,7 @@
                   "value": "text/plain; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "Price should be greater than 0."
             }
           ]
@@ -1128,6 +1117,7 @@
               "code": 404,
               "_postman_previewlanguage": "text",
               "header": [],
+              "cookie": [],
               "body": ""
             }
           ]
@@ -1184,6 +1174,7 @@
               "code": 404,
               "_postman_previewlanguage": "text",
               "header": [],
+              "cookie": [],
               "body": ""
             }
           ]
@@ -1240,6 +1231,7 @@
               "code": 404,
               "_postman_previewlanguage": "text",
               "header": [],
+              "cookie": [],
               "body": ""
             }
           ]
@@ -1306,15 +1298,16 @@
                   "value": "text/plain; charset=utf-8"
                 }
               ],
+              "cookie": [],
               "body": "Author is associated with a book and cannot be deleted."
             }
           ]
         }
-      ]
+      ],
+      "description": "Explicit test cases validating 400 Bad Request, 404 Not Found, and 409 Conflict status codes and messages."
     },
     {
       "name": "4. Cleanup",
-      "description": "Tears down test resources in proper foreign-key order: first deletes the book ({{bookId}}), then deletes the author ({{authorId}}).",
       "item": [
         {
           "name": "Delete Book by ID (Uses {{bookId}})",
@@ -1322,25 +1315,29 @@
             {
               "listen": "prerequest",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "// Guard: bookId must be set by running \"Create Book\" first",
                   "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
                   "if (!bookId) {",
-                  "    throw new Error(\"{{bookId}} is empty! Run the \"Create Book\" request first.\");",
+                  "    throw new Error(\"{{bookId}} is empty! Run the 'Create Book' request first.\");",
                   "}"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status code is 204 No Content\", function () {",
                   "    pm.response.to.have.status(204);",
                   "});"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1381,6 +1378,7 @@
               "code": 204,
               "_postman_previewlanguage": "text",
               "header": [],
+              "cookie": [],
               "body": ""
             }
           ]
@@ -1391,12 +1389,11 @@
             {
               "listen": "prerequest",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "// Guard: authorId must be set by running \"Create Author\" first",
                   "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
                   "if (!authorId) {",
-                  "    throw new Error(\"{{authorId}} is empty! Run the \"Create Author\" request first.\");",
+                  "    throw new Error(\"{{authorId}} is empty! Run the 'Create Author' request first.\");",
                   "}",
                   "",
                   "// Ensure the book is deleted first (FK constraint)",
@@ -1404,18 +1401,23 @@
                   "if (bookId) {",
                   "    console.warn(\"Warning: bookId is still set. Delete the book before deleting the author to avoid 409 Conflict.\");",
                   "}"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status code is 204 No Content\", function () {",
                   "    pm.response.to.have.status(204);",
                   "});"
-                ]
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1456,11 +1458,51 @@
               "code": 204,
               "_postman_previewlanguage": "text",
               "header": [],
+              "cookie": [],
               "body": ""
             }
           ]
         }
-      ]
+      ],
+      "description": "Tears down test resources in proper foreign-key order: first deletes the book ({{bookId}}), then deletes the author ({{authorId}})."
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5194",
+      "type": "string",
+      "description": "Base URL of the running LibraryApi service"
+    },
+    {
+      "key": "authorId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Author\" test script. Run that request first before calling any request that uses {{authorId}}."
+    },
+    {
+      "key": "bookId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Book\" test script. Run that request first before calling any request that uses {{bookId}}."
+    },
+    {
+      "key": "nonExistentId",
+      "value": "999999",
+      "type": "string",
+      "description": "Non-existent ID used for testing 404 Not Found scenarios"
+    },
+    {
+      "key": "invalidId",
+      "value": "0",
+      "type": "string",
+      "description": "Invalid ID (<= 0) used for testing 400 Bad Request scenarios"
+    },
+    {
+      "key": "conflictAuthorId",
+      "value": "1",
+      "type": "string",
+      "description": "Author ID 1 (Fyodor Dostoevsky, seeded) who has existing books — triggers 409 Conflict on DELETE. Never updated dynamically."
     }
   ]
 }

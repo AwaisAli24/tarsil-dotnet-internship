@@ -52,7 +52,7 @@ class AuthorRepository : IAuthorRepository
         await reader.ReadAsync();
         return MaptoDTO(reader);
     }
-    public async Task<ResponseAuthorDTO> UpdateAsync(int id, UpdateAuthorDTO author)
+    public async Task<ResponseAuthorDTO?> UpdateAsync(int id, UpdateAuthorDTO author)
     {
         using var command = _source.CreateCommand("""
             UPDATE authors
@@ -66,6 +66,10 @@ class AuthorRepository : IAuthorRepository
         command.Parameters.AddWithValue("@country", author.Country);
         command.Parameters.AddWithValue("@id", id);
         using var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows)
+        {
+            return null;
+        }
         await reader.ReadAsync();
         return MaptoDTO(reader);
     }

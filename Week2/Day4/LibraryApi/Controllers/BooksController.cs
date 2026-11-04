@@ -16,6 +16,18 @@ public class BooksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<ResponseBookDTO>>> GetAllAsync([FromQuery] string? title, [FromQuery] int? authorId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
+        if (page.HasValue && page <= 0)
+        {
+            return BadRequest("Page must be greater than 0");
+        }
+        if (pageSize.HasValue && pageSize <= 0)
+        {
+            return BadRequest("Page size must be greater than 0");
+        }
+        if (pageSize.HasValue && pageSize > 40)
+        {
+            return BadRequest("Page size must be less than or equal to 40");
+        }
         var books = await _service.GetAllAsync(page ?? 1, pageSize ?? 10, title, authorId, minPrice, maxPrice);
         return Ok(books);
     }
