@@ -16,7 +16,7 @@ class AuthorRepository : IAuthorRepository
         using var command = _source.CreateCommand("""
             SELECT * FROM authors;
         """);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         List<ResponseAuthorDTO> authors = new List<ResponseAuthorDTO>();
         while (await reader.ReadAsync())
         {
@@ -26,12 +26,12 @@ class AuthorRepository : IAuthorRepository
     }
     public async Task<ResponseAuthorDTO?> GetByIdAsync(int id)
     {
-        var command = _source.CreateCommand("""
+        using var command = _source.CreateCommand("""
             SELECT * FROM authors
             WHERE id = @id
         """);
         command.Parameters.AddWithValue("@id", id);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         if (reader.HasRows == false)
         {
             return null;
@@ -41,20 +41,20 @@ class AuthorRepository : IAuthorRepository
     }
     public async Task<ResponseAuthorDTO> CreateAsync(CreateAuthorDTO author)
     {
-        var command = _source.CreateCommand("""
+        using var command = _source.CreateCommand("""
             INSERT INTO authors(name,country)
             VALUES(@name,@country)
             RETURNING *;
         """);
         command.Parameters.AddWithValue("@name", author.Name);
         command.Parameters.AddWithValue("@country", author.Country);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         await reader.ReadAsync();
         return MaptoDTO(reader);
     }
     public async Task<ResponseAuthorDTO> UpdateAsync(int id, UpdateAuthorDTO author)
     {
-        var command = _source.CreateCommand("""
+        using var command = _source.CreateCommand("""
             UPDATE authors
             SET 
             name = @name,
@@ -65,13 +65,13 @@ class AuthorRepository : IAuthorRepository
         command.Parameters.AddWithValue("@name", author.Name);
         command.Parameters.AddWithValue("@country", author.Country);
         command.Parameters.AddWithValue("@id", id);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         await reader.ReadAsync();
         return MaptoDTO(reader);
     }
     public async Task<bool> DeleteAsync(int id)
     {
-        var command = _source.CreateCommand("""
+        using var command = _source.CreateCommand("""
             DELETE FROM authors
             WHERE id = @id;
         """);

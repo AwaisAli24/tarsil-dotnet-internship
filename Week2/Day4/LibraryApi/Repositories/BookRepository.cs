@@ -51,7 +51,7 @@ public class BookRepository : IBookRepository
         """);
         command.Parameters.AddWithValue("@id", id);
 
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         if (reader.HasRows == false)
         {
             return null;
@@ -73,7 +73,7 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("available_copies", book.AvailableCopies);
         command.Parameters.AddWithValue("published_year", book.PublishedYear);
         command.Parameters.AddWithValue("author_id", book.AuthorId);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         await reader.ReadAsync();
         return MapToDTO(reader);
     }
@@ -100,7 +100,7 @@ public class BookRepository : IBookRepository
         command.Parameters.AddWithValue("published_year", book.PublishedYear);
         command.Parameters.AddWithValue("author_id", book.AuthorId);
         command.Parameters.AddWithValue("id", id);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         if (!reader.HasRows)
         {
             return null;
@@ -111,7 +111,7 @@ public class BookRepository : IBookRepository
     }
     public async Task<bool> DeleteAsync(int id)
     {
-        var command = _source.CreateCommand("""
+        using var command = _source.CreateCommand("""
             DELETE FROM books
             WHERE id = @id;
         """);
