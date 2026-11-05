@@ -22,11 +22,36 @@ public class LoansController : ControllerBase
         {
             id = await _service.BorrowAsync(loan);
         }
-        catch
+        catch (InvalidOperationException e)
         {
-            Console.WriteLine("error occured");
-            return BadRequest();
+            return Conflict(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
         }
         return Ok($"Loan created with id {id}");
+    }
+    [HttpPost("{id:int}/return")]
+    public async Task<ActionResult> ReturnAsync(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest("Id should be greater than 0.");
+        }
+        try
+        {
+
+            await _service.ReturnAsync(id);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
+        return Ok($"Loan with id {id} has been returned successfully.");
     }
 }

@@ -20,7 +20,7 @@ public class AuthorsController : ControllerBase
         return Ok(authors);
     }
     [HttpGet("{id:int}", Name = "GetAuthorById")]
-    public async Task<ActionResult<ResponseAuthorDTO?>> GetByIdAsync(int id)
+    public async Task<ActionResult<ResponseAuthorDTOWithBooks?>> GetByIdAsync(int id)
     {
         if (id <= 0)
         {

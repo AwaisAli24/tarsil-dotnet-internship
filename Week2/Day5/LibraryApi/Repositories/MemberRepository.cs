@@ -77,6 +77,12 @@ public class MemberRepository : IMemberRepository
         int affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
     }
+    // public async Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id,bool? isActive)
+    // {
+    //     using var command = _source.CreateCommand("""
+
+    //     """);
+    // }
     private ResponseMemberDTO MapToDTO(NpgsqlDataReader reader)
     {
         return new ResponseMemberDTO

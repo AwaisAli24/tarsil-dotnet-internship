@@ -1,3 +1,5 @@
+using LibraryApi.Models;
+
 namespace LibraryApi.DTOs;
 
 public class ResponseAuthorDTO

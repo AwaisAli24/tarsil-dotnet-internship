@@ -16,7 +16,7 @@ public class AuthorService : IAuthorService
     {
         return await _repository.GetAllAsync();
     }
-    public async Task<ResponseAuthorDTO?> GetByIdAsync(int id)
+    public async Task<ResponseAuthorDTOWithBooks?> GetByIdAsync(int id)
     {
         var author = await _repository.GetByIdAsync(id);
         if (author == null)

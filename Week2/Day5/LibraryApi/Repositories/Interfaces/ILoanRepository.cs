@@ -5,4 +5,5 @@ namespace LibraryApi.Repositories.Interfaces;
 public interface ILoanRepository
 {
     Task<int> BorrowAsync(CreateLoanDTO loan);
+    Task<int> ReturnAsync(int id);
 }

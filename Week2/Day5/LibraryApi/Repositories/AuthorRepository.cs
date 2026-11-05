@@ -20,15 +20,17 @@ class AuthorRepository : IAuthorRepository
         List<ResponseAuthorDTO> authors = new List<ResponseAuthorDTO>();
         while (await reader.ReadAsync())
         {
-            authors.Add(MaptoDTO(reader));
+            authors.Add(await MaptoDTO(reader));
         }
         return authors;
     }
-    public async Task<ResponseAuthorDTO?> GetByIdAsync(int id)
+    public async Task<ResponseAuthorDTOWithBooks?> GetByIdAsync(int id)
     {
         using var command = _source.CreateCommand("""
-            SELECT * FROM authors
-            WHERE id = @id
+            SELECT a.*, b.id as book_id, b.title, b.isbn, b.price, b.total_copies, b.available_copies, b.published_year, b.author_id FROM authors a
+            LEFT JOIN books b
+            ON a.id = b.author_id
+            WHERE a.id = @id
         """);
         command.Parameters.AddWithValue("@id", id);
         using var reader = await command.ExecuteReaderAsync();
@@ -36,8 +38,8 @@ class AuthorRepository : IAuthorRepository
         {
             return null;
         }
-        await reader.ReadAsync();
-        return MaptoDTO(reader);
+        // await reader.ReadAsync();
+        return await MaptoDTOWithBooks(reader);
     }
     public async Task<ResponseAuthorDTO> CreateAsync(CreateAuthorDTO author)
     {
@@ -50,7 +52,7 @@ class AuthorRepository : IAuthorRepository
         command.Parameters.AddWithValue("@country", author.Country);
         using var reader = await command.ExecuteReaderAsync();
         await reader.ReadAsync();
-        return MaptoDTO(reader);
+        return await MaptoDTO(reader);
     }
     public async Task<ResponseAuthorDTO?> UpdateAsync(int id, UpdateAuthorDTO author)
     {
@@ -71,7 +73,7 @@ class AuthorRepository : IAuthorRepository
             return null;
         }
         await reader.ReadAsync();
-        return MaptoDTO(reader);
+        return await MaptoDTO(reader);
     }
     public async Task<bool> DeleteAsync(int id)
     {
@@ -83,7 +85,7 @@ class AuthorRepository : IAuthorRepository
         var affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows > 0;
     }
-    private ResponseAuthorDTO MaptoDTO(NpgsqlDataReader reader)
+    private async Task<ResponseAuthorDTO> MaptoDTO(NpgsqlDataReader reader)
     {
         return new ResponseAuthorDTO
         {
@@ -91,5 +93,24 @@ class AuthorRepository : IAuthorRepository
             Name = reader.GetString(reader.GetOrdinal("name")),
             Country = reader.GetString(reader.GetOrdinal("country"))
         };
+    }
+    private async Task<ResponseAuthorDTOWithBooks> MaptoDTOWithBooks(NpgsqlDataReader reader)
+    {
+        await reader.ReadAsync();
+        ResponseAuthorDTOWithBooks author = new ResponseAuthorDTOWithBooks
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            Name = reader.GetString(reader.GetOrdinal("name")),
+            Country = reader.GetString(reader.GetOrdinal("country"))
+        };
+        if (reader.IsDBNull(reader.GetOrdinal("book_id")))
+        {
+            return author;
+        }
+        do
+        {
+            author.Books.Add(BookRepository.MapToDTO(reader));
+        } while (await reader.ReadAsync());
+        return author;
     }
 }

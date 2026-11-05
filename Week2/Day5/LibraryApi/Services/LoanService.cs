@@ -17,10 +17,25 @@ public class LoanService : ILoanService
         {
             id = await _repository.BorrowAsync(loan);
         }
-        catch (PostgresException e)
+        catch (InvalidOperationException e)
         {
-            Console.WriteLine(e);
-            return -1;
+            throw new InvalidOperationException(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            throw new ArgumentException(e.Message);
+        }
+        return id;
+    }
+    public async Task<int> ReturnAsync(int id)
+    {
+        try
+        {
+            await _repository.ReturnAsync(id);
+        }
+        catch
+        {
+            throw;
         }
         return id;
     }
