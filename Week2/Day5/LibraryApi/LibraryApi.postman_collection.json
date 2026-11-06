@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "01cdb4e6-f898-4bdc-9daa-01131aec8746",
     "name": "LibraryApi",
-    "description": "LibraryApi Postman Collection — Run Order Guide\n==============================================\n\nIMPORTANT: Run the folders IN ORDER for chained variables to work:\n\n  1. Authors        → POST \"Create Author\" captures {{authorId}}\n  2. Books          → POST \"Create Book\" uses {{authorId}}, captures {{bookId}}\n  3. Error Scenarios → Validation/error edge-cases (safe to run standalone)\n  4. Cleanup        → DELETE Book first, then DELETE Author (FK order matters)\n\nCollection Variables set automatically:\n  {{baseUrl}}          → http://localhost:5194 (edit to match your environment)\n  {{authorId}}         → set by \"Create Author\" POST response\n  {{bookId}}           → set by \"Create Book\" POST response\n  {{conflictAuthorId}} → hardcoded to 1 (seeded author Dostoevsky who has books)\n  {{nonExistentId}}    → 999999 (used for 404 tests)\n  {{invalidId}}        → 0     (used for 400 tests)\n",
+    "description": "LibraryApi Postman Collection — Run Order Guide\n==============================================\n\nIMPORTANT: Run the folders IN ORDER for chained variables to work:\n\n  1. Authors                    → POST \"Create Author\" captures {{authorId}}\n  2. Books                      → POST \"Create Book\" uses {{authorId}}, captures {{bookId}}\n  3. Members                    → POST \"Create Member\" captures {{memberId}}\n  4. Loans                      → POST \"Borrow Book\" uses {{bookId}} + {{memberId}}, captures {{loanId}}\n  5. Error Scenarios            → Validation/error edge-cases (safe to run standalone)\n  6. Cleanup & Delete Verification → Creates fresh unencumbered Member, Author, and Book and deletes them to verify all DELETE endpoints without loan FK conflicts\n\nCollection Variables set automatically:\n  {{baseUrl}}          → http://localhost:5194 (edit to match your environment)\n  {{authorId}}         → set by \"Create Author\" POST response\n  {{bookId}}           → set by \"Create Book\" POST response\n  {{memberId}}         → set by \"Create Member\" POST response\n  {{loanId}}           → set by \"Borrow Book\" POST response\n  {{deleteMemberId}}   → set by Cleanup \"Create Member for Deletion\"\n  {{deleteAuthorId}}   → set by Cleanup \"Create Author for Deletion\"\n  {{deleteBookId}}     → set by Cleanup \"Create Book for Deletion\"\n  {{conflictAuthorId}} → hardcoded to 1 (seeded author Dostoevsky who has books)\n  {{nonExistentId}}    → 999999 (used for 404 tests)\n  {{invalidId}}        → 0     (used for 400 tests)\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "38239216"
   },
@@ -446,7 +446,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 14.99,\n  \"totalCopies\": 1,\n  \"availableCopies\": 1,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -477,7 +477,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+                  "raw": "{\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 1,\n  \"availableCopies\": 1,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/books",
@@ -504,7 +504,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+              "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 1,\n  \"availableCopies\": 1,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
             }
           ]
         },
@@ -560,6 +560,30 @@
                 {
                   "key": "pageSize",
                   "value": "10"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "Optional: filter by book title (partial match)",
+                  "disabled": true
+                },
+                {
+                  "key": "authorId",
+                  "value": "",
+                  "description": "Optional: filter by author ID",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "",
+                  "description": "Optional: filter books with price >= minPrice",
+                  "disabled": true
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "",
+                  "description": "Optional: filter books with price <= maxPrice",
+                  "disabled": true
                 }
               ]
             }
@@ -690,7 +714,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 10,\n  \"availableCopies\": 10,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+              "body": "{\n  \"id\": 9,\n  \"title\": \"1984\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 14.99,\n  \"totalCopies\": 1,\n  \"availableCopies\": 1,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
             }
           ]
         },
@@ -737,7 +761,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 19.99,\n  \"totalCopies\": 15,\n  \"availableCopies\": 15,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
+              "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"{{uniqueIsbn}}\",\n  \"price\": 19.99,\n  \"totalCopies\": 1,\n  \"availableCopies\": 1,\n  \"publishedYear\": 1949,\n  \"authorId\": \"{{authorId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -769,7 +793,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 19.99,\n  \"totalCopies\": 15,\n  \"availableCopies\": 15,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
+                  "raw": "{\n  \"title\": \"1984 (Collector Edition)\",\n  \"isbn\": \"9780451524935\",\n  \"price\": 19.99,\n  \"totalCopies\": 1,\n  \"availableCopies\": 1,\n  \"publishedYear\": 1949,\n  \"authorId\": 4\n}"
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/books/{{bookId}}",
@@ -796,7 +820,964 @@
       "description": "CRUD operations for Books. Consumes {{authorId}} to create a book and persists {{bookId}}."
     },
     {
-      "name": "3. Error Scenarios (400, 404, 409)",
+      "name": "3. Members",
+      "item": [
+        {
+          "name": "Get All Members",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array of members\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.expect(responseData).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Members have valid schema (id, fullName, email)\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    if (responseData.length > 0) {",
+                  "        const member = responseData[0];",
+                  "        pm.expect(member).to.have.property(\"id\");",
+                  "        pm.expect(member).to.have.property(\"fullName\");",
+                  "        pm.expect(member).to.have.property(\"email\");",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Get All Members",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/members",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 1,\n    \"fullName\": \"Alice Smith\",\n    \"email\": \"alice@example.com\",\n    \"joinedOn\": \"2024-01-15\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create Member (Chains memberId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains created member id\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Member successfully created with id\");",
+                  "});",
+                  "",
+                  "pm.test(\"Chain Member ID to collection and environment variables\", function () {",
+                  "    const text = pm.response.text();",
+                  "    const match = text.match(/id:\\s*(\\d+)/);",
+                  "    if (match) {",
+                  "        const id = match[1];",
+                  "        pm.collectionVariables.set(\"memberId\", id);",
+                  "        pm.environment.set(\"memberId\", id);",
+                  "        console.log(\"Saved memberId: \" + id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"joinedOn\": \"2026-01-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Member Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"joinedOn\": \"2026-01-01\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/members",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Member successfully created with id: 2"
+            }
+          ]
+        },
+        {
+          "name": "Get Member by ID (Uses {{memberId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Guard: memberId must be set by running \"Create Member\" first",
+                  "const memberId = pm.collectionVariables.get(\"memberId\") || pm.environment.get(\"memberId\");",
+                  "if (!memberId) {",
+                  "    throw new Error(\"{{memberId}} is empty! Run the 'Create Member' request first.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Returned member matches requested memberId\", function () {",
+                  "    const responseData = pm.response.json();",
+                  "    const currentMemberId = pm.collectionVariables.get(\"memberId\") || pm.environment.get(\"memberId\");",
+                  "    if (currentMemberId) {",
+                  "        pm.expect(responseData.id).to.eql(parseInt(currentMemberId));",
+                  "    }",
+                  "    pm.expect(responseData).to.have.property(\"fullName\");",
+                  "    pm.expect(responseData).to.have.property(\"email\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members",
+                "{{memberId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Get Member by ID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/members/{{memberId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members",
+                    "{{memberId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"fullName\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"joinedOn\": \"2026-01-01\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Member by ID (Uses {{memberId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Guard: memberId must be set by running \"Create Member\" first",
+                  "const memberId = pm.collectionVariables.get(\"memberId\") || pm.environment.get(\"memberId\");",
+                  "if (!memberId) {",
+                  "    throw new Error(\"{{memberId}} is empty! Run the 'Create Member' request first.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms member was updated\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"updated successfully\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Doe (Updated)\",\n  \"email\": \"jane.updated@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members",
+                "{{memberId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Update Member",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Jane Doe (Updated)\",\n  \"email\": \"jane.updated@example.com\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/members/{{memberId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members",
+                    "{{memberId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Member with id 2 updated successfully"
+            }
+          ]
+        }
+      ],
+      "description": "CRUD operations for Members. Creates a member and persists {{memberId}} for downstream loan creation."
+    },
+    {
+      "name": "4. Loans",
+      "item": [
+        {
+          "name": "Borrow Book (Uses {{bookId}} + {{memberId}}, Chains loanId) ← book is UNAVAILABLE after this",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
+                  "if (!bookId) {",
+                  "    throw new Error(\"{{bookId}} is empty! Run the 'Create Book' request first.\");",
+                  "}",
+                  "const memberId = pm.collectionVariables.get(\"memberId\") || pm.environment.get(\"memberId\");",
+                  "if (!memberId) {",
+                  "    throw new Error(\"{{memberId}} is empty! Run the 'Create Member' request first.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains loan id\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Loan created with id\");",
+                  "});",
+                  "",
+                  "pm.test(\"Chain Loan ID to collection and environment variables\", function () {",
+                  "    const text = pm.response.text();",
+                  "    const match = text.match(/(\\d+)$/);",
+                  "    if (match) {",
+                  "        const id = match[1];",
+                  "        pm.collectionVariables.set(\"loanId\", id);",
+                  "        pm.environment.set(\"loanId\", id);",
+                  "        console.log(\"Saved loanId: \" + id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": {{bookId}},\n  \"memberId\": {{memberId}},\n  \"days\": 14\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/loans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Loan Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookId\": 9,\n  \"memberId\": 2,\n  \"days\": 14\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Loan created with id 1"
+            }
+          ]
+        },
+        {
+          "name": "409 Conflict - Borrow Book With No Available Copies (book still UNAVAILABLE here)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": {{bookId}},\n  \"memberId\": {{memberId}},\n  \"days\": 7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/loans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Book Already Borrowed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookId\": 9,\n  \"memberId\": 2,\n  \"days\": 7\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Book is not available."
+            }
+          ]
+        },
+        {
+          "name": "Return Book (Uses {{loanId}}) ← releases book back to AVAILABLE",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Guard: loanId must be set by running \"Borrow Book\" first",
+                  "const loanId = pm.collectionVariables.get(\"loanId\") || pm.environment.get(\"loanId\");",
+                  "if (!loanId) {",
+                  "    throw new Error(\"{{loanId}} is empty! Run the 'Borrow Book' request first.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms loan was returned\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"returned successfully\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/loans/{{loanId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans",
+                "{{loanId}}",
+                "return"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Loan Returned",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans/1/return",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans",
+                    "1",
+                    "return"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Loan with id 1 has been returned successfully."
+            }
+          ]
+        },
+        {
+          "name": "409 Conflict - Return Already-Returned Loan (Uses {{loanId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Guard: loanId must be set and just returned in the previous request",
+                  "const loanId = pm.collectionVariables.get(\"loanId\") || pm.environment.get(\"loanId\");",
+                  "if (!loanId) {",
+                  "    throw new Error(\"{{loanId}} is empty! Run the 'Borrow Book' and 'Return Book' requests first.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates book is already returned\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Already returned\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/loans/{{loanId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans",
+                "{{loanId}}",
+                "return"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Loan Already Returned",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans/1/return",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans",
+                    "1",
+                    "return"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "The Book is Already returned."
+            }
+          ]
+        },
+        {
+          "name": "400 Bad Request - Return with Invalid Loan ID (<= 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates Id should be greater than 0\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Id should be greater than 0\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/loans/{{invalidId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans",
+                "{{invalidId}}",
+                "return"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Invalid Loan ID",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans/0/return",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans",
+                    "0",
+                    "return"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Id should be greater than 0."
+            }
+          ]
+        },
+        {
+          "name": "400 Bad Request - Borrow with Invalid Days (< 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates days not valid\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Days not valid\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": 1,\n  \"memberId\": 1,\n  \"days\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/loans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Invalid Days",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"bookId\": 1,\n  \"memberId\": 1,\n  \"days\": 0\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Days not valid."
+            }
+          ]
+        },
+        {
+          "name": "404 Not Found - Return Non-Existent Loan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/loans/{{nonExistentId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loans",
+                "{{nonExistentId}}",
+                "return"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Loan Not Found",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/loans/999999/return",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "loans",
+                    "999999",
+                    "return"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "Loan operations — borrowing a book (which makes it UNAVAILABLE), testing the 409 conflict while borrowed, then returning it. Consumes {{bookId}} and {{memberId}} to create a loan and persists {{loanId}}. NOTE: Return Book is the last step here so that Error Scenarios (folder 5) can rely on the book being available again after."
+    },
+    {
+      "name": "5. Error Scenarios (400, 404, 409)",
       "item": [
         {
           "name": "400 Bad Request - Invalid Author ID (<= 0)",
@@ -1066,6 +2047,63 @@
           ]
         },
         {
+          "name": "400 Bad Request - Invalid Member ID (<= 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{invalidId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members",
+                "{{invalidId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Invalid Member ID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/members/0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members",
+                    "0"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
           "name": "404 Not Found - Author by Non-Existent ID",
           "event": [
             {
@@ -1166,6 +2204,63 @@
                   "path": [
                     "api",
                     "books",
+                    "999999"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "404 Not Found - Member by Non-Existent ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{nonExistentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members",
+                "{{nonExistentId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Member ID Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/members/999999",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members",
                     "999999"
                   ]
                 }
@@ -1302,29 +2397,363 @@
               "body": "Author is associated with a book and cannot be deleted."
             }
           ]
+        },
+        {
+          "name": "409 Conflict - Create Member With Duplicate Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates email must be unique\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"Email must be Unique\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Doe Again\",\n  \"email\": \"jane.updated@example.com\",\n  \"joinedOn\": \"2026-01-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Duplicate Member Email",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Jane Doe Again\",\n  \"email\": \"jane.updated@example.com\",\n  \"joinedOn\": \"2026-01-01\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/members",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "members"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "Email must be Unique"
+            }
+          ]
         }
       ],
-      "description": "Explicit test cases validating 400 Bad Request, 404 Not Found, and 409 Conflict status codes and messages."
+      "description": "Explicit test cases validating 400 Bad Request, 404 Not Found, and 409 Conflict status codes and messages across all controllers."
     },
     {
-      "name": "4. Cleanup",
+      "name": "6. Cleanup & Delete Verification",
       "item": [
         {
-          "name": "Delete Book by ID (Uses {{bookId}})",
+          "name": "Create Member for Deletion (Chains deleteMemberId)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(100000 + Math.random() * 900000);",
+                  "pm.variables.set(\"deleteMemberEmail\", \"delete.member.\" + rand + \"@example.com\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Capture deleteMemberId\", function () {",
+                  "    const text = pm.response.text();",
+                  "    const match = text.match(/id:\\s*(\\d+)/);",
+                  "    pm.expect(match).to.not.be.null;",
+                  "    if (match) {",
+                  "        pm.collectionVariables.set(\"deleteMemberId\", match[1]);",
+                  "        pm.environment.set(\"deleteMemberId\", match[1]);",
+                  "        console.log(\"Saved deleteMemberId: \" + match[1]);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Temporary Member for Delete\",\n  \"email\": \"{{deleteMemberEmail}}\",\n  \"joinedOn\": \"2026-01-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Member by ID (Uses {{deleteMemberId}})",
           "event": [
             {
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "// Guard: bookId must be set by running \"Create Book\" first",
-                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
-                  "if (!bookId) {",
-                  "    throw new Error(\"{{bookId}} is empty! Run the 'Create Book' request first.\");",
+                  "const id = pm.collectionVariables.get(\"deleteMemberId\") || pm.environment.get(\"deleteMemberId\");",
+                  "if (!id) {",
+                  "    throw new Error(\"{{deleteMemberId}} is empty! Run 'Create Member for Deletion' first.\");",
                   "}"
                 ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms member was deleted\", function () {",
+                  "    const text = pm.response.text();",
+                  "    pm.expect(text).to.include(\"deleted successfully\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{deleteMemberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "members",
+                "{{deleteMemberId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Author for Deletion (Chains deleteAuthorId)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const rand = Math.floor(100000 + Math.random() * 900000);",
+                  "pm.variables.set(\"deleteAuthorName\", \"Temporary Author \" + rand);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Capture deleteAuthorId\", function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res).to.have.property(\"id\");",
+                  "    pm.collectionVariables.set(\"deleteAuthorId\", res.id.toString());",
+                  "    pm.environment.set(\"deleteAuthorId\", res.id.toString());",
+                  "    console.log(\"Saved deleteAuthorId: \" + res.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{deleteAuthorName}}\",\n  \"country\": \"Deletionland\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/authors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "authors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Book for Deletion (Uses {{deleteAuthorId}}, Chains deleteBookId)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const authorId = pm.collectionVariables.get(\"deleteAuthorId\") || pm.environment.get(\"deleteAuthorId\");",
+                  "if (!authorId) {",
+                  "    throw new Error(\"{{deleteAuthorId}} is empty! Run 'Create Author for Deletion' first.\");",
+                  "}",
+                  "const rand = Math.floor(1000000000 + Math.random() * 9000000000);",
+                  "pm.variables.set(\"deleteBookIsbn\", \"978\" + rand);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Capture deleteBookId\", function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res).to.have.property(\"id\");",
+                  "    pm.collectionVariables.set(\"deleteBookId\", res.id.toString());",
+                  "    pm.environment.set(\"deleteBookId\", res.id.toString());",
+                  "    console.log(\"Saved deleteBookId: \" + res.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Temporary Book for Delete\",\n  \"isbn\": \"{{deleteBookIsbn}}\",\n  \"price\": 12.50,\n  \"totalCopies\": 2,\n  \"availableCopies\": 2,\n  \"publishedYear\": 2024,\n  \"authorId\": \"{{deleteAuthorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Book by ID (Uses {{deleteBookId}})",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const bookId = pm.collectionVariables.get(\"deleteBookId\") || pm.environment.get(\"deleteBookId\");",
+                  "if (!bookId) {",
+                  "    throw new Error(\"{{deleteBookId}} is empty! Run 'Create Book for Deletion' first.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
               }
             },
             {
@@ -1335,9 +2764,7 @@
                   "    pm.response.to.have.status(204);",
                   "});"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
               }
             }
           ],
@@ -1345,66 +2772,32 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "raw": "{{baseUrl}}/api/books/{{deleteBookId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "books",
-                "{{bookId}}"
+                "{{deleteBookId}}"
               ]
             }
           },
-          "response": [
-            {
-              "name": "204 No Content - Delete Book",
-              "originalRequest": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/api/books/{{bookId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "books",
-                    "{{bookId}}"
-                  ]
-                }
-              },
-              "status": "No Content",
-              "code": 204,
-              "_postman_previewlanguage": "text",
-              "header": [],
-              "cookie": [],
-              "body": ""
-            }
-          ]
+          "response": []
         },
         {
-          "name": "Delete Author by ID (Uses {{authorId}})",
+          "name": "Delete Author by ID (Uses {{deleteAuthorId}})",
           "event": [
             {
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "// Guard: authorId must be set by running \"Create Author\" first",
-                  "const authorId = pm.collectionVariables.get(\"authorId\") || pm.environment.get(\"authorId\");",
+                  "const authorId = pm.collectionVariables.get(\"deleteAuthorId\") || pm.environment.get(\"deleteAuthorId\");",
                   "if (!authorId) {",
-                  "    throw new Error(\"{{authorId}} is empty! Run the 'Create Author' request first.\");",
-                  "}",
-                  "",
-                  "// Ensure the book is deleted first (FK constraint)",
-                  "const bookId = pm.collectionVariables.get(\"bookId\") || pm.environment.get(\"bookId\");",
-                  "if (bookId) {",
-                  "    console.warn(\"Warning: bookId is still set. Delete the book before deleting the author to avoid 409 Conflict.\");",
+                  "    throw new Error(\"{{deleteAuthorId}} is empty! Run 'Create Author for Deletion' first.\");",
                   "}"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
               }
             },
             {
@@ -1415,9 +2808,7 @@
                   "    pm.response.to.have.status(204);",
                   "});"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
               }
             }
           ],
@@ -1425,46 +2816,21 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/authors/{{authorId}}",
+              "raw": "{{baseUrl}}/api/authors/{{deleteAuthorId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "authors",
-                "{{authorId}}"
+                "{{deleteAuthorId}}"
               ]
             }
           },
-          "response": [
-            {
-              "name": "204 No Content - Author Deleted",
-              "originalRequest": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/api/authors/{{authorId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "authors",
-                    "{{authorId}}"
-                  ]
-                }
-              },
-              "status": "No Content",
-              "code": 204,
-              "_postman_previewlanguage": "text",
-              "header": [],
-              "cookie": [],
-              "body": ""
-            }
-          ]
+          "response": []
         }
       ],
-      "description": "Tears down test resources in proper foreign-key order: first deletes the book ({{bookId}}), then deletes the author ({{authorId}})."
+      "description": "Verifies all DELETE endpoints cleanly. Creates unencumbered test records (Member, Author, Book) not referenced by any loans, then deletes the Book, the Author, and the Member to verify successful 204 No Content and 200 OK responses."
     }
   ],
   "variable": [
@@ -1485,6 +2851,36 @@
       "value": "",
       "type": "string",
       "description": "Dynamically set by \"Create Book\" test script. Run that request first before calling any request that uses {{bookId}}."
+    },
+    {
+      "key": "memberId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Member\" test script. Run that request first before calling any request that uses {{memberId}}."
+    },
+    {
+      "key": "loanId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Borrow Book\" test script. Run that request first before calling any request that uses {{loanId}}."
+    },
+    {
+      "key": "deleteMemberId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Member for Deletion\" test script."
+    },
+    {
+      "key": "deleteAuthorId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Author for Deletion\" test script."
+    },
+    {
+      "key": "deleteBookId",
+      "value": "",
+      "type": "string",
+      "description": "Dynamically set by \"Create Book for Deletion\" test script."
     },
     {
       "key": "nonExistentId",

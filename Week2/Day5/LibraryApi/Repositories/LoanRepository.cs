@@ -1,7 +1,5 @@
 using LibraryApi.DTOs;
-using LibraryApi.Exceptions;
 using LibraryApi.Repositories.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Npgsql;
 
 namespace LibraryApi.Repositories;
@@ -42,7 +40,7 @@ public class LoanRepository : ILoanRepository
 
             command.CommandText = """
                 SELECT COUNT(*) FROM loans
-                WHERE member_id=@member_id
+                WHERE member_id=@member_id and returned_at IS NULL
                 GROUP BY member_id
             """;
             command.Parameters.AddWithValue("@member_id", loan.MemberId);
@@ -110,11 +108,11 @@ public class LoanRepository : ILoanRepository
                     WHERE id = @id
                     );
             """;
-            command.Parameters.AddWithValue(id);
+            command.Parameters.AddWithValue("@id", id);
             bool exist = Convert.ToBoolean(await command.ExecuteScalarAsync());
             if (!exist)
             {
-                throw new ArgumentException("Provided id does not exist in loans.");
+                throw new KeyNotFoundException("Provided id does not exist in loans.");
             }
 
             command.CommandText = """
@@ -129,16 +127,17 @@ public class LoanRepository : ILoanRepository
             int bookId = Convert.ToInt32(await command.ExecuteScalarAsync());
             if (bookId == 0)
             {
-                throw new InvalidOperationException("The Book is Already returned or the loan does not exist.");
+                throw new InvalidOperationException("The Book is Already returned.");
             }
-            Console.WriteLine(bookId);
             command.CommandText = """
                 UPDATE books
-                SET available_books = available_books+1
+                SET available_copies = available_copies+1
                 WHERE id = @book_id;
             """;
             command.Parameters.Clear();
             command.Parameters.AddWithValue("@book_id", bookId);
+
+            await command.ExecuteNonQueryAsync();
             await transaction.CommitAsync();
         }
         catch

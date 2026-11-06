@@ -84,7 +84,15 @@ public class BooksController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteAsync(int id)
     {
-        var toDelete = await _service.DeleteAsync(id);
+        bool toDelete;
+        try
+        {
+            toDelete = await _service.DeleteAsync(id);
+        }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
         if (!toDelete)
         {
             return NotFound();

@@ -82,7 +82,15 @@ public class BookService : IBookService
     public async Task<bool> DeleteAsync(int id)
     {
 
-        var toDelete = await _repository.DeleteAsync(id);
+        bool toDelete;
+        try
+        {
+            toDelete = await _repository.DeleteAsync(id);
+        }
+        catch (PostgresException e) when (e.SqlState == "23503")
+        {
+            throw new InvalidOperationException("Books is associated with a loan and can not be deleted.");
+        }
         if (toDelete)
         {
             _logger.LogInformation($"Book with id {id} deleted successfully.");

@@ -45,7 +45,7 @@ public class MembersController : ControllerBase
         }
         catch (ArgumentException e)
         {
-            return BadRequest(e.Message);
+            return Conflict(e.Message);
         }
         return Ok($"Member successfully created with id: {id}");
     }

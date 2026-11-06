@@ -27,7 +27,7 @@ class AuthorRepository : IAuthorRepository
     public async Task<ResponseAuthorDTOWithBooks?> GetByIdAsync(int id)
     {
         using var command = _source.CreateCommand("""
-            SELECT a.*, b.id as book_id, b.title, b.isbn, b.price, b.total_copies, b.available_copies, b.published_year, b.author_id FROM authors a
+            SELECT a.id as author_id, name, country , b.* FROM authors a
             LEFT JOIN books b
             ON a.id = b.author_id
             WHERE a.id = @id
@@ -99,11 +99,11 @@ class AuthorRepository : IAuthorRepository
         await reader.ReadAsync();
         ResponseAuthorDTOWithBooks author = new ResponseAuthorDTOWithBooks
         {
-            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            Id = reader.GetInt32(reader.GetOrdinal("author_id")),
             Name = reader.GetString(reader.GetOrdinal("name")),
             Country = reader.GetString(reader.GetOrdinal("country"))
         };
-        if (reader.IsDBNull(reader.GetOrdinal("book_id")))
+        if (reader.IsDBNull(reader.GetOrdinal("id")))
         {
             return author;
         }

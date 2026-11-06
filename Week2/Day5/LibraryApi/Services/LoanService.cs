@@ -17,13 +17,17 @@ public class LoanService : ILoanService
         {
             id = await _repository.BorrowAsync(loan);
         }
-        catch (InvalidOperationException e)
+        // catch (InvalidOperationException e)
+        // {
+        //     throw new InvalidOperationException(e.Message);
+        // }
+        // catch (ArgumentException e)
+        // {
+        //     throw new ArgumentException(e.Message);
+        // }
+        catch
         {
-            throw new InvalidOperationException(e.Message);
-        }
-        catch (ArgumentException e)
-        {
-            throw new ArgumentException(e.Message);
+            throw;
         }
         return id;
     }

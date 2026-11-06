@@ -17,6 +17,10 @@ public class LoansController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> BorrowAsync(CreateLoanDTO loan)
     {
+        if (loan.days < 1)
+        {
+            return BadRequest("Days not valid.");
+        }
         int id;
         try
         {
@@ -51,6 +55,10 @@ public class LoansController : ControllerBase
         catch (InvalidOperationException e)
         {
             return Conflict(e.Message);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
         }
         return Ok($"Loan with id {id} has been returned successfully.");
     }

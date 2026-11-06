@@ -46,7 +46,7 @@ public class BookRepository : IBookRepository
     public async Task<ResponseBookDTO?> GetByIdAsync(int id)
     {
         using var command = _source.CreateCommand("""
-            SELECT b.id as book_id, b.title, b.isbn, b.price, b.total_copies, b.available_copies, b.published_year, b.author_id FROM books b
+            SELECT * FROM books b
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
@@ -116,14 +116,21 @@ public class BookRepository : IBookRepository
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
-        var result = await command.ExecuteNonQueryAsync();
-        return result > 0;
+        try
+        {
+            var result = await command.ExecuteNonQueryAsync();
+            return result > 0;
+        }
+        catch
+        {
+            throw;
+        }
     }
     public static ResponseBookDTO MapToDTO(NpgsqlDataReader reader)
     {
         return new ResponseBookDTO
         {
-            Id = reader.GetInt32(reader.GetOrdinal("book_id")),
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
             Title = reader.GetString(reader.GetOrdinal("title")),
             Isbn = reader.GetString(reader.GetOrdinal("isbn")),
             Price = reader.GetDecimal(reader.GetOrdinal("price")),

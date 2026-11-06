@@ -1,6 +1,6 @@
 CREATE TABLE members (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     full_name VARCHAR(50) NOT NULL,
-    email VARCHAR(50) UNIQUE,
+    email TEXT UNIQUE,
     joined_on DATE NOT NULL
 );
