@@ -66,4 +66,9 @@ public class MemberService : IMemberService
         }
         return affectedRows;
     }
+    public async Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id, bool? isActive)
+    {
+        var loans = await _repository.GetLoansByMemberAsync(id, isActive);
+        return loans;
+    }
 }

@@ -85,4 +85,14 @@ public class MembersController : ControllerBase
         }
         return Ok($"Member with id {id} deleted successfully.");
     }
+    [HttpGet("{id:int}/loans")]
+    public async Task<ActionResult<List<ResponseLoanDTO>>> GetLoansByMemberAsync(int id, [FromQuery] bool? Active)
+    {
+        if (id < 1)
+        {
+            return BadRequest("Enter a valid id");
+        }
+        var loans = await _service.GetLoansByMemberAsync(id, Active);
+        return Ok(loans);
+    }
 }

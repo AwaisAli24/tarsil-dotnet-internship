@@ -40,6 +40,9 @@ builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<ILoanService, LoanService>();
 
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IReportService, ReportService>();
+
 builder.Services.AddSingleton<DatabaseMigrator>();
 
 var app = builder.Build();

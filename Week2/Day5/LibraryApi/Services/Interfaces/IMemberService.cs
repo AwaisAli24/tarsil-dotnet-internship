@@ -9,4 +9,5 @@ public interface IMemberService
     Task<int> CreateAsync(CreateMemberDTO member);
     Task<bool> UpdateAsync(int id, UpdateMemberDTO member);
     Task<bool> DeleteAsync(int id);
+    Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id, bool? isActive);
 }

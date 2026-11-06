@@ -1,7 +1,7 @@
 using LibraryApi.DTOs;
 using Npgsql;
 using LibraryApi.Repositories.Interfaces;
-
+using NpgsqlTypes;
 namespace LibraryApi.Repositories;
 
 public class MemberRepository : IMemberRepository
@@ -77,12 +77,36 @@ public class MemberRepository : IMemberRepository
         int affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
     }
-    // public async Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id,bool? isActive)
-    // {
-    //     using var command = _source.CreateCommand("""
-
-    //     """);
-    // }
+    public async Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id, bool? isActive)
+    {
+        using var command = _source.CreateCommand("""
+            SELECT l.id, b.title, l.member_id, l.returned_at
+            FROM loans l
+            JOIN books b ON b.id = l.book_id
+            WHERE l.member_id = @id
+            AND (
+            @is_active IS NULL
+            OR (@is_active IS FALSE AND l.returned_at IS NOT NULL)
+            OR (@is_active IS TRUE AND l.returned_at IS NULL)
+        );
+        """);
+        command.Parameters.Add("@is_active", NpgsqlDbType.Boolean).Value =
+    (object?)isActive ?? DBNull.Value;
+        command.Parameters.AddWithValue("@id", id);
+        using var reader = await command.ExecuteReaderAsync();
+        List<ResponseLoanDTO> loans = new List<ResponseLoanDTO>();
+        while (await reader.ReadAsync())
+        {
+            loans.Add(new ResponseLoanDTO
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                BookTitle = reader.GetString(reader.GetOrdinal("title")),
+                MemberId = reader.GetInt32(reader.GetOrdinal("member_id")),
+                IsActive = isActive ?? (reader.IsDBNull(reader.GetOrdinal("returned_at")) ? true : false)
+            });
+        }
+        return loans;
+    }
     private ResponseMemberDTO MapToDTO(NpgsqlDataReader reader)
     {
         return new ResponseMemberDTO
