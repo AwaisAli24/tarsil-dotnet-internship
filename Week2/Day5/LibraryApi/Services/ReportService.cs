@@ -19,5 +19,9 @@ public class ReportService : IReportService
         var topBooks = await _repository.GetMostBorrowedBooks(limit);
         return topBooks;
     }
-
+    public async Task<List<ResponseAuthorReportDTO>> GetAuthorReports()
+    {
+        var authors = await _repository.GetAuthorReports();
+        return authors;
+    }
 }

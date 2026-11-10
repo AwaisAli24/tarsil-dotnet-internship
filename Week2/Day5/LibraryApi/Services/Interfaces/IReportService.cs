@@ -5,4 +5,5 @@ public interface IReportService
 {
     Task<List<ResponseOverdueLoansDTO>> GetOverdueLoansAsync();
     Task<List<ResponseTopBorrowedDTO>> GetMostBorrowedBooks(int limit);
+    Task<List<ResponseAuthorReportDTO>> GetAuthorReports();
 }

@@ -69,11 +69,28 @@ public class ReportRepository : IReportRepository
         }
         return books;
     }
-    // public async Task<List<ResponseAuthorDTOWithBooks>> GetAuthorReports()
-    // {
-    //     using var command = _source.CreateCommand();
-    //     command.CommandText = """
-
-    //     """;
-    // }
+    public async Task<List<ResponseAuthorReportDTO>> GetAuthorReports()
+    {
+        using var command = _source.CreateCommand();
+        command.CommandText = """
+            SELECT a.name, count(b.id) as total_books,SUM( b.total_copies) as total_copies,SUM(b.total_copies-b.available_copies) as currently_borrowed
+            FROM books b
+            JOIN authors a
+            ON b.author_id = a.id
+            GROUP BY a.name;
+        """;
+        var reader = await command.ExecuteReaderAsync();
+        List<ResponseAuthorReportDTO> authors = new List<ResponseAuthorReportDTO>();
+        while (await reader.ReadAsync())
+        {
+            authors.Add(new ResponseAuthorReportDTO
+            {
+                AuthorName = reader.GetString(reader.GetOrdinal("name")),
+                NumberOfBooks = reader.GetInt32(reader.GetOrdinal("total_books")),
+                TotalCopies = reader.GetInt32(reader.GetOrdinal("total_copies")),
+                CurrentlyBorrowedCopies = reader.GetInt32(reader.GetOrdinal("currently_borrowed"))
+            });
+        }
+        return authors;
+    }
 }

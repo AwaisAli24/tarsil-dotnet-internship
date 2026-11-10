@@ -31,5 +31,11 @@ public class ReportsController : ControllerBase
         var books = await _service.GetMostBorrowedBooks(limit ?? 5);
         return Ok(books);
     }
+    [HttpGet("authors")]
+    public async Task<ActionResult<List<ResponseAuthorReportDTO>>> GetAuthorsWithBooks()
+    {
+        var authors = await _service.GetAuthorReports();
+        return Ok(authors);
+    }
 
 }
