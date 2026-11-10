@@ -68,7 +68,16 @@ public class MemberService : IMemberService
     }
     public async Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id, bool? isActive)
     {
-        var loans = await _repository.GetLoansByMemberAsync(id, isActive);
+        List<ResponseLoanDTO> loans;
+        try
+        {
+
+            loans = await _repository.GetLoansByMemberAsync(id, isActive);
+        }
+        catch
+        {
+            throw;
+        }
         return loans;
     }
 }

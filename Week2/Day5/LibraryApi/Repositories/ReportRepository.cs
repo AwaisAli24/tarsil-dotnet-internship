@@ -19,14 +19,14 @@ public class ReportRepository : IReportRepository
             (SELECT	id,member_id,
             book_id,
             GREATEST(0,
-            COALESCE(returned_at,NOW())::Date - due_date::date
+            NOW()::Date - due_date::date
             ) AS days_overdue
-            FROM loans) as t
+            FROM loans WHERE returned_at IS NULL) as t
             JOIN books b
             ON b.id = t.book_id
             Join members m
             ON m.id = t.member_id
-            WHERE days_overdue>0;
+            WHERE days_overdue>0 ;
         """;
         using var reader = await command.ExecuteReaderAsync();
 
@@ -55,7 +55,7 @@ public class ReportRepository : IReportRepository
             LIMIT @limit;
         """;
         command.Parameters.AddWithValue("@limit", limit);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         List<ResponseTopBorrowedDTO> books = new List<ResponseTopBorrowedDTO>();
         while (await reader.ReadAsync())
         {

@@ -79,6 +79,10 @@ public class MemberRepository : IMemberRepository
     }
     public async Task<List<ResponseLoanDTO>> GetLoansByMemberAsync(int id, bool? isActive)
     {
+        if (await GetByIdAsync(id) == null)
+        {
+            throw new ArgumentException($"Member with id {id} does not exist.");
+        }
         using var command = _source.CreateCommand("""
             SELECT l.id, b.title, l.member_id, l.returned_at
             FROM loans l

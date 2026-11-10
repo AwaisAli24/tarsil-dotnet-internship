@@ -5,6 +5,7 @@ namespace LibraryApi.DTOs;
 public class CreateMemberDTO
 {
     [Required]
+    [MaxLength(50)]
     public string FullName { get; set; } = string.Empty;
     [Required]
     [EmailAddress]

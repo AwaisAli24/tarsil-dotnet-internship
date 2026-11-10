@@ -34,7 +34,7 @@ public class BookRepository : IBookRepository
         command.Parameters.Add("@maxPrice", NpgsqlDbType.Numeric).Value =
     (object?)maxPrice ?? DBNull.Value;
         command.Parameters.AddWithValue("@offset", (page - 1) * pageSize);
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
 
         List<ResponseBookDTO> books = new List<ResponseBookDTO>();
         while (await reader.ReadAsync())

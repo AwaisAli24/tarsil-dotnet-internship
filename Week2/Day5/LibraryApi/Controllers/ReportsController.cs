@@ -24,6 +24,10 @@ public class ReportsController : ControllerBase
     [HttpGet("top-books")]
     public async Task<ActionResult<List<ResponseTopBorrowedDTO>>> GetMostBorrowedBooks([FromQuery] int? limit)
     {
+        if (limit < 1)
+        {
+            return BadRequest("Limit must be greater than 0");
+        }
         var books = await _service.GetMostBorrowedBooks(limit ?? 5);
         return Ok(books);
     }

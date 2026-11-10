@@ -59,7 +59,7 @@ public class MembersController : ControllerBase
         }
         catch (ArgumentException e)
         {
-            return BadRequest(e.Message);
+            return Conflict(e.Message);
         }
         if (!affectedRows)
         {
@@ -92,7 +92,15 @@ public class MembersController : ControllerBase
         {
             return BadRequest("Enter a valid id");
         }
-        var loans = await _service.GetLoansByMemberAsync(id, Active);
+        List<ResponseLoanDTO> loans;
+        try
+        {
+            loans = await _service.GetLoansByMemberAsync(id, Active);
+        }
+        catch (ArgumentException e)
+        {
+            return NotFound(e.Message);
+        }
         return Ok(loans);
     }
 }
