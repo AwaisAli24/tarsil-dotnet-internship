@@ -15,4 +15,5 @@ That means the tracking is not "automatic EF tracking" in the usual sense, but i
 
 So the pattern here is: SQL-first migrations, runner-managed execution, and explicit version tracking via `schema_migrations` rather than EF Core migration history.
 
-In day4 deleting author already associated with the book raises sqlstat 23503(confirmed through debugging) but you said it raises 23001 i tried changing it to 23001 but then it throws a 500 error help me with this please.
+PostgreSQL ≤ 17
+gives 23503, PostgreSQL 18 gives 23001 for RESTRICT, so we catch both

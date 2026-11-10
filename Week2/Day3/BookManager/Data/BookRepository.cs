@@ -103,7 +103,7 @@ public class BookRepository : IBookRepository
         {
             throw new Exception("ISBN already exists.");
         }
-        catch (PostgresException e) when (e.SqlState == "23001")
+        catch (PostgresException e) when (e.SqlState == "23001" || e.SqlState == "23503")
         {
             throw new Exception("Author not Found");
         }
