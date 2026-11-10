@@ -75,7 +75,7 @@ public class ReportRepository : IReportRepository
         command.CommandText = """
             SELECT * FROM authors_view;
         """;
-        var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync();
         List<ResponseAuthorReportDTO> authors = new List<ResponseAuthorReportDTO>();
         while (await reader.ReadAsync())
         {
