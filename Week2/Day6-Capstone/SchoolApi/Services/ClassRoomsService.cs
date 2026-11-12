@@ -46,7 +46,15 @@ public class ClassRoomsService : IClassRoomsService
     }
     public async Task<bool> DeleteAsync(int id)
     {
-        bool isDeleted = await _repository.DeleteAsync(id);
+        bool isDeleted;
+        try
+        {
+            isDeleted = await _repository.DeleteAsync(id);
+        }
+        catch (PostgresException e) when (e.SqlState == "23503" || e.SqlState == "23001")
+        {
+            throw new InvalidOperationException("ClassRoom cannot be deleted. Relation exists.");
+        }
         return isDeleted;
     }
 }

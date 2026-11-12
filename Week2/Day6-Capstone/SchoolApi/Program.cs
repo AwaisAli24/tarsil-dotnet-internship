@@ -1,5 +1,6 @@
 using Npgsql;
 using SchoolApi.Data;
+using SchoolApi.Repository;
 using SchoolApi.Repository.Interfaces;
 using SchoolApi.Services;
 using SchoolApi.Services.Interface;
@@ -25,6 +26,15 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 
 builder.Services.AddScoped<IClassRoomsRepository, ClassRoomsRepository>();
 builder.Services.AddScoped<IClassRoomsService, ClassRoomsService>();
+
+builder.Services.AddScoped<IStudentsRepository, StudentsRepository>();
+builder.Services.AddScoped<IStudentsService, StudentsService>();
+
+builder.Services.AddScoped<ITeachersRepository, TeachersRepository>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
+
+builder.Services.AddScoped<ICoursesRepository, CoursesRepository>();
+builder.Services.AddScoped<ICoursesService, CoursesService>();
 
 builder.Services.AddSingleton<DataBaseMigrator>();
 

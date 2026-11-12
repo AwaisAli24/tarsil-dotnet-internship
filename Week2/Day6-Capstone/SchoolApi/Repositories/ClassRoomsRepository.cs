@@ -79,7 +79,15 @@ public class ClassRoomsRepository : IClassRoomsRepository
             WHERE id = @id;
         """);
         command.Parameters.AddWithValue("@id", id);
-        int affectedRows = await command.ExecuteNonQueryAsync();
+        int affectedRows;
+        try
+        {
+            affectedRows = await command.ExecuteNonQueryAsync();
+        }
+        catch
+        {
+            throw;
+        }
         return affectedRows == 1;
     }
     private ResponseClassRoomsDTO MapClassRoom(NpgsqlDataReader reader)
