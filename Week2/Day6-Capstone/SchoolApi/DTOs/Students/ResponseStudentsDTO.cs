@@ -1,4 +1,4 @@
-namespace SchoolApi.DTO.Students;
+namespace SchoolApi.DTOs.Students;
 
 public class ResponseStudentsDTO
 {

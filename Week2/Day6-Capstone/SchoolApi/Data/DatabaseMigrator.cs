@@ -13,6 +13,7 @@ public class DataBaseMigrator
     {
         await EnsureMigrationTablesExist();
         string[] files = GetMigrationFiles();
+        Array.Sort(files);
         foreach (var file in files)
         {
             if (await isMigrationApplied(Path.GetFileName(file)))

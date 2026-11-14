@@ -1,6 +1,6 @@
-using SchoolApi.DTO.Courses;
+using SchoolApi.DTOs.Courses;
 
-namespace SchoolApi.Services.Interface;
+namespace SchoolApi.Services.Interfaces;
 
 public interface ICoursesService
 {
@@ -9,4 +9,5 @@ public interface ICoursesService
     Task<int> CreateAsync(CreateCoursesDTO course);
     Task<bool> UpdateAsync(int id, UpdateCoursesDTO course);
     Task<bool> DeleteAsync(int id);
+    Task<ResponseRosterDTO?> GetRosterAsync(int id);
 }

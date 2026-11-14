@@ -44,7 +44,7 @@ CREATE TABLE enrollments(
     course_id INT NOT NULL,
     enrolled_on DATE NOT NULL DEFAULT CURRENT_DATE,
     marks INT CHECK(marks>=0 and marks<=100),
-    grade VARCHAR(1) NOT NULL,
+    grade VARCHAR(1),
 
     FOREIGN KEY (student_id) REFERENCES students(id)
     ON DELETE RESTRICT,

@@ -1,4 +1,4 @@
-namespace SchoolApi.DTO.Teachers;
+namespace SchoolApi.DTOs.Teachers;
 
 public class CreateTeachersDTO
 {

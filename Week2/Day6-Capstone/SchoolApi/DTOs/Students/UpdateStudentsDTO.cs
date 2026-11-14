@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SchoolApi.DTO.Students;
+namespace SchoolApi.DTOs.Students;
 
 public class UpdateStudentsDTO
 {

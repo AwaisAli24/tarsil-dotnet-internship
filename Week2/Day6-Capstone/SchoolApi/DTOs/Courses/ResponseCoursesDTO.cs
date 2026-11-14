@@ -1,4 +1,4 @@
-namespace SchoolApi.DTO.Courses;
+namespace SchoolApi.DTOs.Courses;
 
 public class ResponseCoursesDTO
 {

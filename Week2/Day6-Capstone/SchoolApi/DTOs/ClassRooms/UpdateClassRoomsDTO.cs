@@ -1,4 +1,4 @@
-namespace SchoolApi.DTO.ClassRoom;
+namespace SchoolApi.DTOs.ClassRoom;
 
 public class UpdateClassRoomsDTO
 {

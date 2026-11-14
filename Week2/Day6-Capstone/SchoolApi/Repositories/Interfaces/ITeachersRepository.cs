@@ -1,4 +1,4 @@
-using SchoolApi.DTO.Teachers;
+using SchoolApi.DTOs.Teachers;
 
 namespace SchoolApi.Repository.Interfaces;
 

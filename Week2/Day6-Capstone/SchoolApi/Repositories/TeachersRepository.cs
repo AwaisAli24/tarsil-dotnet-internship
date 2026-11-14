@@ -1,5 +1,5 @@
 using Npgsql;
-using SchoolApi.DTO.Teachers;
+using SchoolApi.DTOs.Teachers;
 using SchoolApi.Repository.Interfaces;
 
 public class TeachersRepository : ITeachersRepository
@@ -87,6 +87,7 @@ public class TeachersRepository : ITeachersRepository
             DELETE FROM teachers
             WHERE id = @id;
         """;
+        command.Parameters.AddWithValue("@id", id);
         int affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
     }

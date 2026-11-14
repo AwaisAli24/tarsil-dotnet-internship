@@ -1,6 +1,6 @@
-using SchoolApi.DTO.Courses;
+using SchoolApi.DTOs.Courses;
 using SchoolApi.Repository.Interfaces;
-using SchoolApi.Services.Interface;
+using SchoolApi.Services.Interfaces;
 
 namespace SchoolApi.Services;
 
@@ -43,5 +43,18 @@ public class CoursesService : ICoursesService
     {
         bool isDeleted = await _repository.DeleteAsync(id);
         return isDeleted;
+    }
+    public async Task<ResponseRosterDTO?> GetRosterAsync(int id)
+    {
+        ResponseRosterDTO? roster = new ResponseRosterDTO();
+        try
+        {
+            roster = await _repository.GetRosterAsync(id);
+        }
+        catch
+        {
+            throw;
+        }
+        return roster;
     }
 }

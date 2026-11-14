@@ -1,5 +1,7 @@
 using Npgsql;
-using SchoolApi.DTO.Students;
+using NpgsqlTypes;
+using SchoolApi.DTOs.Courses;
+using SchoolApi.DTOs.Students;
 
 public class StudentsRepository : IStudentsRepository
 {
@@ -8,12 +10,19 @@ public class StudentsRepository : IStudentsRepository
     {
         _source = source;
     }
-    public async Task<List<ResponseStudentsDTO>> GetAllAsync()
+    public async Task<List<ResponseStudentsDTO>> GetAllAsync(int limit, int offset, int? classRoomId, string? search)
     {
         using var command = _source.CreateCommand();
         command.CommandText = """
-            SELECT * FROM students;
+            SELECT * FROM students
+            WHERE (@classRoomId IS NULL OR class_room_id = @classRoomId) AND
+                (@search IS NULL OR first_name ILIKE '%' || @search || '%' OR last_name ILIKE '%' || @search || '%')
+                limit @limit offset @offset;
         """;
+        command.Parameters.Add("@classRoomId", NpgsqlDbType.Integer).Value = (object?)classRoomId ?? DBNull.Value;
+        command.Parameters.Add("@search", NpgsqlDbType.Text).Value = (object?)search ?? DBNull.Value;
+        command.Parameters.AddWithValue("@limit", limit);
+        command.Parameters.AddWithValue("@offset", offset);
         using var reader = await command.ExecuteReaderAsync();
         List<ResponseStudentsDTO> students = new List<ResponseStudentsDTO>();
         while (await reader.ReadAsync())
@@ -89,7 +98,83 @@ public class StudentsRepository : IStudentsRepository
         int affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
     }
-    private ResponseStudentsDTO MapStudent(NpgsqlDataReader reader)
+    public async Task<ResponseTranscriptDTO?> GetTranscriptAsync(int id)
+    {
+        using var command = _source.CreateCommand();
+        command.CommandText = """
+            SELECT marks FROM enrollments
+            WHERE id = @id;
+        """;
+        command.Parameters.AddWithValue("@id", id);
+        var exist = await command.ExecuteScalarAsync();
+        command.CommandText = """
+            SELECT s.first_name, s.last_name, t.full_name AS teacher_name, c.title AS course_title ,e.marks, e.grade, COALESCE(AVG(e.marks)OVER(PARTITION BY e.student_id),0) as avg FROM students s
+            INNER JOIN enrollments e
+            ON s.id=e.student_id
+            JOIN courses c
+            ON e.course_id = c.id
+            JOIN teachers t
+            ON t.id = c.teacher_id
+            WHERE s.id = @id;
+        """;
+        command.Parameters.AddWithValue("@id", id);
+        using var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows)
+        {
+            return null;
+        }
+        ResponseTranscriptDTO transcript = new ResponseTranscriptDTO();
+        await reader.ReadAsync();
+        transcript.FirstName = reader.GetString(reader.GetOrdinal("first_name"));
+        transcript.LastName = reader.GetString(reader.GetOrdinal("last_name"));
+        transcript.AvgMarks = reader.GetDouble(reader.GetOrdinal("avg"));
+        do
+        {
+            transcript.courses.Add(new ResponseTranscriptCoursesDTO
+            {
+                TeacherName = reader.GetString(reader.GetOrdinal("teacher_name")),
+                CourseTitle = reader.GetString(reader.GetOrdinal("course_title")),
+                Marks = reader.IsDBNull(reader.GetOrdinal("marks")) ? null : reader.GetInt32(reader.GetOrdinal("marks")),
+                Grade = reader.IsDBNull(reader.GetOrdinal("marks")) ? "In progress" : reader.GetString(reader.GetOrdinal("grade"))
+            });
+        } while (await reader.ReadAsync());
+        return transcript;
+    }
+
+    public async Task<bool> ImportStudentDataCSVAsync(List<ImportStudentsDTO> students)
+    {
+        using var connection = _source.CreateConnection();
+        await connection.OpenAsync();
+        using var transaction = await connection.BeginTransactionAsync();
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = """
+                INSERT INTO students(roll_number,first_name,last_name,email,class_room_id,enrolled_on)
+                VALUES(@roll_number,@first_name,@last_name,@email,@class_room_id,@enrolled_on);
+            """;
+            foreach (var student in students)
+            {
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@roll_number", student.RollNumber);
+                command.Parameters.AddWithValue("@first_name", student.FirstName);
+                command.Parameters.AddWithValue("@last_name", student.LastName);
+                command.Parameters.AddWithValue("@email", student.Email);
+                command.Parameters.AddWithValue("@class_room_id", student.ClassRoomId);
+                command.Parameters.AddWithValue("enrolled_on", DateOnly.FromDateTime(DateTime.Now));
+                await command.ExecuteNonQueryAsync();
+            }
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+    public static ResponseStudentsDTO MapStudent(NpgsqlDataReader reader)
     {
         return new ResponseStudentsDTO
         {
@@ -102,4 +187,5 @@ public class StudentsRepository : IStudentsRepository
             Enrolled_on = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("enrolled_on")))
         };
     }
+
 }

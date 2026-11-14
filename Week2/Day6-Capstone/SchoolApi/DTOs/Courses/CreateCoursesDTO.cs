@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SchoolApi.DTO.Courses;
+namespace SchoolApi.DTOs.Courses;
 
 public class CreateCoursesDTO
 {

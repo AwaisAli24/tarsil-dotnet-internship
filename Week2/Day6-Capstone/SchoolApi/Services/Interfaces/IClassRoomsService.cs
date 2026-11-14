@@ -1,6 +1,6 @@
-using SchoolApi.DTO.ClassRoom;
+using SchoolApi.DTOs.ClassRoom;
 
-namespace SchoolApi.Services.Interface;
+namespace SchoolApi.Services.Interfaces;
 
 public interface IClassRoomsService
 {

@@ -1,4 +1,4 @@
-using SchoolApi.DTO.ClassRoom;
+using SchoolApi.DTOs.ClassRoom;
 
 namespace SchoolApi.Repository.Interfaces;
 

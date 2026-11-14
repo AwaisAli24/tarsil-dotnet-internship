@@ -1,6 +1,6 @@
-using SchoolApi.DTO.Teachers;
+using SchoolApi.DTOs.Teachers;
 
-namespace SchoolApi.Services.Interface;
+namespace SchoolApi.Services.Interfaces;
 
 public interface ITeacherService
 {

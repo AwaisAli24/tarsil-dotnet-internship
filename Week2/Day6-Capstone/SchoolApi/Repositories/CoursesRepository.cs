@@ -1,5 +1,6 @@
 using Npgsql;
-using SchoolApi.DTO.Courses;
+using SchoolApi.DTOs.Courses;
+using SchoolApi.DTOs.Students;
 using SchoolApi.Repository.Interfaces;
 
 namespace SchoolApi.Repository;
@@ -89,6 +90,41 @@ public class CoursesRepository : ICoursesRepository
         command.Parameters.AddWithValue("@id", id);
         int affectedRows = await command.ExecuteNonQueryAsync();
         return affectedRows == 1;
+    }
+    public async Task<ResponseRosterDTO?> GetRosterAsync(int id)
+    {
+        using var command = _source.CreateCommand();
+        command.CommandText = """
+            SELECT c.code,c.title,c.credit_hours,c.capacity,t.full_name AS teacher_name,s.*,c.capacity - COUNT(e.course_id) over() AS seats_left FROM courses c
+            JOIN enrollments e
+            ON c.id = e.course_id
+            JOIN teachers t
+            ON t.id = c.teacher_id
+            JOIN students s
+            ON s.id = e.student_id
+            WHERE c.id = @id;
+        """;
+        command.Parameters.AddWithValue("@id", id);
+        ResponseRosterDTO roster = new ResponseRosterDTO();
+
+        using var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows)
+        {
+            return null;
+        }
+        await reader.ReadAsync();
+        roster.CourseCode = reader.GetString(reader.GetOrdinal("code"));
+        roster.Title = reader.GetString(reader.GetOrdinal("title"));
+        roster.CreditHours = reader.GetInt32(reader.GetOrdinal("credit_hours"));
+        roster.Capacity = reader.GetInt32(reader.GetOrdinal("capacity"));
+        roster.TeacherName = reader.GetString(reader.GetOrdinal("teacher_name"));
+        roster.SeatsLeft = reader.GetInt32(reader.GetOrdinal("seats_left"));
+        do
+        {
+            roster.EnrolledStudents.Add(StudentsRepository.MapStudent(reader));
+        } while (await reader.ReadAsync());
+        return roster;
+
     }
     private ResponseCoursesDTO MapCourse(NpgsqlDataReader reader)
     {

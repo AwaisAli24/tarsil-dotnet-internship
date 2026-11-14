@@ -1,7 +1,7 @@
-using SchoolApi.Services.Interface;
-using SchoolApi.DTO.Students;
+using SchoolApi.Services.Interfaces;
+using SchoolApi.DTOs.Students;
 using Npgsql;
-
+using CsvHelper;
 public class StudentsService : IStudentsService
 {
     private readonly IStudentsRepository _repository;
@@ -9,9 +9,9 @@ public class StudentsService : IStudentsService
     {
         _repository = repository;
     }
-    public async Task<List<ResponseStudentsDTO>> GetAllAsync()
+    public async Task<List<ResponseStudentsDTO>> GetAllAsync(int limit, int offset, int? classRoomId, string? search)
     {
-        var students = await _repository.GetAllAsync();
+        var students = await _repository.GetAllAsync(limit, offset, classRoomId, search);
         return students;
     }
     public async Task<ResponseStudentsDTO?> GetByIdAsync(int id)
@@ -69,9 +69,31 @@ public class StudentsService : IStudentsService
         }
         return isUpdated;
     }
+    public async Task<ResponseTranscriptDTO?> GetTranscriptAsync(int id)
+    {
+        ResponseTranscriptDTO? transcript = new ResponseTranscriptDTO();
+        try
+        {
+            transcript = await _repository.GetTranscriptAsync(id);
+        }
+        catch
+        {
+            throw;
+        }
+        return transcript;
+    }
     public async Task<bool> DeleteAsync(int id)
     {
         bool isDeleted = await _repository.DeleteAsync(id);
         return isDeleted;
+    }
+
+    public async Task<bool> ImportStudentDataCSVAsync(IFormFile file)
+    {
+        using var reader = new StreamReader(file.OpenReadStream());
+        using var csv = CsvReader.Create(reader);
+        var students = csv.GetRecords<ImportStudentsDTO>().ToList();
+        bool success = await _repository.ImportStudentDataCSVAsync(students);
+        return success;
     }
 }

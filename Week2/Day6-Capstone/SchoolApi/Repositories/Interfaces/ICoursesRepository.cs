@@ -1,6 +1,6 @@
 using Npgsql;
-using SchoolApi.DTO.ClassRoom;
-using SchoolApi.DTO.Courses;
+using SchoolApi.DTOs.ClassRoom;
+using SchoolApi.DTOs.Courses;
 
 namespace SchoolApi.Repository.Interfaces;
 
@@ -11,4 +11,5 @@ public interface ICoursesRepository
     Task<int> CreateAsync(CreateCoursesDTO course);
     Task<bool> UpdateAsync(int id, UpdateCoursesDTO course);
     Task<bool> DeleteAsync(int id);
+    Task<ResponseRosterDTO?> GetRosterAsync(int id);
 }

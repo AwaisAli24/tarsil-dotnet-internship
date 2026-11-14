@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using SchoolApi.DTO.Teachers;
-using SchoolApi.Services.Interface;
+using SchoolApi.DTOs.Teachers;
+using SchoolApi.Services.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]

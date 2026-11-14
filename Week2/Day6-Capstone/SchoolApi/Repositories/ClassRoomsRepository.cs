@@ -1,5 +1,5 @@
 using Npgsql;
-using SchoolApi.DTO.ClassRoom;
+using SchoolApi.DTOs.ClassRoom;
 using SchoolApi.Repository.Interfaces;
 
 public class ClassRoomsRepository : IClassRoomsRepository

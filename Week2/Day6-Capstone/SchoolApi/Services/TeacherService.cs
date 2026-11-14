@@ -1,7 +1,7 @@
 using Npgsql;
-using SchoolApi.DTO.Teachers;
+using SchoolApi.DTOs.Teachers;
 using SchoolApi.Repository.Interfaces;
-using SchoolApi.Services.Interface;
+using SchoolApi.Services.Interfaces;
 
 namespace SchoolApi.Services;
 

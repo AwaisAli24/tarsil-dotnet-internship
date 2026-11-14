@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using SchoolApi.DTO.Courses;
-using SchoolApi.Services.Interface;
+using SchoolApi.DTOs.Courses;
+using SchoolApi.Services.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -52,5 +52,16 @@ public class CoursesController : ControllerBase
             return NotFound();
         }
         return Ok($"Course with id {id} Deleted successfully.");
+    }
+    [HttpGet("{id:int}/roster")]
+    public async Task<ActionResult> GetRosterAsync(int id)
+    {
+        ResponseRosterDTO? roster = new ResponseRosterDTO();
+        roster = await _service.GetRosterAsync(id);
+        if (roster == null)
+        {
+            return NotFound();
+        }
+        return Ok(roster);
     }
 }

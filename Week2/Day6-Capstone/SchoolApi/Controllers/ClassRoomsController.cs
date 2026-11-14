@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using SchoolApi.DTO.ClassRoom;
-using SchoolApi.Services.Interface;
+using SchoolApi.DTOs.ClassRoom;
+using SchoolApi.Services.Interfaces;
 
 namespace SchoolApi.Controllers;
 

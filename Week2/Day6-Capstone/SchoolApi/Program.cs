@@ -1,9 +1,12 @@
 using Npgsql;
 using SchoolApi.Data;
+using SchoolApi.Exceptions;
+using SchoolApi.Repositories;
+using SchoolApi.Repositories.Interfaces;
 using SchoolApi.Repository;
 using SchoolApi.Repository.Interfaces;
 using SchoolApi.Services;
-using SchoolApi.Services.Interface;
+using SchoolApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +39,14 @@ builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<ICoursesRepository, CoursesRepository>();
 builder.Services.AddScoped<ICoursesService, CoursesService>();
 
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentsRepository>();
+builder.Services.AddScoped<IEnrollmentsService, EnrollmentsService>();
+
+builder.Services.AddScoped<IReportsRepository, ReportsRepository>();
+builder.Services.AddScoped<IReportsService, ReportsService>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.AddSingleton<DataBaseMigrator>();
 
 var app = builder.Build();
@@ -48,6 +59,8 @@ if (app.Environment.IsDevelopment())
 
 var migrator = app.Services.GetRequiredService<DataBaseMigrator>();
 await migrator.RunAsync();
+
+app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
 
