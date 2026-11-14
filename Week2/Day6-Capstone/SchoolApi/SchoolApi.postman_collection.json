@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
     "name": "SchoolApi - End-to-End & Error Checking Tests",
-    "description": "Comprehensive Postman test collection for SchoolApi covering all controllers and endpoints:\n- ClassRooms, Teachers, Students, Courses, Enrollments, and Reports\n- Full CRUD operations, Transcripts, Rosters, Course Stats, Classroom Toppers, and Update Marks\n- Happy paths, boundary checks, and error scenarios (400 Bad Request, 404 Not Found, 409 Conflict)\n- Relational constraint verification (FK RESTRICT, duplicate keys, capacity overflow).\n\n### Dependency Execution Order:\n1. **ClassRooms (Parent)**: Create -> Read -> Update -> Error checks -> Temporary Delete check\n2. **Teachers (Parent)**: Create -> Read -> Update -> Error checks -> Temporary Delete check\n3. **Students (Child of ClassRoom)**: Create -> Read with Pagination/Search filters -> Update -> Error checks -> Temporary Delete check\n4. **Courses (Child of Teacher)**: Create -> Read -> Update -> Error checks -> Temporary Delete check\n5. **Enrollments (Child of Student & Course)**:\n   - Add Enrollment (Happy Path)\n   - Update Marks (Happy Path & Errors: >100, <0, 404)\n   - Add Enrollment Errors: Duplicate Student & Course (409), Non-existent Course (409), Non-existent Student (409), Invalid Data Type (400)\n   - Capacity Overflow Verification (Capacity = 1)\n6. **Transcripts & Rosters**:\n   - Student Transcript (Happy Path & 404)\n   - Course Roster (Happy Path & 404)\n7. **Reports**:\n   - Classroom Toppers (Happy Path & Error limit < 1)\n   - Course Stats (Happy Path & 404)\n8. **Relational Constraints**:\n   - Delete Teacher while Course exists (409 Conflict)\n   - Delete ClassRoom while Student exists (409 Conflict)",
+    "description": "Comprehensive Postman test collection for SchoolApi covering all controllers and endpoints:\n- ClassRooms, Teachers, Students, Courses, Enrollments, and Reports\n- Full CRUD operations, Transcripts, Rosters, Course Stats, Classroom Toppers, CSV Bulk Import, and Update Marks\n- Happy paths, boundary checks, and error scenarios (400 Bad Request, 404 Not Found, 409 Conflict)\n- Relational constraint verification (FK RESTRICT, duplicate keys, capacity overflow).\n\n### Dependency Execution Order:\n1. **ClassRooms (Parent)**: Create -> Read -> Update -> Error checks -> Temporary Delete check\n2. **Teachers (Parent)**: Create -> Read -> Update -> Error checks -> Temporary Delete check\n3. **Students (Child of ClassRoom)**: Create -> Read with Pagination/Search filters -> Parameter validation errors -> Update -> Unique constraint errors -> CSV Bulk Import -> Temporary Delete check\n4. **Courses (Child of Teacher)**: Create -> Read -> Update -> Credit Hours & Capacity range errors -> Temporary Delete check\n5. **Enrollments (Child of Student & Course)**:\n   - Add Enrollment (Happy Path)\n   - Update Marks (Happy Path & Errors: >100, <0, 404)\n   - Add Enrollment Errors: Duplicate Student & Course (409), Non-existent Course (409), Non-existent Student (409), Invalid Data Type (400)\n   - Capacity Overflow Verification (Capacity = 1)\n6. **Transcripts & Rosters**:\n   - Student Transcript (Happy Path & 404)\n   - Course Roster (Happy Path & 404)\n7. **Reports**:\n   - Classroom Toppers (Happy Path & Error limit < 1)\n   - Course Stats (Happy Path & 404)\n8. **Relational Constraints**:\n   - Delete Teacher while Course exists (409 Conflict)\n   - Delete ClassRoom while Student exists (409 Conflict)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -974,7 +974,79 @@
           }
         },
         {
-          "name": "3.5 [Happy Path] Get Student By Id",
+          "name": "3.5 [Error] Get Students - Invalid Page (< 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error message indicates invalid page number', function () { pm.expect(pm.response.text()).to.include('Page number cannot be zero or negative'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Students?page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Validates that page < 1 returns 400 Bad Request."
+          }
+        },
+        {
+          "name": "3.6 [Error] Get Students - Invalid ClassRoom ID (< 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Error message indicates invalid classroom id', function () { pm.expect(pm.response.text()).to.include('Class Room id cannot be zero or negative'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/Students?classRoomId=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Students"
+              ],
+              "query": [
+                {
+                  "key": "classRoomId",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Validates that classRoomId < 1 returns 400 Bad Request."
+          }
+        },
+        {
+          "name": "3.7 [Happy Path] Get Student By Id",
           "event": [
             {
               "listen": "test",
@@ -1009,7 +1081,7 @@
           }
         },
         {
-          "name": "3.6 [Happy Path] Update Student",
+          "name": "3.8 [Happy Path] Update Student",
           "event": [
             {
               "listen": "test",
@@ -1048,7 +1120,7 @@
           }
         },
         {
-          "name": "3.7 [Error] Create Student - Non-Existent ClassRoom ID",
+          "name": "3.9 [Error] Create Student - Non-Existent ClassRoom ID",
           "event": [
             {
               "listen": "test",
@@ -1086,7 +1158,7 @@
           }
         },
         {
-          "name": "3.8 [Error] Create Student - Duplicate Roll Number",
+          "name": "3.10 [Error] Create Student - Duplicate Roll Number",
           "event": [
             {
               "listen": "test",
@@ -1124,7 +1196,87 @@
           }
         },
         {
-          "name": "3.9 [Setup Delete Test] Create Temporary Student",
+          "name": "3.11 [Error] Create Student - Duplicate Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Error indicates email unique violation', function () { pm.expect(pm.response.text()).to.include('Email Should be unique'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rollNumber\": \"STU-UNIQUE-ROLL-99\",\n  \"firstName\": \"Duplicate\",\n  \"lastName\": \"Email\",\n  \"email\": \"alex.mercer.updated@student.school.edu\",\n  \"classRoomId\": {{classRoomId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Students",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Students"
+              ]
+            },
+            "description": "Attempts to create a student with an already registered email, expecting 409 Conflict."
+          }
+        },
+        {
+          "name": "3.12 [Happy Path] Import Students from CSV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "students_import.csv",
+                  "description": "CSV file containing RollNumber,FirstName,LastName,Email,ClassRoomId"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Students/import",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Students",
+                "import"
+              ]
+            },
+            "description": "Bulk imports students from a CSV file via multipart/form-data with key 'file'."
+          }
+        },
+        {
+          "name": "3.13 [Setup Delete Test] Create Temporary Student",
           "event": [
             {
               "listen": "test",
@@ -1163,7 +1315,7 @@
           }
         },
         {
-          "name": "3.10 [Happy Path] Delete Temporary Student",
+          "name": "3.14 [Happy Path] Delete Temporary Student",
           "event": [
             {
               "listen": "test",
@@ -1193,7 +1345,7 @@
           }
         },
         {
-          "name": "3.11 [Verify] Get Deleted Student By ID",
+          "name": "3.15 [Verify] Get Deleted Student By ID",
           "event": [
             {
               "listen": "test",
@@ -1457,7 +1609,85 @@
           }
         },
         {
-          "name": "4.7 [Setup Delete Test] Create Temporary Course",
+          "name": "4.7 [Error] Create Course - Capacity Above Range (> 60)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Validation error for capacity', function () { pm.expect(JSON.stringify(pm.response.json()).toLowerCase()).to.include('capacity'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"CS-CAP-OVER\",\n  \"title\": \"Over Capacity Course\",\n  \"creditHours\": 3,\n  \"capacity\": 65,\n  \"teacherId\": {{teacherId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Courses"
+              ]
+            },
+            "description": "Validates that course capacity > 60 fails model validation with 400 Bad Request."
+          }
+        },
+        {
+          "name": "4.8 [Error] Create Course - Capacity Below Range (< 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Validation error for capacity', function () { pm.expect(JSON.stringify(pm.response.json()).toLowerCase()).to.include('capacity'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"CS-CAP-UNDER\",\n  \"title\": \"Zero Capacity Course\",\n  \"creditHours\": 3,\n  \"capacity\": 0,\n  \"teacherId\": {{teacherId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Courses"
+              ]
+            },
+            "description": "Validates that course capacity < 1 fails model validation with 400 Bad Request."
+          }
+        },
+        {
+          "name": "4.9 [Setup Delete Test] Create Temporary Course",
           "event": [
             {
               "listen": "test",
@@ -1496,7 +1726,7 @@
           }
         },
         {
-          "name": "4.8 [Happy Path] Delete Temporary Course",
+          "name": "4.10 [Happy Path] Delete Temporary Course",
           "event": [
             {
               "listen": "test",
@@ -1526,7 +1756,7 @@
           }
         },
         {
-          "name": "4.9 [Verify] Get Deleted Course By ID",
+          "name": "4.11 [Verify] Get Deleted Course By ID",
           "event": [
             {
               "listen": "test",
