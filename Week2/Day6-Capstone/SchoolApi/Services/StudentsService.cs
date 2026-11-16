@@ -64,9 +64,14 @@ public class StudentsService : IStudentsService
         {
             throw new ArgumentException("Date of Birth cannot be in the future.");
         }
-        if (DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year < 4 || DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year > 24)
+        int age = DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year;
+        if (student.DateOfBirth > DateOnly.FromDateTime(DateTime.Now).AddYears(-age))
         {
-            throw new ArgumentException("Age must be between 4 and 24 years.");
+            age--;
+        }
+        if (age < 4 || age > 25)
+        {
+            throw new ArgumentException("Age must be between 4 and 25 years.");
         }
         bool isUpdated;
         try

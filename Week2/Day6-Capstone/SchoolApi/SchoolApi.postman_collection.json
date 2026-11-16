@@ -1716,6 +1716,16 @@
           "name": "4.4 [Happy Path] Update Course",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.collectionVariables.set(\"courseCode\", \"CS-UPD-\" + rand);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -1736,7 +1746,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CS-101\",\n  \"title\": \"Advanced Programming & Algorithms\",\n  \"creditHours\": 4,\n  \"capacity\": 50,\n  \"teacherId\": {{teacherId}}\n}"
+              "raw": "{\n  \"code\": \"{{courseCode}}\",\n  \"title\": \"Advanced Programming & Algorithms\",\n  \"creditHours\": 4,\n  \"capacity\": 50,\n  \"teacherId\": {{teacherId}}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Courses/{{courseId}}",
