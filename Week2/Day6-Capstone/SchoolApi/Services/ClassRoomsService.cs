@@ -49,7 +49,24 @@ public class ClassRoomsService : IClassRoomsService
     }
     public async Task<bool> UpdateAsync(int id, UpdateClassRoomsDTO classroom)
     {
-        bool isUpdated = await _repository.UpdateAsync(id, classroom);
+        bool isUpdated;
+        try
+        {
+
+            isUpdated = await _repository.UpdateAsync(id, classroom);
+        }
+        catch (PostgresException e) when (e.SqlState == "23505")
+        {
+            throw new InvalidOperationException("ClassRoom with the same name already exists.");
+        }
+        catch (PostgresException e) when (e.SqlState == "23503")
+        {
+            throw new InvalidOperationException("Invalid CourseId. Course does not exist.");
+        }
+        catch
+        {
+            throw;
+        }
         return isUpdated;
     }
     public async Task<bool> DeleteAsync(int id)

@@ -36,17 +36,18 @@ public class EnrollmentsService : IEnrollmentsService
         }
         return id;
     }
-    public async Task<bool> UpdateMarksAsync(int id, int marks)
+    public async Task<bool> UpdateMarksAsync(int id, int? marks)
     {
         if (marks > 100 || marks < 0)
         {
             throw new ArgumentException("Marks should be between 0-100");
         }
         bool isUpdated;
+        int marksValue = marks ?? 0;
         try
         {
 
-            isUpdated = await _repository.UpdateMarksAsync(id, marks);
+            isUpdated = await _repository.UpdateMarksAsync(id, marksValue);
         }
         catch
         {

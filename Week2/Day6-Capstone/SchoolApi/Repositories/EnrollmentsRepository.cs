@@ -2,6 +2,7 @@
 using Npgsql;
 using SchoolApi.DTOs.Enrollments;
 using SchoolApi.Repository.Interfaces;
+using SchoolApi.Services;
 
 namespace SchoolApi.Repository;
 
@@ -90,7 +91,7 @@ public class EnrollmentsRepository : IEnrollmentRepository
                 grade = @grade
             WHERE id = @id;
         """;
-        string grade = SchoolApi.Services.GradingRules.CalculateGrade(marks);
+        string grade = GradingRules.CalculateGrade(marks);
         command.Parameters.AddWithValue("@marks", marks);
         command.Parameters.AddWithValue("@grade", grade);
         command.Parameters.AddWithValue("@id", id);

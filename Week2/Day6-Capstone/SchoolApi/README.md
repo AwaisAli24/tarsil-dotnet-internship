@@ -257,23 +257,50 @@ Migrations are located in `SchoolApi/db/Migrations/` and automatically executed 
 - [.NET 10 SDK](https://dotnet.microsoft.com/)
 - [PostgreSQL](https://www.postgresql.org/) running locally or in Docker
 
-### Configuration
-Update the database connection string in `SchoolApi/appsettings.json` or `appsettings.Development.json`:
+### Step 1: Create Database & User
+Connect to PostgreSQL using `psql` (or pgAdmin) and create the dedicated database user and database:
 
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=school_db;Username=postgres;Password=your_password"
-  }
-}
+```bash
+# Connect to PostgreSQL as superuser
+psql -U postgres
 ```
 
-### Running the API
+Execute the following SQL commands:
+```sql
+-- Create dedicated database user
+CREATE USER school_user WITH PASSWORD 'your_secure_password';
+
+-- Create database owned by the user
+CREATE DATABASE school_db OWNER school_user;
+
+-- Grant all privileges on the database
+GRANT ALL PRIVILEGES ON DATABASE school_db TO school_user;
+```
+
+*(Alternatively, run as a terminal one-liner:)*
 ```bash
-# Navigate to API project
+psql -U postgres -c "CREATE USER school_user WITH PASSWORD 'your_secure_password';" \
+                -c "CREATE DATABASE school_db OWNER school_user;" \
+                -c "GRANT ALL PRIVILEGES ON DATABASE school_db TO school_user;"
+```
+
+### Step 2: Configure Connection String via .NET User Secrets
+To adhere to the security rule **"never commit the password"**, database credentials must never be placed in `appsettings.json` or committed to version control. `Program.cs` reads the connection string securely through the **.NET Secret Manager** via `builder.Configuration.AddUserSecrets<Program>()`:
+
+```bash
+# Navigate to the API project directory
 cd SchoolApi
 
-# Run application (migrations execute automatically on launch)
+# Store the connection string securely in User Secrets
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=school_db;Username=school_user;Password=your_secure_password"
+```
+
+> [!NOTE]
+> `SchoolApi.csproj` has `<UserSecretsId>3dbbb5f8-2d65-436b-a655-794143d5dbc1</UserSecretsId>` pre-configured. User secrets are stored securely outside the source tree in your local user profile directory, keeping sensitive passwords completely out of Git.
+
+### Step 3: Run the Application
+```bash
+# Start the API (database migrations execute automatically on launch)
 dotnet run
 ```
 The application will listen on `http://localhost:5165`.

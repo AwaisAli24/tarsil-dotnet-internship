@@ -143,16 +143,25 @@ public class StudentsRepository : IStudentsRepository
         transcript.AvgMarks = reader.GetDouble(reader.GetOrdinal("avg"));
         do
         {
-            if (reader.IsDBNull(reader.GetOrdinal("marks")))
+            if (reader.IsDBNull(reader.GetOrdinal("course_title")))
             {
                 break;
             }
-            transcript.courses.Add(new ResponseTranscriptCoursesDTO
+            if (reader.IsDBNull(reader.GetOrdinal("marks")))
+            {
+                transcript.InProgressCourses.Add(new InProgressTranscriptCoursesDTO
+                {
+                    TeacherName = reader.GetString(reader.GetOrdinal("teacher_name")),
+                    CourseTitle = reader.GetString(reader.GetOrdinal("course_title"))
+                });
+                continue;
+            }
+            transcript.CompletedCourses.Add(new CompletedTranscriptCoursesDTO
             {
                 TeacherName = reader.GetString(reader.GetOrdinal("teacher_name")),
                 CourseTitle = reader.GetString(reader.GetOrdinal("course_title")),
-                Marks = reader.IsDBNull(reader.GetOrdinal("marks")) ? null : reader.GetInt32(reader.GetOrdinal("marks")),
-                Grade = reader.IsDBNull(reader.GetOrdinal("marks")) ? "In progress" : reader.GetString(reader.GetOrdinal("grade"))
+                Marks = reader.GetInt32(reader.GetOrdinal("marks")),
+                Grade = reader.GetString(reader.GetOrdinal("grade"))
             });
         } while (await reader.ReadAsync());
         return transcript;
@@ -201,7 +210,8 @@ public class StudentsRepository : IStudentsRepository
             LastName = reader.GetString(reader.GetOrdinal("last_name")),
             Email = reader.GetString(reader.GetOrdinal("email")),
             ClassRoomId = reader.GetInt32(reader.GetOrdinal("class_room_id")),
-            Enrolled_on = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("enrolled_on")))
+            Enrolled_on = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("enrolled_on"))),
+            DateOfBirth = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth")))
         };
     }
 

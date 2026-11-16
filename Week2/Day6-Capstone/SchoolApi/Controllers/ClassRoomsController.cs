@@ -53,7 +53,20 @@ public class ClassRoomsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateAsync(int id, UpdateClassRoomsDTO classroom)
     {
-        bool isUpdated = await _service.UpdateAsync(id, classroom);
+        bool isUpdated;
+        try
+        {
+
+            isUpdated = await _service.UpdateAsync(id, classroom);
+        }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
         if (!isUpdated)
         {
             return NotFound($"Classroom with id {id} not found.");

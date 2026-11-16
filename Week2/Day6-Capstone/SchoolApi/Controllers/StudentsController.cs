@@ -60,6 +60,10 @@ public class StudentsController : ControllerBase
         {
             return Conflict(e.Message);
         }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
         return Ok($"Student created with id:{id}");
     }
     [HttpPut("{id:int}")]
@@ -73,6 +77,10 @@ public class StudentsController : ControllerBase
         catch (InvalidOperationException e)
         {
             return Conflict(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
         }
         if (!isUpdated)
         {
