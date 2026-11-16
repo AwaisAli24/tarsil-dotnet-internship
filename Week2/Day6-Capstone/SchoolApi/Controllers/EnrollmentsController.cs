@@ -32,7 +32,7 @@ public class EnrollmentsController : ControllerBase
         }
         return Ok($"Enrollment created with id {id}");
     }
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:int}/marks")]
     public async Task<ActionResult> UpdateMarksAsync(int id, UpdateMarksDTO body)
     {
         bool isUpdated;

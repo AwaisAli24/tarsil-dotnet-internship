@@ -33,6 +33,14 @@ public class ClassRoomsService : IClassRoomsService
         {
             id = await _repository.CreateAsync(classroom);
         }
+        catch (PostgresException e) when (e.SqlState == "23505")
+        {
+            throw new InvalidOperationException("ClassRoom with the same name already exists.");
+        }
+        catch (PostgresException e) when (e.SqlState == "23503")
+        {
+            throw new InvalidOperationException("Invalid CourseId. Course does not exist.");
+        }
         catch
         {
             throw;

@@ -15,10 +15,11 @@ public class ReportsRepository : IReportsRepository
     {
         using var command = _source.CreateCommand();
         command.CommandText = """
-            SELECT s.id,s.first_name,COALESCE(e.marks,0) as marks,COALESCE(e.grade,'') as grade FROM students s
+            SELECT s.id,s.first_name,AVG(COALESCE(e.marks,0)) as marks FROM students s
             JOIN enrollments e
             ON s.id=e.student_id
-            WHERE s.class_room_id = @id
+            WHERE s.class_room_id = @id and e.marks IS NOT NULL
+            GROUP BY s.id
             ORDER BY marks DESC
             LIMIT @limit;
         """;
@@ -33,7 +34,6 @@ public class ReportsRepository : IReportsRepository
                 Id = reader.GetInt32(reader.GetOrdinal("id")),
                 Name = reader.GetString(reader.GetOrdinal("first_name")),
                 Marks = reader.GetInt32(reader.GetOrdinal("marks")),
-                Grade = reader.GetString(reader.GetOrdinal("grade"))
             });
         }
         return toppers;
@@ -75,7 +75,7 @@ public class ReportsRepository : IReportsRepository
         }
         command.CommandText = """
             SELECT grade,count(grade) AS count FROM enrollments
-            WHERE course_id = @id
+            WHERE course_id = @id and grade IS NOT NULL
             GROUP BY grade
             ORDER BY grade;
         """;

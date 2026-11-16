@@ -30,7 +30,16 @@ public class CoursesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateAsync(CreateCoursesDTO course)
     {
-        int id = await _service.CreateAsync(course);
+        int id;
+        try
+        {
+
+            id = await _service.CreateAsync(course);
+        }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
         return Ok($"Course created with Id {id}");
     }
     [HttpPut("{id:int}")]

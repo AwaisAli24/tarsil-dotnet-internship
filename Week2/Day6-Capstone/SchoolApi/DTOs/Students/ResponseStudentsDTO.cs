@@ -8,5 +8,6 @@ public class ResponseStudentsDTO
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public int ClassRoomId { get; set; }
+    public DateOnly DateOfBirth { get; set; }
     public DateOnly Enrolled_on { get; set; }
 }

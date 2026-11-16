@@ -30,7 +30,7 @@ public class EnrollmentsRepository : IEnrollmentRepository
             var result = await command.ExecuteScalarAsync();
             if (result == null || result == DBNull.Value)
             {
-                throw new InvalidOperationException("Course Does not exist.");
+                throw new ArgumentException("Course Does not exist.");
             }
             int capacity = Convert.ToInt32(result);
 

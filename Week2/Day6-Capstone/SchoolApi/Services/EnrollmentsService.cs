@@ -23,12 +23,12 @@ public class EnrollmentsService : IEnrollmentsService
         {
             if (e.MessageText.Contains("student"))
             {
-                throw new InvalidOperationException("Student id does not exist");
+                throw new ArgumentException("Student id does not exist");
             }
-        }
-        catch (PostgresException e)
-        {
-            Console.WriteLine(e.SqlState);
+            if (e.MessageText.Contains("course"))
+            {
+                throw new ArgumentException("Course id does not exist");
+            }
         }
         catch
         {

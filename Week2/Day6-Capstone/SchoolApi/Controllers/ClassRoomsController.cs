@@ -43,6 +43,10 @@ public class ClassRoomsController : ControllerBase
         {
             return BadRequest(e.Message);
         }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
 
         return Ok($"Course created with Id:{id}");
     }

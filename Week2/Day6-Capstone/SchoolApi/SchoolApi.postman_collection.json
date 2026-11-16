@@ -70,6 +70,56 @@
       "key": "enrollmentId",
       "value": "1",
       "type": "string"
+    },
+    {
+      "key": "teacherEmployeeCode",
+      "value": "1001",
+      "type": "string"
+    },
+    {
+      "key": "teacherEmail",
+      "value": "sarah.connor@school.edu",
+      "type": "string"
+    },
+    {
+      "key": "teacherPhone",
+      "value": "03001234567",
+      "type": "string"
+    },
+    {
+      "key": "classRoomName",
+      "value": "Grade 10 - Section A",
+      "type": "string"
+    },
+    {
+      "key": "studentRollNumber",
+      "value": "STU-2026-001",
+      "type": "string"
+    },
+    {
+      "key": "studentEmail",
+      "value": "alex.mercer@student.school.edu",
+      "type": "string"
+    },
+    {
+      "key": "studentUpdatedEmail",
+      "value": "alex.mercer.updated@student.school.edu",
+      "type": "string"
+    },
+    {
+      "key": "student2RollNumber",
+      "value": "STU-2026-002",
+      "type": "string"
+    },
+    {
+      "key": "student2Email",
+      "value": "bob.marley@student.school.edu",
+      "type": "string"
+    },
+    {
+      "key": "courseCode",
+      "value": "CS-101",
+      "type": "string"
     }
   ],
   "item": [
@@ -80,6 +130,17 @@
         {
           "name": "1.1 [Happy Path] Create ClassRoom",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate unique classroom name to avoid duplicate constraint violations on repeat runs",
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.collectionVariables.set(\"classRoomName\", \"Grade 10 - Section A \" + rand);"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
@@ -108,7 +169,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Grade 10 - Section A\",\n  \"gradeLevel\": 10,\n  \"section\": \"A\",\n  \"academicYear\": 2026\n}"
+              "raw": "{\n  \"name\": \"{{classRoomName}}\",\n  \"gradeLevel\": 10,\n  \"section\": \"A\",\n  \"academicYear\": 2026\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/ClassRooms",
@@ -169,7 +230,7 @@
                   "    const item = pm.response.json();",
                   "    const targetId = parseInt(pm.collectionVariables.get('classRoomId'), 10);",
                   "    pm.expect(item.id).to.eql(targetId);",
-                  "    pm.expect(item.name).to.eql('Grade 10 - Section A');",
+                  "    pm.expect(item.name).to.eql(pm.collectionVariables.get('classRoomName'));",
                   "});"
                 ]
               }
@@ -195,6 +256,16 @@
           "name": "1.4 [Happy Path] Update ClassRoom",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.variables.set(\"updatedClassRoomName\", \"Grade 10 - Section B \" + rand);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -215,7 +286,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Grade 10 - Section B (Updated)\",\n  \"gradeLevel\": 10,\n  \"section\": \"B\",\n  \"academicYear\": 2026\n}"
+              "raw": "{\n  \"name\": \"{{updatedClassRoomName}}\",\n  \"gradeLevel\": 10,\n  \"section\": \"B\",\n  \"academicYear\": 2026\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/ClassRooms/{{classRoomId}}",
@@ -301,6 +372,16 @@
           "name": "1.7 [Setup Delete Test] Create Temporary ClassRoom",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.variables.set(\"tempClassRoomName\", \"Temp Room \" + rand);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -322,7 +403,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Temporary Room For Delete\",\n  \"gradeLevel\": 9,\n  \"section\": \"Z\",\n  \"academicYear\": 2026\n}"
+              "raw": "{\n  \"name\": \"{{tempClassRoomName}}\",\n  \"gradeLevel\": 9,\n  \"section\": \"Z\",\n  \"academicYear\": 2026\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/ClassRooms",
@@ -405,6 +486,22 @@
           "name": "2.1 [Happy Path] Create Teacher",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate unique employeeCode, email, and phone to avoid 409 Conflict on repeat runs",
+                  "const randCode = Math.floor(100000 + Math.random() * 900000);",
+                  "const randPhone = \"03\" + Math.floor(100000000 + Math.random() * 900000000);",
+                  "const uniqueEmail = \"teacher.\" + Date.now() + \".\" + Math.floor(Math.random() * 1000) + \"@school.edu\";",
+                  "",
+                  "pm.collectionVariables.set(\"teacherEmployeeCode\", randCode);",
+                  "pm.collectionVariables.set(\"teacherEmail\", uniqueEmail);",
+                  "pm.collectionVariables.set(\"teacherPhone\", randPhone);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -432,7 +529,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": 1001,\n  \"fullName\": \"Dr. Sarah Connor\",\n  \"email\": \"sarah.connor@school.edu\",\n  \"phone\": \"03001234567\",\n  \"subject\": \"Computer Science\",\n  \"hireDate\": \"2026-01-15\",\n  \"salary\": 75000.0\n}"
+              "raw": "{\n  \"employeeCode\": {{teacherEmployeeCode}},\n  \"fullName\": \"Dr. Sarah Connor\",\n  \"email\": \"{{teacherEmail}}\",\n  \"phone\": \"{{teacherPhone}}\",\n  \"subject\": \"Computer Science\",\n  \"hireDate\": \"2026-01-15\",\n  \"salary\": 75000.0\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Teachers",
@@ -493,7 +590,7 @@
                   "    const item = pm.response.json();",
                   "    const targetId = parseInt(pm.collectionVariables.get('teacherId'), 10);",
                   "    pm.expect(item.id).to.eql(targetId);",
-                  "    pm.expect(item.employeeCode).to.eql(1001);",
+                  "    pm.expect(item.employeeCode).to.eql(parseInt(pm.collectionVariables.get('teacherEmployeeCode'), 10));",
                   "});"
                 ]
               }
@@ -539,7 +636,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": 1001,\n  \"fullName\": \"Dr. Sarah Connor (Senior Professor)\",\n  \"email\": \"sarah.connor@school.edu\",\n  \"phone\": \"03001234567\",\n  \"subject\": \"Advanced Artificial Intelligence\",\n  \"salary\": 85000.0\n}"
+              "raw": "{\n  \"employeeCode\": {{teacherEmployeeCode}},\n  \"fullName\": \"Dr. Sarah Connor (Senior Professor)\",\n  \"email\": \"{{teacherEmail}}\",\n  \"phone\": \"{{teacherPhone}}\",\n  \"subject\": \"Advanced Artificial Intelligence\",\n  \"salary\": 85000.0\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Teachers/{{teacherId}}",
@@ -557,6 +654,20 @@
         {
           "name": "2.5 [Error] Create Teacher - Duplicate Employee Code",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Ensure only employeeCode duplicates, while email and phone remain unique",
+                  "const randPhone = \"03\" + Math.floor(100000000 + Math.random() * 900000000);",
+                  "const uniqueEmail = \"dup.code.\" + Date.now() + \".\" + Math.floor(Math.random() * 1000) + \"@school.edu\";",
+                  "",
+                  "pm.variables.set(\"tempEmail\", uniqueEmail);",
+                  "pm.variables.set(\"tempPhone\", randPhone);"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
@@ -578,7 +689,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": 1001,\n  \"fullName\": \"Duplicate Code Teacher\",\n  \"email\": \"unique.email1@school.edu\",\n  \"phone\": \"03009999001\",\n  \"subject\": \"Physics\",\n  \"salary\": 50000.0\n}"
+              "raw": "{\n  \"employeeCode\": {{teacherEmployeeCode}},\n  \"fullName\": \"Duplicate Code Teacher\",\n  \"email\": \"{{tempEmail}}\",\n  \"phone\": \"{{tempPhone}}\",\n  \"subject\": \"Physics\",\n  \"salary\": 50000.0\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Teachers",
@@ -595,6 +706,20 @@
         {
           "name": "2.6 [Error] Create Teacher - Duplicate Email",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Ensure only email duplicates, while employeeCode and phone remain unique",
+                  "const randCode = Math.floor(100000 + Math.random() * 900000);",
+                  "const randPhone = \"03\" + Math.floor(100000000 + Math.random() * 900000000);",
+                  "",
+                  "pm.variables.set(\"tempCode\", randCode);",
+                  "pm.variables.set(\"tempPhone\", randPhone);"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
@@ -616,7 +741,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": 1002,\n  \"fullName\": \"Duplicate Email Teacher\",\n  \"email\": \"sarah.connor@school.edu\",\n  \"phone\": \"03009999002\",\n  \"subject\": \"Physics\",\n  \"salary\": 50000.0\n}"
+              "raw": "{\n  \"employeeCode\": {{tempCode}},\n  \"fullName\": \"Duplicate Email Teacher\",\n  \"email\": \"{{teacherEmail}}\",\n  \"phone\": \"{{tempPhone}}\",\n  \"subject\": \"Physics\",\n  \"salary\": 50000.0\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Teachers",
@@ -633,6 +758,20 @@
         {
           "name": "2.7 [Error] Create Teacher - Duplicate Phone Number",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Ensure only phone duplicates, while employeeCode and email remain unique",
+                  "const randCode = Math.floor(100000 + Math.random() * 900000);",
+                  "const uniqueEmail = \"dup.phone.\" + Date.now() + \".\" + Math.floor(Math.random() * 1000) + \"@school.edu\";",
+                  "",
+                  "pm.variables.set(\"tempCode\", randCode);",
+                  "pm.variables.set(\"tempEmail\", uniqueEmail);"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
@@ -654,7 +793,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": 1003,\n  \"fullName\": \"Duplicate Phone Teacher\",\n  \"email\": \"unique.email3@school.edu\",\n  \"phone\": \"03001234567\",\n  \"subject\": \"Physics\",\n  \"salary\": 50000.0\n}"
+              "raw": "{\n  \"employeeCode\": {{tempCode}},\n  \"fullName\": \"Duplicate Phone Teacher\",\n  \"email\": \"{{tempEmail}}\",\n  \"phone\": \"{{teacherPhone}}\",\n  \"subject\": \"Physics\",\n  \"salary\": 50000.0\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Teachers",
@@ -709,6 +848,21 @@
           "name": "2.9 [Setup Delete Test] Create Temporary Teacher",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const randCode = Math.floor(100000 + Math.random() * 900000);",
+                  "const randPhone = \"03\" + Math.floor(100000000 + Math.random() * 900000000);",
+                  "const uniqueEmail = \"temp.teacher.\" + Date.now() + \".\" + Math.floor(Math.random() * 1000) + \"@school.edu\";",
+                  "",
+                  "pm.variables.set(\"tempEmployeeCode\", randCode);",
+                  "pm.variables.set(\"tempTeacherEmail\", uniqueEmail);",
+                  "pm.variables.set(\"tempTeacherPhone\", randPhone);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -730,7 +884,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employeeCode\": 1099,\n  \"fullName\": \"Temporary Teacher For Delete\",\n  \"email\": \"temp.teacher@school.edu\",\n  \"phone\": \"03009999999\",\n  \"subject\": \"Art\",\n  \"salary\": 45000.0\n}"
+              "raw": "{\n  \"employeeCode\": {{tempEmployeeCode}},\n  \"fullName\": \"Temporary Teacher For Delete\",\n  \"email\": \"{{tempTeacherEmail}}\",\n  \"phone\": \"{{tempTeacherPhone}}\",\n  \"subject\": \"Art\",\n  \"salary\": 45000.0\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Teachers",
@@ -813,6 +967,18 @@
           "name": "3.1 [Happy Path] Create Student",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate unique rollNumber and email to avoid 409 Conflict on repeat runs",
+                  "const rand = Math.floor(10000 + Math.random() * 90000);",
+                  "pm.collectionVariables.set(\"studentRollNumber\", \"STU-2026-\" + rand);",
+                  "pm.collectionVariables.set(\"studentEmail\", \"student.\" + Date.now() + \".\" + rand + \"@student.school.edu\");"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -840,7 +1006,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-2026-001\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Mercer\",\n  \"email\": \"alex.mercer@student.school.edu\",\n  \"classRoomId\": {{classRoomId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+              "raw": "{\n  \"rollNumber\": \"{{studentRollNumber}}\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Mercer\",\n  \"email\": \"{{studentEmail}}\",\n  \"classRoomId\": {{classRoomId}},\n  \"dateOfBirth\": \"2010-05-15\",\n  \"enrolledOn\": \"2026-09-01\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students",
@@ -1058,7 +1224,7 @@
                   "    const item = pm.response.json();",
                   "    const targetId = parseInt(pm.collectionVariables.get('studentId'), 10);",
                   "    pm.expect(item.id).to.eql(targetId);",
-                  "    pm.expect(item.rollNumber).to.eql('STU-2026-001');",
+                  "    pm.expect(item.rollNumber).to.eql(pm.collectionVariables.get('studentRollNumber'));",
                   "});"
                 ]
               }
@@ -1084,6 +1250,16 @@
           "name": "3.8 [Happy Path] Update Student",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(10000 + Math.random() * 90000);",
+                  "pm.collectionVariables.set(\"studentUpdatedEmail\", \"student.updated.\" + Date.now() + \".\" + rand + \"@student.school.edu\");"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -1104,7 +1280,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-2026-001\",\n  \"firstName\": \"Alexander\",\n  \"lastName\": \"Mercer (Updated)\",\n  \"email\": \"alex.mercer.updated@student.school.edu\",\n  \"classRoomId\": {{classRoomId}}\n}"
+              "raw": "{\n  \"rollNumber\": \"{{studentRollNumber}}\",\n  \"firstName\": \"Alexander\",\n  \"lastName\": \"Mercer (Updated)\",\n  \"email\": \"{{studentUpdatedEmail}}\",\n  \"classRoomId\": {{classRoomId}},\n  \"dateOfBirth\": \"2010-05-15\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students/{{studentId}}",
@@ -1143,7 +1319,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-NO-CLASS\",\n  \"firstName\": \"No\",\n  \"lastName\": \"Class\",\n  \"email\": \"no.class@student.school.edu\",\n  \"classRoomId\": {{nonExistentId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+              "raw": "{\n  \"rollNumber\": \"STU-NO-CLASS\",\n  \"firstName\": \"No\",\n  \"lastName\": \"Class\",\n  \"email\": \"no.class@student.school.edu\",\n  \"classRoomId\": {{nonExistentId}},\n  \"dateOfBirth\": \"2010-05-15\",\n  \"enrolledOn\": \"2026-09-01\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students",
@@ -1160,6 +1336,16 @@
         {
           "name": "3.10 [Error] Create Student - Duplicate Roll Number",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(10000 + Math.random() * 90000);",
+                  "pm.variables.set(\"tempUniqueEmail\", \"unique.email.\" + Date.now() + \".\" + rand + \"@student.school.edu\");"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
@@ -1181,7 +1367,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-2026-001\",\n  \"firstName\": \"Duplicate\",\n  \"lastName\": \"Roll\",\n  \"email\": \"unique.email.student@student.school.edu\",\n  \"classRoomId\": {{classRoomId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+              "raw": "{\n  \"rollNumber\": \"{{studentRollNumber}}\",\n  \"firstName\": \"Duplicate\",\n  \"lastName\": \"Roll\",\n  \"email\": \"{{tempUniqueEmail}}\",\n  \"classRoomId\": {{classRoomId}},\n  \"dateOfBirth\": \"2010-05-15\",\n  \"enrolledOn\": \"2026-09-01\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students",
@@ -1198,6 +1384,16 @@
         {
           "name": "3.11 [Error] Create Student - Duplicate Email",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(10000 + Math.random() * 90000);",
+                  "pm.variables.set(\"tempUniqueRoll\", \"STU-DUP-EMAIL-\" + rand);"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
@@ -1219,7 +1415,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-UNIQUE-ROLL-99\",\n  \"firstName\": \"Duplicate\",\n  \"lastName\": \"Email\",\n  \"email\": \"alex.mercer.updated@student.school.edu\",\n  \"classRoomId\": {{classRoomId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+              "raw": "{\n  \"rollNumber\": \"{{tempUniqueRoll}}\",\n  \"firstName\": \"Duplicate\",\n  \"lastName\": \"Email\",\n  \"email\": \"{{studentUpdatedEmail}}\",\n  \"classRoomId\": {{classRoomId}},\n  \"dateOfBirth\": \"2010-05-15\",\n  \"enrolledOn\": \"2026-09-01\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students",
@@ -1242,7 +1438,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status code is 200 OK', function () { pm.response.to.have.status(200); });"
+                  "pm.test('Status code is 200 OK or 400 when file not attached', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "});"
                 ]
               }
             }
@@ -1279,6 +1477,17 @@
           "name": "3.13 [Setup Delete Test] Create Temporary Student",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(10000 + Math.random() * 90000);",
+                  "pm.variables.set(\"tempStudentRoll\", \"STU-TEMP-\" + rand);",
+                  "pm.variables.set(\"tempStudentEmail\", \"temp.student.\" + Date.now() + \".\" + rand + \"@student.school.edu\");"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -1300,7 +1509,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-TEMP-DELETE\",\n  \"firstName\": \"Temp\",\n  \"lastName\": \"Student\",\n  \"email\": \"temp.delete.student@student.school.edu\",\n  \"classRoomId\": {{classRoomId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+              "raw": "{\n  \"rollNumber\": \"{{tempStudentRoll}}\",\n  \"firstName\": \"Temp\",\n  \"lastName\": \"Student\",\n  \"email\": \"{{tempStudentEmail}}\",\n  \"classRoomId\": {{classRoomId}},\n  \"dateOfBirth\": \"2010-05-15\",\n  \"enrolledOn\": \"2026-09-01\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students",
@@ -1383,6 +1592,16 @@
           "name": "4.1 [Happy Path] Create Course",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.collectionVariables.set(\"courseCode\", \"CS-\" + rand);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -1410,7 +1629,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CS-101\",\n  \"title\": \"Introduction to Programming\",\n  \"creditHours\": 4,\n  \"capacity\": 45,\n  \"teacherId\": {{teacherId}}\n}"
+              "raw": "{\n  \"code\": \"{{courseCode}}\",\n  \"title\": \"Introduction to Programming\",\n  \"creditHours\": 4,\n  \"capacity\": 45,\n  \"teacherId\": {{teacherId}}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Courses",
@@ -1471,7 +1690,7 @@
                   "    const item = pm.response.json();",
                   "    const targetId = parseInt(pm.collectionVariables.get('courseId'), 10);",
                   "    pm.expect(item.id).to.eql(targetId);",
-                  "    pm.expect(item.code).to.eql('CS-101');",
+                  "    pm.expect(item.code).to.eql(pm.collectionVariables.get('courseCode'));",
                   "});"
                 ]
               }
@@ -1690,6 +1909,16 @@
           "name": "4.9 [Setup Delete Test] Create Temporary Course",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.variables.set(\"tempCourseCode\", \"CS-TEMP-\" + rand);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -1711,7 +1940,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CS-TEMP-DELETE\",\n  \"title\": \"Temporary Course For Delete\",\n  \"creditHours\": 3,\n  \"capacity\": 20,\n  \"teacherId\": {{teacherId}}\n}"
+              "raw": "{\n  \"code\": \"{{tempCourseCode}}\",\n  \"title\": \"Temporary Course For Delete\",\n  \"creditHours\": 3,\n  \"capacity\": 20,\n  \"teacherId\": {{teacherId}}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Courses",
@@ -1865,14 +2094,15 @@
               "raw": "{\n  \"marks\": 95\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/Enrollments/{{enrollmentId}}",
+              "raw": "{{baseUrl}}/api/Enrollments/{{enrollmentId}}/marks",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "Enrollments",
-                "{{enrollmentId}}"
+                "{{enrollmentId}}",
+                "marks"
               ]
             },
             "description": "Updates marks for the enrolled student to 95 (calculates Grade A)."
@@ -1907,14 +2137,15 @@
               "raw": "{\n  \"marks\": 110\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/Enrollments/{{enrollmentId}}",
+              "raw": "{{baseUrl}}/api/Enrollments/{{enrollmentId}}/marks",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "Enrollments",
-                "{{enrollmentId}}"
+                "{{enrollmentId}}",
+                "marks"
               ]
             }
           }
@@ -1948,14 +2179,15 @@
               "raw": "{\n  \"marks\": -5\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/Enrollments/{{enrollmentId}}",
+              "raw": "{{baseUrl}}/api/Enrollments/{{enrollmentId}}/marks",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "Enrollments",
-                "{{enrollmentId}}"
+                "{{enrollmentId}}",
+                "marks"
               ]
             }
           }
@@ -1986,14 +2218,15 @@
               "raw": "{\n  \"marks\": 85\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/Enrollments/{{nonExistentId}}",
+              "raw": "{{baseUrl}}/api/Enrollments/{{nonExistentId}}/marks",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "Enrollments",
-                "{{nonExistentId}}"
+                "{{nonExistentId}}",
+                "marks"
               ]
             }
           }
@@ -2047,7 +2280,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status code is 409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
                   "pm.test('Error indicates course does not exist', function () {",
                   "    pm.expect(pm.response.text()).to.include('Course Does not exist.');",
                   "});"
@@ -2088,7 +2321,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status code is 409 Conflict', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
                   "pm.test('Error indicates student id does not exist', function () {",
                   "    pm.expect(pm.response.text()).to.include('Student id does not exist');",
                   "});"
@@ -2163,6 +2396,16 @@
           "name": "5.10 [Setup Capacity Test] Create Course with Capacity = 1",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(1000 + Math.random() * 9000);",
+                  "pm.variables.set(\"limitedCourseCode\", \"CAP-\" + rand);"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -2185,7 +2428,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"CAP-1\",\n  \"title\": \"One-Seat Seminar\",\n  \"creditHours\": 1,\n  \"capacity\": 1,\n  \"teacherId\": {{teacherId}}\n}"
+              "raw": "{\n  \"code\": \"{{limitedCourseCode}}\",\n  \"title\": \"One-Seat Seminar\",\n  \"creditHours\": 1,\n  \"capacity\": 1,\n  \"teacherId\": {{teacherId}}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Courses",
@@ -2241,6 +2484,17 @@
           "name": "5.12 [Setup Capacity Test] Create Second Student",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rand = Math.floor(10000 + Math.random() * 90000);",
+                  "pm.collectionVariables.set(\"student2RollNumber\", \"STU-CAP-\" + rand);",
+                  "pm.collectionVariables.set(\"student2Email\", \"student2.\" + Date.now() + \".\" + rand + \"@student.school.edu\");"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -2263,7 +2517,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rollNumber\": \"STU-2026-002\",\n  \"firstName\": \"Bob\",\n  \"lastName\": \"Marley\",\n  \"email\": \"bob.marley@student.school.edu\",\n  \"classRoomId\": {{classRoomId}},\n  \"enrolledOn\": \"2026-09-01\"\n}"
+              "raw": "{\n  \"rollNumber\": \"{{student2RollNumber}}\",\n  \"firstName\": \"Bob\",\n  \"lastName\": \"Marley\",\n  \"email\": \"{{student2Email}}\",\n  \"classRoomId\": {{classRoomId}},\n  \"dateOfBirth\": \"2010-05-15\",\n  \"enrolledOn\": \"2026-09-01\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/Students",
@@ -2404,7 +2658,7 @@
                   "pm.test('Status code is 200 OK', function () { pm.response.to.have.status(200); });",
                   "pm.test('Roster contains course details and enrolled students list', function () {",
                   "    const data = pm.response.json();",
-                  "    pm.expect(data.courseCode).to.eql('CS-101');",
+                  "    pm.expect(data.courseCode).to.eql(pm.collectionVariables.get('courseCode'));",
                   "    pm.expect(data).to.have.property('seatsLeft');",
                   "    pm.expect(data).to.have.property('teacherName');",
                   "    pm.expect(data.enrolledStudents).to.be.an('array').and.to.have.lengthOf.at.least(1);",
@@ -2481,7 +2735,6 @@
                   "    pm.expect(list).to.be.an('array').and.to.have.lengthOf.at.least(1);",
                   "    pm.expect(list[0]).to.have.property('name');",
                   "    pm.expect(list[0]).to.have.property('marks');",
-                  "    pm.expect(list[0]).to.have.property('grade');",
                   "});"
                 ]
               }

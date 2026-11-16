@@ -96,11 +96,11 @@ public class CoursesRepository : ICoursesRepository
         using var command = _source.CreateCommand();
         command.CommandText = """
             SELECT c.code,c.title,c.credit_hours,c.capacity,t.full_name AS teacher_name,s.*,c.capacity - COUNT(e.course_id) over() AS seats_left FROM courses c
-            JOIN enrollments e
+            LEFT JOIN enrollments e
             ON c.id = e.course_id
-            JOIN teachers t
+            LEFT JOIN teachers t
             ON t.id = c.teacher_id
-            JOIN students s
+            LEFT JOIN students s
             ON s.id = e.student_id
             WHERE c.id = @id;
         """;
@@ -121,6 +121,10 @@ public class CoursesRepository : ICoursesRepository
         roster.SeatsLeft = reader.GetInt32(reader.GetOrdinal("seats_left"));
         do
         {
+            if (reader.IsDBNull(reader.GetOrdinal("id")))
+            {
+                break;
+            }
             roster.EnrolledStudents.Add(StudentsRepository.MapStudent(reader));
         } while (await reader.ReadAsync());
         return roster;

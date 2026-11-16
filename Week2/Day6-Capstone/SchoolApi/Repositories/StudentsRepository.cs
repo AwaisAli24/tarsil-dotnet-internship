@@ -17,6 +17,7 @@ public class StudentsRepository : IStudentsRepository
             SELECT * FROM students
             WHERE (@classRoomId IS NULL OR class_room_id = @classRoomId) AND
                 (@search IS NULL OR first_name ILIKE '%' || @search || '%' OR last_name ILIKE '%' || @search || '%')
+                ORDER BY id
                 limit @limit offset @offset;
         """;
         command.Parameters.Add("@classRoomId", NpgsqlDbType.Integer).Value = (object?)classRoomId ?? DBNull.Value;
@@ -50,8 +51,8 @@ public class StudentsRepository : IStudentsRepository
     {
         using var command = _source.CreateCommand();
         command.CommandText = """
-            INSERT INTO students(roll_number,first_name,last_name,email,class_room_id,enrolled_on)
-            VALUES(@roll_number,@first_name,@last_name,@email,@class_room_id,@enrolled_on)
+            INSERT INTO students(roll_number,first_name,last_name,email,class_room_id,enrolled_on,date_of_birth)
+            VALUES(@roll_number,@first_name,@last_name,@email,@class_room_id,@enrolled_on,@date_of_birth)
             RETURNING id;
         """;
         command.Parameters.AddWithValue("@roll_number", student.RollNumber);
@@ -59,7 +60,8 @@ public class StudentsRepository : IStudentsRepository
         command.Parameters.AddWithValue("@last_name", student.LastName);
         command.Parameters.AddWithValue("@email", student.Email);
         command.Parameters.AddWithValue("@class_room_id", student.ClassRoomId);
-        command.Parameters.AddWithValue("enrolled_on", DateOnly.FromDateTime(DateTime.Now));
+        command.Parameters.AddWithValue("@enrolled_on", DateOnly.FromDateTime(DateTime.Now));
+        command.Parameters.AddWithValue("@date_of_birth", student.DateOfBirth);
 
         int id = (int)(await command.ExecuteScalarAsync())!;
         return id;
@@ -74,7 +76,8 @@ public class StudentsRepository : IStudentsRepository
                 first_name = @first_name,
                 last_name = @last_name,
                 email = @email,
-                class_room_id = @class_room_id
+                class_room_id = @class_room_id,
+                date_of_birth = @date_of_birth
             WHERE id = @id;
         """;
         command.Parameters.AddWithValue("@roll_number", student.RollNumber);
@@ -82,6 +85,7 @@ public class StudentsRepository : IStudentsRepository
         command.Parameters.AddWithValue("@last_name", student.LastName);
         command.Parameters.AddWithValue("@email", student.Email);
         command.Parameters.AddWithValue("@class_room_id", student.ClassRoomId);
+        command.Parameters.AddWithValue("@date_of_birth", student.DateOfBirth);
         command.Parameters.AddWithValue("@id", id);
 
         int affectedRows = await command.ExecuteNonQueryAsync();
@@ -118,11 +122,11 @@ public class StudentsRepository : IStudentsRepository
         var exist = await command.ExecuteScalarAsync();
         command.CommandText = """
             SELECT s.first_name, s.last_name, t.full_name AS teacher_name, c.title AS course_title ,e.marks, e.grade, COALESCE(AVG(e.marks)OVER(PARTITION BY e.student_id),0) as avg FROM students s
-            INNER JOIN enrollments e
+            LEFT JOIN enrollments e
             ON s.id=e.student_id
-            JOIN courses c
+            LEFT JOIN courses c
             ON e.course_id = c.id
-            JOIN teachers t
+            LEFT JOIN teachers t
             ON t.id = c.teacher_id
             WHERE s.id = @id;
         """;
@@ -139,6 +143,10 @@ public class StudentsRepository : IStudentsRepository
         transcript.AvgMarks = reader.GetDouble(reader.GetOrdinal("avg"));
         do
         {
+            if (reader.IsDBNull(reader.GetOrdinal("marks")))
+            {
+                break;
+            }
             transcript.courses.Add(new ResponseTranscriptCoursesDTO
             {
                 TeacherName = reader.GetString(reader.GetOrdinal("teacher_name")),

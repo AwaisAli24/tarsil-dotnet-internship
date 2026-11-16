@@ -19,6 +19,10 @@ public class ReportsController : ControllerBase
             return BadRequest("Limit cannot be zero or negative.");
         }
         var toppers = await _service.GetToppersAsync(id, limit);
+        if (toppers.Count == 0)
+        {
+            return NotFound();
+        }
         return Ok(toppers);
     }
     [HttpGet("courses/{id:int}/stats")]

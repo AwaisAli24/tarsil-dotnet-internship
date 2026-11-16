@@ -29,6 +29,14 @@ public class CoursesService : ICoursesService
         {
             id = await _repository.CreateAsync(course);
         }
+        catch (PostgresException e) when (e.SqlState == "23505")
+        {
+            throw new InvalidOperationException("Course with the same code already exists.");
+        }
+        catch (PostgresException e) when (e.SqlState == "23503" || e.SqlState == "23001")
+        {
+            throw new InvalidOperationException("Cannot create course because the associated teacher does not exist.");
+        }
         catch
         {
             throw;
@@ -37,7 +45,24 @@ public class CoursesService : ICoursesService
     }
     public async Task<bool> UpdateAsync(int id, UpdateCoursesDTO course)
     {
-        bool isUpdate = await _repository.UpdateAsync(id, course);
+        bool isUpdate;
+        try
+        {
+
+            isUpdate = await _repository.UpdateAsync(id, course);
+        }
+        catch (PostgresException e) when (e.SqlState == "23505")
+        {
+            throw new InvalidOperationException("Course with the same code already exists.");
+        }
+        catch (PostgresException e) when (e.SqlState == "23503" || e.SqlState == "23001")
+        {
+            throw new InvalidOperationException("Cannot create course because the associated teacher does not exist.");
+        }
+        catch
+        {
+            throw;
+        }
         return isUpdate;
     }
     public async Task<bool> DeleteAsync(int id)

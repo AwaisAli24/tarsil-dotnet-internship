@@ -21,6 +21,14 @@ public class StudentsService : IStudentsService
     }
     public async Task<int> CreateAsync(CreateStudentsDTO student)
     {
+        if (student.DateOfBirth > DateOnly.FromDateTime(DateTime.Now))
+        {
+            throw new ArgumentException("Date of Birth cannot be in the future.");
+        }
+        if (DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year < 4 || DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year > 24)
+        {
+            throw new ArgumentException("Age must be between 4 and 24 years.");
+        }
         int id;
         try
         {
@@ -46,6 +54,14 @@ public class StudentsService : IStudentsService
     }
     public async Task<bool> UpdateAsync(int id, UpdateStudentsDTO student)
     {
+        if (student.DateOfBirth > DateOnly.FromDateTime(DateTime.Now))
+        {
+            throw new ArgumentException("Date of Birth cannot be in the future.");
+        }
+        if (DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year < 4 || DateOnly.FromDateTime(DateTime.Now).Year - student.DateOfBirth.Year > 24)
+        {
+            throw new ArgumentException("Age must be between 4 and 24 years.");
+        }
         bool isUpdated;
         try
         {
