@@ -1,6 +1,7 @@
 using SchoolApi.DTOs.Courses;
 using SchoolApi.Repository.Interfaces;
 using SchoolApi.Services.Interfaces;
+using Npgsql;
 
 namespace SchoolApi.Services;
 
@@ -41,7 +42,20 @@ public class CoursesService : ICoursesService
     }
     public async Task<bool> DeleteAsync(int id)
     {
-        bool isDeleted = await _repository.DeleteAsync(id);
+        bool isDeleted;
+        try
+        {
+
+            isDeleted = await _repository.DeleteAsync(id);
+        }
+        catch (PostgresException e) when (e.SqlState == "23503" || e.SqlState == "23001")
+        {
+            throw new InvalidOperationException("Cannot delete course because it has associated students.");
+        }
+        catch
+        {
+            throw;
+        }
         return isDeleted;
     }
     public async Task<ResponseRosterDTO?> GetRosterAsync(int id)

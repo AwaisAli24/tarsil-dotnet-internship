@@ -95,7 +95,16 @@ public class StudentsRepository : IStudentsRepository
             WHERE id = @id;
         """;
         command.Parameters.AddWithValue("@id", id);
-        int affectedRows = await command.ExecuteNonQueryAsync();
+        int affectedRows;
+        try
+        {
+
+            affectedRows = await command.ExecuteNonQueryAsync();
+        }
+        catch (PostgresException e) when (e.SqlState == "23503" || e.SqlState == "23001")
+        {
+            throw new InvalidOperationException("Cannot delete student because it is referenced in the enrollments table.");
+        }
         return affectedRows == 1;
     }
     public async Task<ResponseTranscriptDTO?> GetTranscriptAsync(int id)

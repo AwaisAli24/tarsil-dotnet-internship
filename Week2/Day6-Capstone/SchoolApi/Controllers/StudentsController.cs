@@ -83,7 +83,16 @@ public class StudentsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteAsync(int id)
     {
-        bool isDeleted = await _service.DeleteAsync(id);
+        bool isDeleted;
+        try
+        {
+
+            isDeleted = await _service.DeleteAsync(id);
+        }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
         if (!isDeleted)
         {
             return NotFound();
