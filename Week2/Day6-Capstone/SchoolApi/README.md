@@ -148,7 +148,7 @@ erDiagram
    - Marks updates with boundary validation and automated letter grade calculation.
 
 6. **Transcripts & Analytics**:
-   - Student Transcript (`GET /api/Students/{id}/transcript`): Summarizes enrolled courses, teacher names, individual marks, letter grades, and student cumulative average marks.
+   - Student Transcript (`GET /api/Students/{id}/transcript`): Categorizes courses into `CompletedCourses` (with teacher name, course title, marks, and letter grade) and `InProgressCourses`, along with student cumulative average marks (`AvgMarks`).
    - Classroom Toppers (`GET /api/Reports/classrooms/{id}/toppers?limit=3`): Top-ranked students ordered by highest marks.
    - Course Statistics (`GET /api/Reports/courses/{id}/stats`): Average marks, highest marks, lowest marks, and letter grade distribution counts.
 

@@ -59,10 +59,6 @@ public class ClassRoomsService : IClassRoomsService
         {
             throw new InvalidOperationException("ClassRoom with the same name already exists.");
         }
-        catch (PostgresException e) when (e.SqlState == "23503")
-        {
-            throw new InvalidOperationException("Invalid CourseId. Course does not exist.");
-        }
         catch
         {
             throw;

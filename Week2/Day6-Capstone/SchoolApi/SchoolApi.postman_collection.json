@@ -2587,13 +2587,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status code is 200 OK', function () { pm.response.to.have.status(200); });",
-                  "pm.test('Transcript contains student name and enrolled courses', function () {",
+                  "pm.test('Transcript contains student name and completed/in-progress courses', function () {",
                   "    const data = pm.response.json();",
                   "    pm.expect(data).to.have.property('firstName');",
+                  "    pm.expect(data).to.have.property('lastName');",
                   "    pm.expect(data).to.have.property('avgMarks');",
-                  "    pm.expect(data.courses).to.be.an('array').and.to.have.lengthOf.at.least(1);",
-                  "    pm.expect(data.courses[0]).to.have.property('courseTitle');",
-                  "    pm.expect(data.courses[0]).to.have.property('grade');",
+                  "    pm.expect(data.completedCourses).to.be.an('array');",
+                  "    pm.expect(data.inProgressCourses).to.be.an('array');",
+                  "    pm.expect(data.completedCourses).to.have.lengthOf.at.least(1);",
+                  "    pm.expect(data.completedCourses[0]).to.have.property('courseTitle');",
+                  "    pm.expect(data.completedCourses[0]).to.have.property('teacherName');",
+                  "    pm.expect(data.completedCourses[0]).to.have.property('marks');",
+                  "    pm.expect(data.completedCourses[0]).to.have.property('grade');",
                   "});"
                 ]
               }

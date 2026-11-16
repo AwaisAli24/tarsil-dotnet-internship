@@ -31,9 +31,9 @@ public class StudentsService : IStudentsService
         {
             age--;
         }
-        if (age < 4 || age > 24)
+        if (age < 4 || age > 25)
         {
-            throw new ArgumentException("Age must be between 4 and 24 years.");
+            throw new ArgumentException("Age must be between 4 and 25 years.");
         }
         int id;
         try

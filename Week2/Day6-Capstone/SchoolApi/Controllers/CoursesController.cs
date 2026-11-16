@@ -45,7 +45,16 @@ public class CoursesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateAsync(int id, UpdateCoursesDTO course)
     {
-        bool isUpdated = await _service.UpdateAsync(id, course);
+        bool isUpdated;
+        try
+        {
+
+            isUpdated = await _service.UpdateAsync(id, course);
+        }
+        catch (InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
         if (!isUpdated)
         {
             return NotFound();

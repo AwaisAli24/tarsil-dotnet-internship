@@ -211,7 +211,7 @@ public class StudentsRepository : IStudentsRepository
             Email = reader.GetString(reader.GetOrdinal("email")),
             ClassRoomId = reader.GetInt32(reader.GetOrdinal("class_room_id")),
             Enrolled_on = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("enrolled_on"))),
-            DateOfBirth = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth")))
+            DateOfBirth = reader.IsDBNull(reader.GetOrdinal("date_of_birth")) ? null : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth")))
         };
     }
 
